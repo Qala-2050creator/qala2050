@@ -1,0 +1,13 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--no-sandbox'] });
+const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
+await page.goto('http://127.0.0.1:8765/index.html');
+await page.waitForFunction(() => window.Q && Q.M && document.getElementById('loading').hidden, null, { timeout: 40000 });
+await page.waitForTimeout(3000); await page.click('[data-o]').catch(()=>{});
+await page.evaluate(() => Q.open('traffic')); await page.click('#tClose');
+const box = await page.locator('#map canvas').boundingBox();
+const rd = await page.evaluate(() => { const r = Q.D.roads.filter(r => r.cls === 'primary').find(r => { const xy = QEngine.toXY(r.mid[0], r.mid[1]); const p = Q.map.proj(xy[0], xy[1], 0); return p[0] > 480 && p[0] < 1100 && p[1] > 100 && p[1] < 700; }); const xy = QEngine.toXY(r.mid[0], r.mid[1]); return [Q.map.proj(xy[0], xy[1], 0), Q.tool]; });
+console.log(JSON.stringify(rd), JSON.stringify(box));
+await page.mouse.click(box.x + rd[0][0], box.y + rd[0][1]);
+console.log(await page.evaluate(() => [Q.S.closures.length, Q.tool, Q.S.view]));
+await browser.close();
