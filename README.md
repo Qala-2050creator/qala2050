@@ -2,6 +2,8 @@
 
 **«Қаланың болашағын салмай тұрып көр!» · Design Tomorrow. Before Building It.**
 
+🌐 **Live site:** https://qala-2050creator.github.io/qala2050/ · ⬇️ **Download:** green *Code → Download ZIP* button, or `dist/QALA2050.html` (one-file app)
+
 A working web digital twin of **Kyzylorda, Kazakhstan**. It lets you place hypothetical schools, housing, parks, roads, bridges and solar plants on the real city map. A transparent simulation engine then recalculates school load, accessibility, traffic, environment, budget, risk and a City Health Index.
 
 ## What runs where
