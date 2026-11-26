@@ -48,11 +48,11 @@
   function draw() {
     const el = $('#pitch'); if (!P) { el.hidden = true; return; }
     el.hidden = false;
-    el.innerHTML = `${P.splash ? `<div class="splash ${P.splash === 'end' ? 'end' : ''}"><div class="logo-xl">${G.QIcons.logo}<span>QALA<b>2050</b></span></div><p class="slogan">«${esc(t('slogan'))}»</p><p class="slogan2">${esc(t('sloganEn'))}</p>${P.splash === 'end' ? `<p class="final">«${esc(t('finalStatement'))}»</p><p class="muted">${esc(Q.S.presenter)}</p>` : ''}</div>` : ''}
+    el.innerHTML = `${P.splash ? `<div class="splash ${P.splash === 'end' ? 'end' : ''}"><div class="logo-xl">${G.QIcons.logo}<span>QALA <b>2050</b></span></div><p class="eyebrow">${esc(t('labName'))} · Kyzylorda</p><p class="slogan">«${esc(t('slogan'))}»</p><p class="slogan2">${esc(t('sloganEn'))}</p>${P.splash === 'end' ? `<p class="final">«${esc(t('finalStatement'))}»</p><p class="muted">${esc(Q.S.presenter)}</p>` : ''}</div>` : ''}
       ${P.card ? `<div class="pcard">${P.card}</div>` : ''}
       <div class="pcap"><div class="pstep">${P.k + 1} / ${STEPS}</div><h3>${esc(P.cap.h)}</h3><p>${esc(P.cap.b)}</p><div class="pprog"><i style="width:${(P.k + 1) / STEPS * 100}%"></i></div>
         <div class="pctl"><button class="btn" data-p="prev" title="${esc(t('prev'))}">◀</button><button class="btn pri" data-p="play">${P.auto ? '❚❚ ' + esc(t('pause')) : '▶ ' + esc(t('resume'))}</button><button class="btn" data-p="next" title="${esc(t('next'))}">▶</button><button class="btn" data-p="restart">↺ ${esc(t('restart'))}</button>
-        <span class="seg"><button class="${P.min === 2 ? 'on' : ''}" data-p="m2">2 ${esc(t('min'))}</button><button class="${P.min === 3 ? 'on' : ''}" data-p="m3">3 ${esc(t('min'))}</button></span><button class="btn" data-p="fs">⛶</button><button class="btn" data-p="exit">✕ ${esc(t('exit'))}</button></div></div>`;
+        <span class="seg"><button class="${P.min === 2 ? 'on' : ''}" data-p="m2">2 ${esc(t('min'))}</button><button class="${P.min === 3 ? 'on' : ''}" data-p="m3">3 ${esc(t('min'))}</button></span><button class="btn" data-p="fs">⛶</button><button class="btn" data-p="exit">✕ ${esc(t('exit'))}</button><span class="ptip">${esc(t('pitchTip'))}</span></div></div>`;
     el.querySelectorAll('[data-p]').forEach(b => b.onclick = () => ctl(b.dataset.p));
   }
   function schedule() { clearTimeout(P.timer); if (!P.auto || P.k >= STEPS - 1) return; P.timer = setTimeout(() => go(P.k + 1), DUR[P.min][P.k] * 1000); }

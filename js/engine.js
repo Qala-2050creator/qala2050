@@ -41,27 +41,27 @@
   // kind: bld = building (GFA = w*l*floors), area = flat site (area = w*l), line = linear (length l, width w), unit = per item
   // cap(p): default capacity from geometry. costM2: KZT per m² GFA / site m² / unit (hypothetical, NOT procurement prices)
   const CATALOG = {
-    school:       { grp: 'edu',  kind: 'bld',  w: 80,  l: 60,  floors: 3,  color: '#38bdf8', costM2: 450000, opex: 0.045, life: 50, capU: 'seats',    cap: g => g / 12,  jobs: g => g / 140, svc: 'school' },
-    kindergarten: { grp: 'edu',  kind: 'bld',  w: 50,  l: 40,  floors: 2,  color: '#7dd3fc', costM2: 420000, opex: 0.05,  life: 50, capU: 'places',   cap: g => g / 14,  jobs: g => g / 90,  svc: 'kinder' },
-    university:   { grp: 'edu',  kind: 'bld',  w: 110, l: 70,  floors: 5,  color: '#0ea5e9', costM2: 480000, opex: 0.04,  life: 60, capU: 'students', cap: g => g / 15,  jobs: g => g / 110, svc: 'university' },
-    hospital:     { grp: 'hlth', kind: 'bld',  w: 120, l: 60,  floors: 6,  color: '#f87171', costM2: 650000, opex: 0.08,  life: 50, capU: 'beds',     cap: g => g / 100, jobs: g => g / 40,  svc: 'hospital' },
-    clinic:       { grp: 'hlth', kind: 'bld',  w: 40,  l: 30,  floors: 3,  color: '#fca5a5', costM2: 520000, opex: 0.07,  life: 50, capU: 'visits',   cap: g => g / 7,   jobs: g => g / 60,  svc: 'clinic' },
-    residential:  { grp: 'res',  kind: 'bld',  w: 80,  l: 60,  floors: 12, color: '#c4b5fd', costM2: 330000, opex: 0.012, life: 60, capU: 'units',    cap: g => g * 0.78 / 65, jobs: g => g / 2500, res: true },
-    apartment:    { grp: 'res',  kind: 'bld',  w: 60,  l: 16,  floors: 9,  color: '#a78bfa', costM2: 320000, opex: 0.012, life: 60, capU: 'units',    cap: g => g * 0.78 / 65, jobs: g => g / 3000, res: true },
-    shopping:     { grp: 'biz',  kind: 'bld',  w: 120, l: 90,  floors: 3,  color: '#fbbf24', costM2: 380000, opex: 0.03,  life: 40, capU: 'jobs',     cap: g => g / 30,  jobs: g => g / 30,  attract: 0.012 },
-    business:     { grp: 'biz',  kind: 'bld',  w: 50,  l: 40,  floors: 14, color: '#f59e0b', costM2: 400000, opex: 0.03,  life: 50, capU: 'jobs',     cap: g => g / 18,  jobs: g => g / 18 },
-    hotel:        { grp: 'biz',  kind: 'bld',  w: 50,  l: 30,  floors: 10, color: '#fcd34d', costM2: 420000, opex: 0.05,  life: 40, capU: 'rooms',    cap: g => g / 45,  jobs: g => g / 120 },
-    stadium:      { grp: 'rec',  kind: 'area', w: 180, l: 130, floors: 1,  h: 25, color: '#34d399', costM2: 350000, opex: 0.02, life: 50, capU: 'seats', cap: a => a * 0.64, jobs: a => a / 900, svc: 'sport', attract: 0.004 },
-    sports:       { grp: 'rec',  kind: 'bld',  w: 70,  l: 50,  floors: 2,  color: '#6ee7b7', costM2: 380000, opex: 0.04,  life: 40, capU: 'visits',   cap: g => g / 10,  jobs: g => g / 250, svc: 'sport' },
-    park:         { grp: 'green', kind: 'area', w: 220, l: 160, floors: 0, h: 2, color: '#22c55e', costM2: 18000, opex: 0.04, life: 40, capU: 'm2', cap: a => a, jobs: a => a / 15000, svc: 'park', green: 1 },
-    playground:   { grp: 'green', kind: 'area', w: 40,  l: 30,  floors: 0, h: 2, color: '#86efac', costM2: 25000, opex: 0.05, life: 15, capU: 'm2', cap: a => a, jobs: () => 0, svc: 'park', green: 0.5 },
-    factory:      { grp: 'ind',  kind: 'bld',  w: 140, l: 90,  floors: 1,  h: 14, color: '#94a3b8', costM2: 280000, opex: 0.03, life: 40, capU: 'jobs', cap: g => g / 80, jobs: g => g / 80 },
-    road:         { grp: 'mob',  kind: 'line', w: 14,  l: 1200, floors: 0, h: 0.6, color: '#e2e8f0', costM2: 60000, opex: 0.02, life: 25, capU: 'veh/h', cap: (a, p) => Math.max(1, Math.floor(p.w / 3.5)) * 900, jobs: () => 0, road: true },
-    bridge:       { grp: 'mob',  kind: 'line', w: 18,  l: 450, floors: 0, h: 6, color: '#cbd5e1', costM2: 900000, opex: 0.015, life: 80, capU: 'veh/h', cap: (a, p) => Math.max(1, Math.floor(p.w / 3.5)) * 900, jobs: () => 0, road: true, bridge: true },
-    bus_stop:     { grp: 'mob',  kind: 'unit', w: 12,  l: 4,   floors: 0, h: 3, color: '#22d3ee', costM2: 6000000, opex: 0.06, life: 15, capU: 'stops', cap: () => 1, jobs: () => 0, svc: 'transit' },
-    parking:      { grp: 'mob',  kind: 'area', w: 80,  l: 50,  floors: 0, h: 0.5, color: '#64748b', costM2: 45000, opex: 0.02, life: 25, capU: 'spaces', cap: a => a / 25, jobs: () => 0, parking: true },
-    solar:        { grp: 'eng',  kind: 'area', w: 220, l: 150, floors: 0, h: 2.5, color: '#facc15', costM2: 18000, opex: 0.015, life: 25, capU: 'MW', cap: a => a * 0.055 / 1000, jobs: a => a / 20000, solar: true },
-    water:        { grp: 'eng',  kind: 'area', w: 90,  l: 60,  floors: 0, h: 8, color: '#60a5fa', costM2: 250000, opex: 0.04, life: 50, capU: 'm3/day', cap: a => a * 2, jobs: a => a / 600, water: true }
+    school:       { grp: 'edu',  kind: 'bld',  w: 80,  l: 60,  floors: 3,  color: '#2f5bd3', costM2: 450000, opex: 0.045, life: 50, capU: 'seats',    cap: g => g / 12,  jobs: g => g / 140, svc: 'school' },
+    kindergarten: { grp: 'edu',  kind: 'bld',  w: 50,  l: 40,  floors: 2,  color: '#6f8fe0', costM2: 420000, opex: 0.05,  life: 50, capU: 'places',   cap: g => g / 14,  jobs: g => g / 90,  svc: 'kinder' },
+    university:   { grp: 'edu',  kind: 'bld',  w: 110, l: 70,  floors: 5,  color: '#1e3a8a', costM2: 480000, opex: 0.04,  life: 60, capU: 'students', cap: g => g / 15,  jobs: g => g / 110, svc: 'university' },
+    hospital:     { grp: 'hlth', kind: 'bld',  w: 120, l: 60,  floors: 6,  color: '#c2412d', costM2: 650000, opex: 0.08,  life: 50, capU: 'beds',     cap: g => g / 100, jobs: g => g / 40,  svc: 'hospital' },
+    clinic:       { grp: 'hlth', kind: 'bld',  w: 40,  l: 30,  floors: 3,  color: '#e07a5f', costM2: 520000, opex: 0.07,  life: 50, capU: 'visits',   cap: g => g / 7,   jobs: g => g / 60,  svc: 'clinic' },
+    residential:  { grp: 'res',  kind: 'bld',  w: 80,  l: 60,  floors: 12, color: '#c8794a', costM2: 330000, opex: 0.012, life: 60, capU: 'units',    cap: g => g * 0.78 / 65, jobs: g => g / 2500, res: true },
+    apartment:    { grp: 'res',  kind: 'bld',  w: 60,  l: 16,  floors: 9,  color: '#d99a6c', costM2: 320000, opex: 0.012, life: 60, capU: 'units',    cap: g => g * 0.78 / 65, jobs: g => g / 3000, res: true },
+    shopping:     { grp: 'biz',  kind: 'bld',  w: 120, l: 90,  floors: 3,  color: '#b8860b', costM2: 380000, opex: 0.03,  life: 40, capU: 'jobs',     cap: g => g / 30,  jobs: g => g / 30,  attract: 0.012 },
+    business:     { grp: 'biz',  kind: 'bld',  w: 50,  l: 40,  floors: 14, color: '#8a6d3b', costM2: 400000, opex: 0.03,  life: 50, capU: 'jobs',     cap: g => g / 18,  jobs: g => g / 18 },
+    hotel:        { grp: 'biz',  kind: 'bld',  w: 50,  l: 30,  floors: 10, color: '#c9a227', costM2: 420000, opex: 0.05,  life: 40, capU: 'rooms',    cap: g => g / 45,  jobs: g => g / 120 },
+    stadium:      { grp: 'rec',  kind: 'area', w: 180, l: 130, floors: 1,  h: 25, color: '#4f7d4a', costM2: 350000, opex: 0.02, life: 50, capU: 'seats', cap: a => a * 0.64, jobs: a => a / 900, svc: 'sport', attract: 0.004 },
+    sports:       { grp: 'rec',  kind: 'bld',  w: 70,  l: 50,  floors: 2,  color: '#7aa874', costM2: 380000, opex: 0.04,  life: 40, capU: 'visits',   cap: g => g / 10,  jobs: g => g / 250, svc: 'sport' },
+    park:         { grp: 'green', kind: 'area', w: 220, l: 160, floors: 0, h: 2, color: '#6b8f4e', costM2: 18000, opex: 0.04, life: 40, capU: 'm2', cap: a => a, jobs: a => a / 15000, svc: 'park', green: 1 },
+    playground:   { grp: 'green', kind: 'area', w: 40,  l: 30,  floors: 0, h: 2, color: '#93b071', costM2: 25000, opex: 0.05, life: 15, capU: 'm2', cap: a => a, jobs: () => 0, svc: 'park', green: 0.5 },
+    factory:      { grp: 'ind',  kind: 'bld',  w: 140, l: 90,  floors: 1,  h: 14, color: '#6c6c6c', costM2: 280000, opex: 0.03, life: 40, capU: 'jobs', cap: g => g / 80, jobs: g => g / 80 },
+    road:         { grp: 'mob',  kind: 'line', w: 14,  l: 1200, floors: 0, h: 0.6, color: '#5c5f66', costM2: 60000, opex: 0.02, life: 25, capU: 'veh/h', cap: (a, p) => Math.max(1, Math.floor(p.w / 3.5)) * 900, jobs: () => 0, road: true },
+    bridge:       { grp: 'mob',  kind: 'line', w: 18,  l: 450, floors: 0, h: 6, color: '#3f444c', costM2: 900000, opex: 0.015, life: 80, capU: 'veh/h', cap: (a, p) => Math.max(1, Math.floor(p.w / 3.5)) * 900, jobs: () => 0, road: true, bridge: true },
+    bus_stop:     { grp: 'mob',  kind: 'unit', w: 12,  l: 4,   floors: 0, h: 3, color: '#1d4ed8', costM2: 6000000, opex: 0.06, life: 15, capU: 'stops', cap: () => 1, jobs: () => 0, svc: 'transit' },
+    parking:      { grp: 'mob',  kind: 'area', w: 80,  l: 50,  floors: 0, h: 0.5, color: '#8d99ae', costM2: 45000, opex: 0.02, life: 25, capU: 'spaces', cap: a => a / 25, jobs: () => 0, parking: true },
+    solar:        { grp: 'eng',  kind: 'area', w: 220, l: 150, floors: 0, h: 2.5, color: '#d4a017', costM2: 18000, opex: 0.015, life: 25, capU: 'MW', cap: a => a * 0.055 / 1000, jobs: a => a / 20000, solar: true },
+    water:        { grp: 'eng',  kind: 'area', w: 90,  l: 60,  floors: 0, h: 8, color: '#3a7ca5', costM2: 250000, opex: 0.04, life: 50, capU: 'm3/day', cap: a => a * 2, jobs: a => a / 600, water: true }
   };
   const TYPES = Object.keys(CATALOG);
 
@@ -166,7 +166,7 @@
   }
   function lineCoords(p) { const r = (p.rot || 0) * Math.PI / 180, L = p.d.l / 2; return [toLL(p.d.xy[0] - L * Math.sin(r), p.d.xy[1] - L * Math.cos(r)), toLL(p.d.xy[0] + L * Math.sin(r), p.d.xy[1] + L * Math.cos(r))]; }
   const congClass = vc => vc >= 1 ? 'critical' : vc >= 0.8 ? 'high' : vc >= 0.6 ? 'moderate' : 'low';
-  const congColor = vc => vc >= 1 ? '#ef4444' : vc >= 0.8 ? '#f97316' : vc >= 0.6 ? '#eab308' : '#22c55e';
+  const congColor = vc => vc >= 1 ? '#b02a37' : vc >= 0.8 ? '#e8590c' : vc >= 0.6 ? '#e0a800' : '#2b8a3e';   // colour-blind-checked ramp; always paired with a text label
 
   /* ---------- Main computation: one shared scenario state → all metrics ---------- */
   function compute(S, D) {

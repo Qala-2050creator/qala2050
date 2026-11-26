@@ -72,12 +72,12 @@
       });
       const ext = (id, op) => m.addLayer({ id: 'q-' + id, type: 'fill-extrusion', source: id, paint: { 'fill-extrusion-color': ['get', 'color'], 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-base': ['coalesce', ['get', 'base'], 0], 'fill-extrusion-opacity': op } });
       ext('future', 0.7); ext('proposals', 0.95); ext('sel', 0.6);
-      const circ = (id, r, extra) => m.addLayer(Object.assign({ id: 'q-' + id, type: 'circle', source: id, paint: { 'circle-color': ['coalesce', ['get', 'color'], '#22d3ee'], 'circle-radius': ['coalesce', ['get', 'r'], r], 'circle-stroke-color': ['coalesce', ['get', 'stroke'], '#081322'], 'circle-stroke-width': 1.5 } }, extra || {}));
+      const circ = (id, r, extra) => m.addLayer(Object.assign({ id: 'q-' + id, type: 'circle', source: id, paint: { 'circle-color': ['coalesce', ['get', 'color'], '#22d3ee'], 'circle-radius': ['coalesce', ['get', 'r'], r], 'circle-stroke-color': ['coalesce', ['get', 'stroke'], '#ffffff'], 'circle-stroke-width': 1.5 } }, extra || {}));
       circ('trees', 2.5); circ('fac', 5); circ('citizen', 7); circ('landmarks', 6); circ('vehicles', 2.6);
-      m.addLayer({ id: 'q-measure-l', type: 'line', source: 'measure', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-color': '#22d3ee', 'line-width': 2.5, 'line-dasharray': [2, 1.5] } });
-      m.addLayer({ id: 'q-measure-p', type: 'circle', source: 'measure', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-color': '#fff', 'circle-radius': 4 } });
+      m.addLayer({ id: 'q-measure-l', type: 'line', source: 'measure', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-color': '#c8643b', 'line-width': 2.5, 'line-dasharray': [2, 1.5] } });
+      m.addLayer({ id: 'q-measure-p', type: 'circle', source: 'measure', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-color': '#c8643b', 'circle-radius': 4 } });
       const font = ((st.layers.find(l => l.layout && l.layout['text-font']) || {}).layout || {})['text-font'] || ['Noto Sans Regular'];
-      const lbl = (id, minz) => m.addLayer({ id: 'q-' + id + '-lbl', type: 'symbol', source: id, minzoom: minz, layout: { 'text-field': ['coalesce', ['get', 'label'], ''], 'text-font': font, 'text-size': 12, 'text-offset': [0, -1.3], 'text-anchor': 'bottom', 'text-optional': true }, paint: { 'text-color': '#e6eefb', 'text-halo-color': '#081322', 'text-halo-width': 1.6 } });
+      const lbl = (id, minz) => m.addLayer({ id: 'q-' + id + '-lbl', type: 'symbol', source: id, minzoom: minz, layout: { 'text-field': ['coalesce', ['get', 'label'], ''], 'text-font': font, 'text-size': 12, 'text-offset': [0, -1.3], 'text-anchor': 'bottom', 'text-optional': true }, paint: { 'text-color': '#23272f', 'text-halo-color': '#f4efe6', 'text-halo-width': 1.6 } });
       lbl('landmarks', 9); lbl('fac', 15); lbl('proposals', 14);
       this.ids = { heat: ['q-heat'], flood: ['q-flood'], traffic: ['q-traffic'], gaps: ['q-gaps'], buildings: ['q-3d'], future: ['q-future'], proposals: ['q-proposals', 'q-proposals-lbl'], sel: ['q-sel'], trees: ['q-trees'], fac: ['q-fac', 'q-fac-lbl'], citizen: ['q-citizen'], landmarks: ['q-landmarks', 'q-landmarks-lbl'], measure: ['q-measure-l', 'q-measure-p'], vehicles: ['q-vehicles'] };
       // remember original paint for day/night switching
@@ -106,7 +106,7 @@
       try {
         this.map.setPaintProperty('q-3d', 'fill-extrusion-color', t === 'night'
           ? ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 5], 0, '#2c3e5f', 12, '#3d5683', 30, '#5574a8', 60, '#7b97c9']
-          : ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 5], 0, '#d9dde4', 20, '#c3cad6', 60, '#a9b4c6']);
+          : ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 5], 0, '#ddd5c7', 20, '#cbc1b0', 60, '#b3a893']);
       } catch (e) { }
     }
     setSatellite(url) {

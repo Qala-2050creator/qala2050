@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-const out = '/tmp/shots2'; const fs = await import('fs'); fs.mkdirSync(out, { recursive: true });
+const out = '/tmp/rd2'; const fs = await import('fs'); fs.mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--no-sandbox'] });
 const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, acceptDownloads: true });
 const errs = []; page.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' ' + (e.stack||'').split('\n')[1]));
@@ -43,7 +43,7 @@ await page.screenshot({ path: out + '/eco.png' });
 // disaster flood
 await page.evaluate(() => Q.open('disaster')); await page.evaluate(() => { const r = document.getElementById('dLvl'); r.value = 4; r.dispatchEvent(new Event('input')); }); await page.waitForTimeout(300);
 await page.screenshot({ path: out + '/flood.png' });
-for (const k of ['heat','drought','fire','failure','water','closure','evac']) { await page.evaluate(k => { const s = document.getElementById('dType'); s.value = k; s.dispatchEvent(new Event('change')); }, k); await page.waitForTimeout(150); }
+for (const k of ['heat','drought','fire','failure','water','closure','evac','flood']) { await page.click('[data-dis="' + k + '"]'); await page.waitForTimeout(150); }
 // budget optimiser
 await page.evaluate(() => Q.open('budget')); await page.click('[data-b="50000000000"]'); await page.click('#optRun'); await page.waitForTimeout(200); await log('opt', () => Q.lastOpt && Q.lastOpt.items.map(i=>i.type+'x'+i.count));
 await page.click('#optApply').catch(e=>console.log('noapply')); await page.waitForTimeout(300); await log('after plan', () => [Q.S.proposals.length, Q.M.chi.toFixed(1), Q.M.overrun]);
@@ -65,7 +65,7 @@ await page.evaluate(() => Q.open('biz')); await page.mouse.click(box.x + box.wid
 // mayor
 await page.evaluate(() => Q.open('mayor')); for (const i of [1,2,3,4,5,6]) { await page.click(`[data-q="${i}"]`); await page.waitForTimeout(250); }
 await page.fill('#mIn', 'What should we do?'); await page.click('#mForm button'); await page.waitForTimeout(300);
-await log('chat', () => document.querySelectorAll('#chat .msg.ai').length); await page.screenshot({ path: out + '/mayor.png' });
+await log('chat', () => document.querySelectorAll('#chat .brief').length); await page.screenshot({ path: out + '/mayor.png' });
 // compare
 await page.evaluate(() => Q.open('compare')); await page.click('#cmpSplit'); await page.waitForTimeout(900); await page.screenshot({ path: out + '/compare.png' }); await page.click('#cmpSplit');
 // reports downloads

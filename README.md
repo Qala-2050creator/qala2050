@@ -4,7 +4,7 @@
 
 🌐 **Live site:** https://qala-2050creator.github.io/qala2050/ · ⬇️ **Download:** green *Code → Download ZIP* button, or `dist/QALA2050.html` (one-file app)
 
-A working web digital twin of **Kyzylorda, Kazakhstan**. It lets you place hypothetical schools, housing, parks, roads, bridges and solar plants on the real city map. A transparent simulation engine then recalculates school load, accessibility, traffic, environment, budget, risk and a City Health Index.
+A working web digital twin of **Kyzylorda, Kazakhstan**, designed as the **QALA 2050 Urban Lab**: warm paper, graphite ink, cobalt and terracotta, Golos Text (Kazakh / Russian / English), light and dark themes. It lets you place hypothetical schools, housing, parks, roads, bridges and solar plants on the real city map. A transparent simulation engine then recalculates school load, accessibility, traffic, environment, budget, risk and a City Health Index.
 
 ## What runs where
 

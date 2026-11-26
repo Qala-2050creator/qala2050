@@ -4,6 +4,7 @@
   const Q = G.Q, t = (...a) => Q.t(...a), $ = Q.$, $$ = Q.$$, esc = Q.esc;
   Q.setLang = l => { Q.S.lang = l; Q.save(); Q.renderShell(); Q.refreshView(true); Q.changed(true); Q.award('lang'); };
   Q.setTheme = th => { Q.S.theme = th; Q.save(); Q.map && Q.map.setTheme(th); Q.map2 && Q.map2.setTheme(th); $('#tTheme').textContent = th === 'night' ? '☾' : '☀'; };
+  Q.setUiTheme = u => { Q.S.uiTheme = u; document.documentElement.dataset.ui = u; Q.setTheme(u === 'dark' ? 'night' : 'day'); const b = $('#uiThemeBtn'); if (b) b.textContent = u === 'dark' ? '☀' : '☾'; };
   function topbar() {
     $('#logo').innerHTML = G.QIcons.logo;
     const cities = [['kzo', 'cityKzo', false], ['ast', 'cityAst', true], ['ala', 'cityAla', true], ['shy', 'cityShy', true], ['tur', 'cityTur', true]];
@@ -11,10 +12,12 @@
     fill(); Q._fillCities = fill;
     $$('#langSw button').forEach(b => b.onclick = () => Q.setLang(b.dataset.l));
     $('#gear').onclick = () => Q.open('settings');
+    $('#uiThemeBtn').onclick = () => Q.setUiTheme(Q.S.uiTheme === 'dark' ? 'light' : 'dark');
+    $('#profileBtn').onclick = () => Q.open('overview');
     $('#pitchBtn').onclick = () => Q.modal(`<h3>${esc(t('pitchMode'))}</h3><p>${esc(t('pitchIntro'))}</p><div class="row end wrap"><button class="btn" data-m="deck">${esc(t('nav_present'))}</button><button class="btn" data-m="3">▶ 3 ${esc(t('min'))}</button><button class="btn pri" data-m="2">▶ 2 ${esc(t('min'))}</button></div>`, b => b.querySelectorAll('[data-m]').forEach(x => x.onclick = () => { Q.closeModal(); if (x.dataset.m === 'deck') G.QPitch.openDeck(); else G.QPitch.start(+x.dataset.m); }));
     $('#brand').onclick = e => { e.preventDefault(); Q.open('overview'); };
     $('#burger').onclick = () => document.body.classList.toggle('nav-open');
-    $('#kpiBtn').onclick = () => document.body.classList.toggle('right-open');
+    $('#kpiBtn').onclick = () => { if (G.innerWidth > 1180) document.body.classList.toggle('right-off'); else document.body.classList.toggle('right-open'); setTimeout(() => { if (Q.map && Q.map.map) Q.map.map.resize(); }, 260); };
     $('#dataStatus').onclick = () => { Q.open('settings'); };
     $('#nav').onclick = e => { const b = e.target.closest('.nav-i'); if (b) Q.open(b.dataset.v); };
     const bell = $('#bell'), notes = $('#notes');
@@ -51,7 +54,7 @@
     Q.modal(`<div class="onb"><div class="logo-xl sm">${G.QIcons.logo}<span>QALA<b>2050</b></span></div><p class="slogan">«${esc(t('slogan'))}»</p><ol>${[1, 2, 3].map(i => `<li><b>${esc(t('onb' + i + 'h'))}</b> ${esc(t('onb' + i))}</li>`).join('')}</ol><p class="muted sm">${esc(t('onbData'))}</p><div class="row end"><button class="btn pri" data-o>${esc(t('onbGo'))}</button></div></div>`, b => { b.querySelector('[data-o]').onclick = () => { Q.S.onboarded = true; Q.save(); Q.closeModal(); }; });
   }
   async function boot() {
-    topbar(); tools(); Q.renderShell(); Q.setTheme(Q.S.theme);
+    topbar(); tools(); Q.renderShell(); document.documentElement.dataset.ui = Q.S.uiTheme; Q.setTheme(Q.S.theme); const ub = $('#uiThemeBtn'); if (ub) ub.textContent = Q.S.uiTheme === 'dark' ? '☀' : '☾';
     const re = Q.renderShell; Q.renderShell = () => { re(); Q._fillCities && Q._fillCities(); };
     Q.refreshView(true);
     try { await Q.bootMap(); } catch (e) { console.error(e); Q.setLoading(null); Q.notify('Map error: ' + (e && e.message), 'warn'); }

@@ -20,22 +20,39 @@
   const GROUPS = [['edu', ['school', 'kindergarten', 'university']], ['hlth', ['hospital', 'clinic']], ['res', ['residential', 'apartment']], ['biz', ['shopping', 'business', 'hotel']], ['rec', ['stadium', 'sports', 'park', 'playground']], ['ind', ['factory']], ['mob', ['road', 'bridge', 'bus_stop', 'parking']], ['eng', ['solar', 'water']]];
 
   /* ============ OVERVIEW ============ */
+  Q.trafficLevel = v => v >= 1 ? 'crit' : v >= 0.8 ? 'high' : v >= 0.6 ? 'mod' : 'low';
+  Q.levelChip = v => { const l = Q.trafficLevel(v); return `<span class="lvl-chip lv-${l}">${esc(t({ low: 'cLow', mod: 'cMod', high: 'cHigh', crit: 'cCrit' }[l]))}</span>`; };
   V.overview = {
     sub: 'ovSub',
-    form: () => `<div class="hero"><p class="lead">${esc(t('ovLead'))}</p><div class="row wrap"><button class="btn pri" data-go="build">${esc(t('ovStart'))}</button><button class="btn" data-pitch="2">▶ ${esc(t('pitchMode'))}</button><button class="btn" data-go="mayor">${esc(t('nav_mayor'))}</button>${location.protocol === 'file:' ? '' : `<button class="btn" data-go="reports">⇩ ${esc(t('dlTitle'))}</button>`}</div></div>
-      <label class="fld"><span>${esc(t('profName'))}</span><input id="profName" value="${esc(Q.S.profile.name)}" placeholder="${esc(t('profPh'))}" maxlength="40"></label>`,
-    bind: el => { $$('[data-go]', el).forEach(b => b.onclick = () => Q.open(b.dataset.go)); $$('[data-pitch]', el).forEach(b => b.onclick = () => G.QPitch.start(+b.dataset.pitch)); $('#profName', el).oninput = e => { Q.S.profile.name = e.target.value; Q.save(); }; },
+    form: () => `<section class="hero"><p class="eyebrow">QALA 2050 · ${esc(t('labName'))}</p><h1>${esc(t('ovHead'))}</h1><p class="lead">${esc(t('ovText'))}</p>
+      <div class="acts">
+        <button class="act" data-go="build"><span class="act-ic">${G.QIcons.build}</span><b>${esc(t('act1'))}</b><span>${esc(t('act1d'))}</span></button>
+        <button class="act" data-go="infra"><span class="act-ic">${G.QIcons.analyse}</span><b>${esc(t('act2'))}</b><span>${esc(t('act2d'))}</span></button>
+        <button class="act act-pitch" data-pitchm="1"><span class="act-ic">${G.QIcons.present}</span><b>${esc(t('act3'))}</b><span>${esc(t('act3d'))}</span></button>
+      </div></section>`,
+    bind: el => { $$('[data-go]', el).forEach(b => b.onclick = () => Q.open(b.dataset.go)); $$('[data-pitchm]', el).forEach(b => b.onclick = () => document.getElementById('pitchBtn').click()); },
     results: () => {
-      const M = Q.M, ach = Q.S.profile.ach, xp = Q.S.profile.xp || 0, lvl = 1 + Math.floor(xp / 300), wk = Q.weekly();
-      const lb = Object.entries(Q.S.saved).map(([n, s]) => [n, s.chi || 0]).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      return `<section class="card"><h4>${esc(t('profile'))}</h4><div class="row"><div class="lvl">${lvl}</div><div><b>${esc(Q.S.profile.name || t('planner'))}</b><div class="muted sm">${Q.n(xp)} XP · ${esc(t('level'))} ${lvl}</div>${Q.bar((xp % 300) / 3)}</div></div></section>
+      const M = Q.M, M0 = Q.M0, ach = Q.S.profile.ach, xp = Q.S.profile.xp || 0, lvl = 1 + Math.floor(xp / 300), wk = Q.weekly();
+      const lb = Object.entries(Q.S.saved).map(([n, sv]) => [n, sv.chi || 0]).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const used = M.budget > 0 ? M.capexC / M.budget : 0;
+      const tile = (k, v, sub, st) => `<div class="snap"><span class="snap-k">${esc(t(k))}</span><b class="snap-v">${v}</b><span class="snap-s">${sub}</span>${Q.badge(st)}</div>`;
+      return `<section class="snapshot"><h3>${esc(t('snapTitle'))}</h3><div class="snaps">
+          ${tile('snapSchool', Q.pct(M.school.cov), esc(t('vsBase')) + ' ' + Q.delta(M.school.cov * 100, M0.school.cov * 100, 1, false, ' pp'), 'SIM')}
+          ${tile('snapGreen', Q.n(M.greenPerCap, 1) + ' ' + esc(t('m2')), esc(t('benchmark')) + ' ' + Q.n(M.A.greenTarget) + ' ' + esc(t('m2')), 'EST')}
+          ${tile('snapTraffic', Q.n(M.traffic.index, 2), Q.levelChip(M.traffic.index), 'SIM')}
+          ${tile('snapBudget', Q.pct(used), Q.kzt(M.capexC) + ' / ' + Q.kzt(M.budget), 'EST')}
+        </div><p class="note">${esc(t('snapNote'))}</p></section>
+      <h3 class="sec-h">${esc(t('moreOv'))}</h3>
+      <label class="fld"><span>${esc(t('profName'))}</span><input id="profName" value="${esc(Q.S.profile.name)}" placeholder="${esc(t('profPh'))}" maxlength="40"></label>
+      <section class="card"><h4>${esc(t('profile'))}</h4><div class="row"><div class="lvl">${lvl}</div><div class="grow"><b>${esc(Q.S.profile.name || t('planner'))}</b><div class="muted sm">${Q.n(xp)} XP · ${esc(t('level'))} ${lvl}</div>${Q.bar((xp % 300) / 3)}</div></div></section>
       <section class="card"><h4>${esc(t('weekly'))}</h4><div class="mission ${wk.done ? 'done' : ''}"><b>${esc(t('mis_' + wk.k))}</b><span>${wk.done ? '✓ ' + esc(t('completed')) : esc(t('inProgress'))}</span></div></section>
       <section class="card"><h4>${esc(t('missions'))} <span class="muted sm">${Q.MISSIONS.filter(m => m.done).length}/${Q.MISSIONS.length}</span></h4>${Q.MISSIONS.map(m => `<div class="mission ${m.done ? 'done' : ''}"><b>${m.done ? '✓ ' : ''}${esc(t('mis_' + m.k))}</b><span>${esc(t('misd_' + m.k))}</span></div>`).join('')}<p class="muted sm">${esc(t('misNote'))}</p></section>
       <section class="card"><h4>${esc(t('achievements'))} <span class="muted sm">${Q.ACH.filter(k => ach[k]).length}/${Q.ACH.length}</span></h4><div class="achs">${Q.ACH.map(k => `<span class="ach ${ach[k] ? 'on' : ''}" title="${esc(t('achd_' + k))}">${esc(t('ach_' + k))}</span>`).join('')}</div></section>
       <section class="card"><h4>${esc(t('compMode'))}</h4>${lb.length ? `<ol class="lb">${lb.map(([n, c]) => `<li><span>${esc(n)}</span><b>${Q.n(c, 1)}</b></li>`).join('')}</ol>` : `<p class="muted">${esc(t('compEmpty'))}</p>`}<p class="muted sm">${esc(t('compNote'))}</p></section>
       <section class="card"><h4>${esc(t('history'))}</h4>${Q.S.history.length ? Q.S.history.slice(0, 6).map(h => `<div class="kv"><span>${esc(h.name)}</span><b>${Q.n(h.chi, 1)}</b><em class="muted sm">${new Date(h.t).toLocaleDateString(Q.locale())}</em></div>`).join('') : `<p class="muted">${esc(t('histEmpty'))}</p>`}</section>
       <section class="card"><h4>${esc(t('dataQ'))}</h4>${kv(t('dsMap'), esc(Q.mode === 'live' ? 'OpenFreeMap / OSM' : t('srcDemo')), Q.mode === 'live' ? 'OPEN' : 'DEMO')}${kv(t('dsAnalytics'), esc(Q.D.mode === 'osm' ? 'Overpass / OSM' : t('srcDemo')), Q.D.mode === 'osm' ? 'OPEN' : 'DEMO')}${kv(t('kPop'), Q.n(M.popBase), 'VERIFIED')}<p class="muted sm">${esc(t('popSrc'))}</p></section>`;
-    }
+    },
+    bindResults: r => { const i = $('#profName', r); if (i) i.onchange = e => { Q.S.profile.name = e.target.value.slice(0, 40); Q.save(); Q.renderShell(); }; }
   };
 
   /* ============ DIGITAL CITY ============ */
@@ -62,11 +79,13 @@
   };
 
   /* ============ BUILD SIMULATOR ============ */
+  const SHELF = [['sh_housing', ['residential', 'apartment']], ['sh_education', ['school', 'kindergarten', 'university']], ['sh_health', ['hospital', 'clinic']], ['sh_green', ['park', 'playground', 'sports', 'stadium']], ['sh_mobility', ['road', 'bridge', 'bus_stop', 'parking']], ['sh_energy', ['solar', 'water']], ['sh_other', ['shopping', 'business', 'hotel', 'factory']]];
+  const capHint = ty => { const d = E.derive({ type: ty, lng: E.LNG0, lat: E.LAT0 }, E.mergeA(Q.S.assumptions), Q.S.unitCosts); return Q.n(d.cap) + ' ' + t('u_' + d.c.capU); };
   V.build = {
     sub: 'buildSub',
-    form: () => `<div class="cat-grid">${GROUPS.map(([g, ts]) => `<div class="cg"><span class="cgl">${esc(t('grp_' + g))}</span>${ts.map(ty => `<button class="ty ${Q.placeType === ty ? 'on' : ''}" data-ty="${ty}" title="${esc(Q.typeName(ty))}"><i style="background:${E.CATALOG[ty].color}"></i>${esc(Q.typeName(ty))}</button>`).join('')}</div>`).join('')}</div>
-      <p class="hint" id="placeHint">${esc(Q.placeType ? t('placeHint', { ty: Q.typeName(Q.placeType) }) : t('pickType'))}</p>`,
-    bind: el => $$('[data-ty]', el).forEach(b => b.onclick = () => { Q.placeType = Q.placeType === b.dataset.ty ? null : b.dataset.ty; $$('[data-ty]', el).forEach(x => x.classList.toggle('on', x.dataset.ty === Q.placeType)); $('#placeHint', el).textContent = Q.placeType ? t('placeHint', { ty: Q.typeName(Q.placeType) }) : t('pickType'); Q.map.cursor(Q.placeType ? 'crosshair' : ''); }),
+    form: () => `<h3 class="sec-h">${esc(t('shelf'))}</h3><div class="shelf">${SHELF.map(([g, ts]) => `<div class="shelf-row"><span class="shelf-l">${esc(t(g))}</span><div class="shelf-items">${ts.map(ty => `<button class="ty ${Q.placeType === ty ? 'on' : ''}" data-ty="${ty}" title="${esc(Q.typeName(ty))}"><i style="background:${E.CATALOG[ty].color}"></i><span><b>${esc(Q.typeName(ty))}</b><em>${esc(capHint(ty))}</em></span></button>`).join('')}</div></div>`).join('')}</div>
+      <p class="hint" id="placeHint">${esc(Q.placeType ? t('placeHint', { ty: Q.typeName(Q.placeType) }) : t('shelfHint'))}</p>`,
+    bind: el => $$('[data-ty]', el).forEach(b => b.onclick = () => { Q.placeType = Q.placeType === b.dataset.ty ? null : b.dataset.ty; $$('[data-ty]', el).forEach(x => x.classList.toggle('on', x.dataset.ty === Q.placeType)); $('#placeHint', el).textContent = Q.placeType ? t('placeHint', { ty: Q.typeName(Q.placeType) }) : t('shelfHint'); Q.map.cursor(Q.placeType ? 'crosshair' : ''); }),
     onMapClick: e => {
       if (Q.placeType) { Q.addProposal(Q.placeType, e.lngLat); return true; }
       if (!(e.hit && e.hit.layer === 'proposals')) { if (Q.S.selId) { Q.S.selId = null; Q.changed(); } }
@@ -77,26 +96,33 @@
       let h = '';
       if (p) {
         const r = Q.validate(p) || { warn: [], near: {} }, d = r.d || E.derive(p, E.mergeA(Q.S.assumptions), Q.S.unitCosts), c = E.CATALOG[p.type];
-        const without = E.compute(Q.scenarioState({ proposals: Q.S.proposals.filter(x => x.id !== p.id) }), Q.D);
+        const without = E.compute(Q.scenarioState({ proposals: Q.S.proposals.filter(x => x.id !== p.id) }), Q.D), M = Q.M;
+        const share = M.budget > 0 ? d.capex * (1 + M.A.contingency) / M.budget : 0;
+        const crit = r.warn.some(w => w.lvl === 'crit'), warnOnly = r.warn.length && !crit;
+        const keyRows = `${dRow(t('kPop'), without.pop, M.pop)}${dRow(t('iSchoolPress'), without.school.pressure * 100, M.school.pressure * 100, 1, true, '%')}${dRow(t('covSchool'), without.school.cov * 100, M.school.cov * 100, 1, false, ' pp')}${dRow(t('kTraffic'), without.traffic.index, M.traffic.index, 3, true)}${dRow(t('kGreen'), without.greenPerCap, M.greenPerCap, 2)}${dRow(t('chi'), without.chi, M.chi, 1)}`;
         h += `<section class="card edit"><div class="row sb"><h4><i class="sw" style="background:${c.color}"></i>${esc(p.name || Q.typeName(p.type))}</h4>${Q.badge('PROPOSED')}</div>
+          <h5 class="ck-h">${esc(t('ck_title'))}</h5>
+          <ol class="checklist">
+            <li class="ck ${M.overrun > 0 ? 'ck-warn' : 'ck-ok'}"><b>${esc(t('ck_budget'))}</b><span class="ck-v">${Q.kzt(d.capex)} <em>${esc(t('ck_share', { p: Q.pct(share, 1) }))}</em></span><span>${esc(t('ck_after', { x: Q.kzt(M.remaining) }))}</span><span>${esc(t('ck_life', { y: d.life, x: Q.kzt(d.capex + d.opex * d.life) }))}</span>${Q.badge('EST')}</li>
+            <li class="ck ck-info"><b>${esc(t('ck_near'))} <em>(${esc(t('straight'))})</em></b><div class="near2">${Object.entries(r.near || {}).map(([k, v]) => `<span>${esc(t('fc_' + k))}: <b>${Q.m(v)}</b></span>`).join('')}</div></li>
+            <li class="ck ${crit ? 'ck-bad' : warnOnly ? 'ck-warn' : 'ck-ok'}"><b>${esc(t('ck_conf'))}</b>${r.warn.length ? r.warn.map(w => `<div class="warn w-${w.lvl}">${esc(t('w_' + w.k, { n: w.n || '' }))}</div>`).join('') : `<span>${esc(t('w_ok'))}</span>`}${r.live && r.live.unknown ? `<span class="muted sm">${esc(t('w_zoom'))}</span>` : ''}<span class="muted sm">${esc(t('screenNote'))}</span></li>
+            <li class="ck ck-info"><b>${esc(t('ck_impact'))}</b><table class="tbl"><thead><tr><th></th><th>${esc(t('before'))}</th><th>${esc(t('after'))}</th><th>Δ</th></tr></thead><tbody>${keyRows}</tbody></table>${Q.badge('SIM')}<details><summary>${esc(t('ck_more'))}</summary>${impactTable(without, M)}</details></li>
+          </ol>
+          <details class="params" open><summary>${esc(t('ck_params'))}</summary>
           <label class="fld"><span>${esc(t('pName'))}</span><input id="eName" value="${esc(p.name)}" maxlength="50" placeholder="${esc(Q.typeName(p.type))}"></label>
           <div class="g2">${num('eW', Math.round(d.w), c.kind === 'line' ? t('pWidth') : t('pW'), 2, 3000, 1, t('m'))}${num('eL', Math.round(d.l), c.kind === 'line' ? t('pLen') : t('pL'), 2, 6000, 1, t('m'))}</div>
           ${c.kind === 'bld' ? rng('eF', d.floors, t('pFloors'), 1, 40, 1, d.floors) : ''}
           ${rng('eR', p.rot || 0, t('pRot'), -180, 180, 5, (p.rot || 0) + '°')}
           <div class="g2">${num('eCap', p.capacity || '', t('pCap') + ' (' + t('u_' + c.capU) + ')', 0, 1e7, 1)}${num('eBud', p.budget ? Math.round(p.budget / 1e6) : '', t('pBudget'), 0, 1e7, 1, t('mn'))}</div>
-          <p class="muted sm">${esc(t('autoVals', { cap: Q.n(d.capAuto) + ' ' + t('u_' + c.capU), cost: Q.kzt(d.capexAuto) }))}</p>
-          <div class="row wrap"><button class="btn" id="eDup">${esc(t('duplicate'))}</button><button class="btn" id="eFly">${esc(t('flyTo'))}</button><button class="btn dng" id="eDel">${esc(t('remove'))}</button></div>
-          <h5>${esc(t('screening'))}</h5>${r.warn.length ? r.warn.map(w => `<div class="warn w-${w.lvl}">${esc(t('w_' + w.k, { n: w.n || '' }))}</div>`).join('') : `<div class="warn w-ok">${esc(t('w_ok'))}</div>`}
-          ${r.live && r.live.unknown ? `<p class="muted sm">${esc(t('w_zoom'))}</p>` : ''}<p class="muted sm">${esc(t('screenNote'))}</p>
-          <h5>${esc(t('nearbySvc'))} <span class="muted sm">(${esc(t('straight'))})</span></h5><div class="near2">${Object.entries(r.near || {}).map(([k, v]) => `<span>${esc(t('fc_' + (k === 'transit' ? 'transit' : k)))}: <b>${Q.m(v)}</b></span>`).join('')}</div>
-          <h5>${esc(t('impact'))} ${Q.badge('MODEL')}</h5>${impactTable(without, Q.M)}</section>`;
+          <p class="muted sm">${esc(t('autoVals', { cap: Q.n(d.capAuto) + ' ' + t('u_' + c.capU), cost: Q.kzt(d.capexAuto) }))}</p></details>
+          <div class="row wrap"><button class="btn" id="eDup">${esc(t('duplicate'))}</button><button class="btn" id="eFly">${esc(t('flyTo'))}</button><button class="btn dng" id="eDel">${esc(t('remove'))}</button></div></section>`;
       } else h += `<p class="muted">${esc(t('noSel'))}</p>`;
       h += `<section class="card"><h4>${esc(t('proposals'))} (${list.length})</h4>${list.length ? list.map(x => `<button class="res ${x.id === Q.S.selId ? 'on' : ''}" data-pid="${x.id}"><b><i class="sw" style="background:${E.CATALOG[x.type].color}"></i>${esc(x.name || Q.typeName(x.type))}</b><span>${Q.kzt((Q.M.props.find(m => m.id === x.id) || { d: { capex: 0 } }).d.capex)}${x._screen && x._screen.warn.some(w => w.lvl === 'crit') ? ' · ⚠' : ''}</span></button>`).join('') : `<p class="muted">${esc(t('noProps'))}</p>`}</section>`;
       return h;
     },
     bindResults: r => {
       $$('[data-pid]', r).forEach(b => b.onclick = () => { Q.S.selId = b.dataset.pid; Q.changed(); });
-      const p = Q.getSel(); if (!p) return;
+      const p = Q.getSel(), pb = r.closest('.pbody'); if (pb) pb.classList.toggle('sel-first', !!p); if (!p) return;
       const upd = (k, v, final) => { if (final) Q.commit(() => { p[k] = v; }); else { p[k] = v; Q.changed(); } };
       const bindNum = (id, k, mul) => { const i = $('#' + id, r); if (i) i.onchange = () => { const v = i.value === '' ? 0 : +i.value * (mul || 1); upd(k, Number.isFinite(v) ? Math.max(0, v) : 0, true); }; };
       $('#eName', r).onchange = e => upd('name', e.target.value.slice(0, 50), true);
@@ -132,13 +158,16 @@
       return true;
     },
     results: () => {
-      const M = Q.M, M0 = Q.M0, tr = M.traffic, demoReal = Q.D.mode === 'demo' && Q.mode === 'live';
-      return `<section class="card"><h4>${esc(t('tIndex'))} ${Q.badge('SIM')}</h4><div class="big ${tr.index >= 0.9 ? 'crit' : tr.index >= 0.75 ? 'warn' : 'ok'}">${Q.n(tr.index, 3)}</div><div class="muted sm">${esc(t('vsBase'))}: ${Q.delta(tr.index, M0.traffic.index, 3, true)} · ${esc(t('tIndexD'))}</div>
-        ${hb([{ l: t('cCrit'), v: tr.critical, txt: tr.critical, c: '#ef4444' }, { l: t('cHigh'), v: tr.high, txt: tr.high, c: '#f97316' }, { l: t('tSegs'), v: tr.segs.length, txt: tr.segs.length, c: '#64748b' }], tr.segs.length)}</section>
-        <section class="card"><h4>${esc(t('tBott'))}</h4><table class="tbl"><thead><tr><th>${esc(t('road'))}</th><th>V/C</th><th>${esc(t('tLoad'))}</th></tr></thead><tbody>${tr.bott.map(s => `<tr data-ll="${s.mid[0]},${s.mid[1]}" class="clk"><td>${esc(s.name || t('unnamedRoad'))}${s.bridge ? ' 🌉' : ''}</td><td style="color:${E.congColor(s.vc)}">${Q.n(s.vc, 2)}</td><td>${Q.n(s.load)} / ${Q.n(s.cap)}</td></tr>`).join('')}</tbody></table>
+      const M = Q.M, M0 = Q.M0, tr = M.traffic, demoReal = Q.D.mode === 'demo' && Q.mode === 'live', lv = Q.trafficLevel(tr.index), w = tr.bott[0];
+      return `<section class="card road-card"><div class="row sb"><h4>${esc(t('tIndex'))}</h4>${Q.badge('SIM')}</div>
+        <div class="row"><div class="big">${Q.n(tr.index, 2)}</div>${Q.levelChip(tr.index)}<span class="muted sm">${esc(t('vsBase'))}: ${Q.delta(tr.index, M0.traffic.index, 3, true)}</span></div>
+        <p class="plain">${esc(t('tx_' + lv))}</p>${w ? `<p class="plain">${esc(t('tx_worst', { r: w.name || t('unnamedRoad'), p: Q.pct(w.vc) }))}</p>` : ''}
+        <div class="lvl-scale">${[['low', 'cLow', '< 0,60'], ['mod', 'cMod', '0,60–0,79'], ['high', 'cHigh', '0,80–0,99'], ['crit', 'cCrit', '≥ 1,00']].map(([k, l, r]) => `<span class="lv-${k} ${k === lv ? 'on' : ''}"><b>${esc(t(l))}</b><em>${r}</em></span>`).join('')}</div>
+        ${hb([{ l: t('cCrit'), v: tr.critical, txt: tr.critical, c: 'var(--c-crit)' }, { l: t('cHigh'), v: tr.high, txt: tr.high, c: 'var(--c-high)' }, { l: t('tSegs'), v: tr.segs.length, txt: tr.segs.length, c: 'var(--muted)' }], tr.segs.length)}</section>
+        <section class="card"><h4>${esc(t('tBott'))}</h4><table class="tbl"><thead><tr><th>${esc(t('road'))}</th><th>${esc(t('tx_level'))}</th><th>V/C</th></tr></thead><tbody>${tr.bott.map(sg => `<tr data-ll="${sg.mid[0]},${sg.mid[1]}" class="clk"><td>${esc(sg.name || t('unnamedRoad'))}${sg.bridge ? ' · ' + esc(t('ty_bridge')) : ''}<div class="muted sm">${Q.n(sg.load)} / ${Q.n(sg.cap)} ${esc(t('u_veh/h'))}</div></td><td>${Q.levelChip(sg.vc)}</td><td>${Q.n(sg.vc, 2)}</td></tr>`).join('')}</tbody></table>
         <p class="muted sm">${esc(t('tClosed'))}: ${Q.S.closures.length}${Q.S.closures.length ? ` <button class="lnk" id="tOpenAll">${esc(t('tOpenAll'))}</button>` : ''}</p></section>
         ${demoReal ? `<p class="warn w-warn">${esc(t('mbDemoAnalytics'))}</p>` : ''}
-        <details class="card"><summary>${esc(t('method'))}</summary><p class="sm">${esc(t('tMethod'))}</p></details>`;
+        <details class="card limits" open><summary>${esc(t('method'))}</summary><p class="sm">${esc(t('tMethod'))}</p></details>`;
     },
     bindResults: r => { $$('tr[data-ll]', r).forEach(tr => tr.onclick = () => Q.map.flyTo({ center: tr.dataset.ll.split(',').map(Number), zoom: 15.6, pitch: 50, duration: 1200 })); const b = $('#tOpenAll', r); if (b) b.onclick = () => Q.commit(S => { S.closures = []; }); }
   };
@@ -156,14 +185,15 @@
     onMapClick: e => { if (Q.tool !== 'tree') return false; Q.commit(S => { S.trees.push({ lng: +e.lngLat[0].toFixed(6), lat: +e.lngLat[1].toFixed(6), n: 50 }); }); Q.award('tree'); return true; },
     results: () => {
       const M = Q.M, M0 = Q.M0;
-      return `<section class="card"><h4>${esc(t('ecoInd'))}</h4><table class="tbl"><thead><tr><th></th><th>${esc(t('baseline'))}</th><th>${esc(t('scenario'))}</th><th>Δ</th></tr></thead><tbody>
-        ${dRow(t('greenArea') + ' (' + t('ha') + ')', M0.greenArea / 1e4, M.greenArea / 1e4, 1)}${dRow(t('kGreen') + ' (' + t('m2') + ')', M0.greenPerCap, M.greenPerCap, 2)}
-        ${dRow(t('covPark'), M0.cov.park.share * 100, M.cov.park.share * 100, 1, false, ' pp')}${dRow(t('heatIdx'), M0.heat.city * 100, M.heat.city * 100, 1, true)}
-        ${dRow(t('co2') , M0.co2, M.co2, 1, true)}${dRow(t('water'), M0.waterDemand, M.waterDemand, 0, true)}${dRow(t('energy'), M0.energy, M.energy, 1, true)}${dRow(t('renew'), M0.renew * 100, M.renew * 100, 2, false, '%')}
-        ${dRow(t('trees'), M0.treeCount, M.treeCount)}</tbody></table>
-        <p class="muted sm">${Q.badge('EST')} ${esc(t('ecoNote'))}</p></section>
-        <section class="card"><h4>${esc(t('greenTarget'))}</h4>${hb([{ l: t('scenario'), v: M.greenPerCap, txt: Q.n(M.greenPerCap, 1) + ' ' + t('m2'), c: 'var(--em)' }, { l: t('benchmark'), v: M.A.greenTarget, txt: Q.n(M.A.greenTarget) + ' ' + t('m2'), c: '#64748b' }], Math.max(M.greenPerCap, M.A.greenTarget) * 1.1)}<p class="muted sm">${esc(t('greenTargetNote'))}</p></section>
-        <details class="card"><summary>${esc(t('method'))}</summary><p class="sm">${esc(t('ecoMethod'))}</p></details>`;
+      const arrow = (a0, a1, d, inv, u) => `<span class="chv"><em>${Q.n(a0, d)}</em> → <b>${Q.n(a1, d)}${u || ''}</b> ${Q.delta(a1, a0, d, inv)}</span>`;
+      const solar = M.props.filter(p => p.d.c.solar).length;
+      return `<section class="chains"><h4>${esc(t('ecoInd'))} ${Q.badge('EST')}</h4>
+        <div class="chain"><div class="ch-src"><b>${esc(t('eco_chain1'))}</b><span>${Q.n(M.treeCount)} ${esc(t('trees')).toLowerCase()} · ${Q.n(M.greenNew / 1e4, 1)} ${esc(t('ha'))}</span></div><div class="ch-res"><span class="ch-l">${esc(t('eco_res1'))}</span>${arrow(M0.greenPerCap, M.greenPerCap, 2, false, ' ' + t('m2'))}${arrow(M0.heat.city * 100, M.heat.city * 100, 1, true)}</div></div>
+        <div class="chain"><div class="ch-src"><b>${esc(t('eco_chain2'))}</b><span>${Q.n(M.solarMW, 1)} ${esc(t('u_MW'))} · ${solar}</span></div><div class="ch-res"><span class="ch-l">${esc(t('eco_res2'))}</span>${arrow(M0.renew * 100, M.renew * 100, 2, false, '%')}${arrow(M0.co2, M.co2, 1, true, ' kt')}</div></div>
+        <div class="chain"><div class="ch-src"><b>${esc(t('eco_chain3'))}</b><span>${Q.n(M.pop)}</span></div><div class="ch-res"><span class="ch-l">${esc(t('eco_res3'))}</span>${arrow(M0.waterDemand, M.waterDemand, 0, true, ' ' + t('m3d'))}${arrow(M0.energy, M.energy, 1, true, ' ' + t('gwh'))}</div></div>
+        <p class="muted sm">${esc(t('ecoNote'))}</p></section>
+        <section class="card"><h4>${esc(t('greenTarget'))}</h4>${hb([{ l: t('scenario'), v: M.greenPerCap, txt: Q.n(M.greenPerCap, 1) + ' ' + t('m2'), c: 'var(--green)' }, { l: t('benchmark'), v: M.A.greenTarget, txt: Q.n(M.A.greenTarget) + ' ' + t('m2'), c: 'var(--muted)' }], Math.max(M.greenPerCap, M.A.greenTarget) * 1.1)}${kv(t('covPark'), Q.pct(M.cov.park.share, 1) + ' ' + Q.delta(M.cov.park.share * 100, M0.cov.park.share * 100, 1, false, ' pp'), 'SIM')}<p class="muted sm">${esc(t('greenTargetNote'))}</p></section>
+        <details class="card limits"><summary>${esc(t('method'))}</summary><p class="sm">${esc(t('ecoMethod'))}</p></details>`;
     }
   };
 
@@ -171,13 +201,13 @@
   const DIS = ['flood', 'heat', 'drought', 'fire', 'failure', 'water', 'closure', 'evac'];
   V.disaster = {
     sub: 'disSub',
-    form: () => `<div class="warn w-info">${esc(t('disBanner'))}</div>${sel('dType', DIS.map(k => [k, t('dis_' + k)]), Q.S.disaster, t('scenario'))}<div id="dCtl"></div>`,
+    form: () => `<div class="calm-warn"><b>⚠</b><span>${esc(t('disBanner'))}</span></div><div class="tabs" role="tablist">${DIS.map(k => `<button role="tab" class="tab ${Q.S.disaster === k ? 'on' : ''}" data-dis="${k}" aria-selected="${Q.S.disaster === k}">${esc(t('dis_' + k))}</button>`).join('')}</div><div id="dCtl"></div>`,
     bind: el => { const draw = () => { const k = Q.S.disaster, c = $('#dCtl', el); c.innerHTML = k === 'flood' ? rng('dLvl', Q.S.floodLevel, t('dLevel'), 0, 6, 0.25, Q.n(Q.S.floodLevel, 2) + ' ' + t('m')) : k === 'heat' ? rng('dHeat', Q.S.heatC, t('dHeatC'), 1, 8, 0.5, '+' + Q.S.heatC + '°C') : (k === 'drought' || k === 'water') ? rng('dDr', Q.S.drought, t('dDrought'), 0, 60, 5, Q.S.drought + '%') : k === 'failure' ? sel('dFail', ['clinic', 'hospital', 'school', 'kinder', 'fire'].map(x => [x, t('fc_' + x)]), Q.S.failCat, t('dFailCat')) + rng('dFailS', Q.S.failShare * 100, t('dFailShare'), 10, 80, 10, Math.round(Q.S.failShare * 100) + '%') : k === 'closure' ? `<button class="btn" id="dGoTraffic">${esc(t('tCloseTool'))} →</button>` : '';
         const b = (id, f) => { const i = $('#' + id, c); if (i) i.oninput = () => { f(+i.value); Q.changed(); }; };
         b('dLvl', v => { Q.S.floodLevel = v; $('#dLvlO', c).textContent = Q.n(v, 2) + ' ' + t('m'); if (v >= 1) Q.award('flood'); }); b('dHeat', v => { Q.S.heatC = v; $('#dHeatO', c).textContent = '+' + v + '°C'; }); b('dDr', v => { Q.S.drought = v; $('#dDrO', c).textContent = v + '%'; }); b('dFailS', v => { Q.S.failShare = v / 100; $('#dFailSO', c).textContent = v + '%'; });
         const f = $('#dFail', c); if (f) f.onchange = () => { Q.S.failCat = f.value; Q.changed(); };
         const g = $('#dGoTraffic', c); if (g) g.onclick = () => { Q.open('traffic'); Q.tool = 'close'; Q.refreshView(true); };
-      }; $('#dType', el).onchange = e => { Q.S.disaster = e.target.value; draw(); Q.changed(); }; draw(); },
+      }; $$('[data-dis]', el).forEach(b => b.onclick = () => { Q.S.disaster = b.dataset.dis; $$('[data-dis]', el).forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); }); draw(); Q.changed(); }); draw(); },
     results: () => {
       const M = Q.M, k = Q.S.disaster, A = M.A; let h = '';
       const sev = s => `<span class="sev sev-${s > 0.15 ? 'crit' : s > 0.05 ? 'high' : s > 0.01 ? 'mod' : 'low'}">${esc(t(s > 0.15 ? 'cCrit' : s > 0.05 ? 'cHigh' : s > 0.01 ? 'cMod' : 'cLow'))}</span>`;
@@ -241,10 +271,19 @@
       const M = Q.M, us = M.props.filter(p => !p.future), grp = {};
       for (const p of us) grp[p.d.c.grp] = (grp[p.d.c.grp] || 0) + p.d.capex;
       const mx = Math.max(1, ...Object.values(grp));
-      return `<section class="card"><h4>${esc(t('budSummary'))}</h4>${kv(t('budget'), Q.kzt(M.budget))}${kv(t('capex'), Q.kzt(M.capex))}${kv(t('contingency', { p: Q.n(M.A.contingency * 100) }), Q.kzt(M.capexC - M.capex))}${kv(t('remaining'), `<span class="${M.overrun > 0 ? 'crit' : 'ok'}">${Q.kzt(M.remaining)}</span>`)}${M.overrun > 0 ? `<div class="warn w-crit">${esc(t('overrunMsg', { x: Q.kzt(M.overrun) }))}</div>` : ''}
-        ${kv(t('opex'), Q.kzt(M.opex) + ' / ' + t('yr'))}${kv(t('lifeCost'), Q.kzt(M.life))}${kv(t('jobs'), Q.n(M.jobs), 'EST')}${kv(t('cJobs'), Q.n(M.cJobs), 'EST')}${kv(t('payroll'), Q.kzt(M.payroll) + ' / ' + t('yr'), 'EST')}</section>
-        <section class="card"><h4>${esc(t('allocation'))}</h4>${Object.keys(grp).length ? hb(Object.entries(grp).map(([g, v]) => ({ l: t('grp_' + g), v, txt: Q.kzt(v) })), mx) : `<p class="muted">${esc(t('noProps'))}</p>`}</section>
-        <section class="card"><h4>${esc(t('breakdown'))}</h4><table class="tbl"><thead><tr><th>${esc(t('object'))}</th><th>${esc(t('capex'))}</th><th>${esc(t('opex'))}/${esc(t('yr'))}</th><th>${esc(t('lifeYrs'))}</th></tr></thead><tbody>${us.map(p => `<tr><td>${esc(p.name || Q.typeName(p.type))}${p.budget ? ' *' : ''}</td><td>${Q.kzt(p.d.capex)}</td><td>${Q.kzt(p.d.opex)}</td><td>${p.d.life}</td></tr>`).join('') || `<tr><td colspan="4" class="muted">${esc(t('noProps'))}</td></tr>`}</tbody></table><p class="muted sm">${esc(t('budNote'))}</p>
+      const line = (k, v, cls) => `<div class="ws-l ${cls || ''}"><span>${k}</span><i></i><b>${v}</b></div>`;
+      return `<section class="sheet"><div class="row sb"><h4>${esc(t('bud_ws'))}</h4>${Q.badge('EST')}</div>
+        ${line(esc(t('bud_avail')), Q.kzt(M.budget))}
+        ${line(esc(t('bud_costs', { n: us.length })), '− ' + Q.kzt(M.capex))}
+        ${line(esc(t('bud_reserve', { p: Q.n(M.A.contingency * 100) })), '− ' + Q.kzt(M.capexC - M.capex))}
+        ${line(esc(t('bud_left')), `<span class="${M.overrun > 0 ? 'crit' : 'ok'}">${Q.kzt(M.remaining)}</span>`, 'ws-total')}
+        ${line(esc(t('bud_yearly')), Q.kzt(M.opex) + ' / ' + esc(t('yr')), 'ws-sub')}
+        ${line(esc(t('bud_life')), Q.kzt(M.life), 'ws-sub')}
+        ${M.overrun > 0 ? `<div class="warn w-crit">${esc(t('overrunMsg', { x: Q.kzt(M.overrun) }))}</div>` : ''}
+        <p class="muted sm">${esc(t('unitNote'))}</p></section>
+        <section class="card"><h4>${esc(t('allocation'))}</h4>${Object.keys(grp).length ? hb(Object.entries(grp).map(([g, v]) => ({ l: t('grp_' + g), v, txt: Q.kzt(v) })), mx) : `<p class="muted">${esc(t('noProps'))}</p>`}
+        ${kv(t('jobs'), Q.n(M.jobs), 'EST')}${kv(t('cJobs'), Q.n(M.cJobs), 'EST')}${kv(t('payroll'), Q.kzt(M.payroll) + ' / ' + t('yr'), 'EST')}</section>
+        <section class="card"><h4>${esc(t('breakdown'))}</h4><div class="scroll"><table class="tbl"><thead><tr><th>${esc(t('object'))}</th><th>${esc(t('capex'))}</th><th>${esc(t('opex'))}/${esc(t('yr'))}</th><th>${esc(t('lifeYrs'))}</th></tr></thead><tbody>${us.map(p => `<tr><td>${esc(p.name || Q.typeName(p.type))}${p.budget ? ' *' : ''}</td><td>${Q.kzt(p.d.capex)}</td><td>${Q.kzt(p.d.opex)}</td><td>${p.d.life}</td></tr>`).join('') || `<tr><td colspan="4" class="muted">${esc(t('noProps'))}</td></tr>`}</tbody></table></div><p class="muted sm">${esc(t('budNote'))}</p>
         <button class="btn" id="budCsv">⇩ ${esc(t('dlBudget'))}</button></section>`;
     },
     bindResults: r => { $('#budCsv', r).onclick = () => G.QReports.budgetCsv(); }
@@ -254,8 +293,8 @@
   const CC = ['road', 'light', 'waste', 'park', 'school', 'transport', 'infra', 'other'], CS = ['submitted', 'review', 'planned', 'progress', 'resolved'];
   V.citizen = {
     sub: 'citSub',
-    form: () => `<div class="warn w-info">${esc(t('cNotOfficial'))}</div>
-      <form id="cForm" class="card"><h4>${esc(t('cNew'))}</h4>${sel('cCat', CC.map(c => [c, t('cc_' + c)]), 'road', t('iCategory'))}
+    form: () => `<div class="calm-warn info"><b>i</b><span>${esc(t('browserOnly'))} ${esc(t('cNotOfficial'))}</span></div>
+      <form id="cForm" class="card note-form"><h4>${esc(t('cNew'))}</h4>${sel('cCat', CC.map(c => [c, t('cc_' + c)]), 'road', t('iCategory'))}
         <label class="fld"><span>${esc(t('cText'))}</span><textarea id="cText" maxlength="400" rows="3" required placeholder="${esc(t('cTextPh'))}"></textarea></label>
         <label class="fld"><span>${esc(t('cPhoto'))}</span><input id="cImg" type="file" accept="image/*"></label>
         <div class="row wrap"><button type="button" class="btn ${Q.tool === 'cpick' ? 'on' : ''}" id="cPick">📍 ${esc(t('cPick'))}</button><span id="cLoc" class="muted sm">${Q.cLoc ? Q.cLoc[1].toFixed(5) + ', ' + Q.cLoc[0].toFixed(5) : esc(t('cNoLoc'))}</span></div>
@@ -278,7 +317,7 @@
       const voted = Q.S.voted || {}; const L = (Q.S.citizen || []).filter(c => (!Q.cf || Q.cf === 'all' || c.cat === Q.cf) && (!Q.cfs || Q.cfs === 'all' || c.status === Q.cfs)).sort((a, b) => (b.votes || 0) - (a.votes || 0));
       const cl = Q.citizenClusters();
       return `<section class="card"><h4>${esc(t('cClusters'))} <span class="st st-RULE">${esc(t('ruleBased'))}</span></h4>${cl.groups.length ? cl.groups.map(g => `<div class="rec rec-warn"><b>${esc(t('cc_' + g.cat))} × ${g.n}</b><span>${esc(t('cClusterTxt', { v: g.votes }))}</span><button class="lnk" data-ll="${g.ll}">${esc(t('flyTo'))}</button></div>`).join('') : `<p class="muted sm">${esc(t('cNoClusters'))}</p>`}</section>
-        <section class="card"><h4>${esc(t('cList'))} (${L.length})</h4>${L.length ? L.map(c => `<div class="issue"><div class="row sb"><b>${esc(t('cc_' + c.cat))}</b><span class="pill" style="background:${Q.STATUSCOL[c.status]}">${esc(t('cs_' + c.status))}</span></div><p>${esc(c.text)}</p>${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="">` : ''}<div class="row sb"><span class="muted sm">${new Date(c.t).toLocaleDateString(Q.locale())}</span><span><button class="btn sm" data-vote="${c.id}" ${voted[c.id] ? 'disabled' : ''}>▲ ${c.votes || 0}</button> <button class="lnk" data-ll="${c.lng},${c.lat}">${esc(t('flyTo'))}</button></span></div>
+        <section class="board"><h4>${esc(t('board'))} · ${L.length}</h4>${L.length ? L.map(c => `<div class="issue pin"><div class="row sb"><b>${esc(t('cc_' + c.cat))}</b><span class="pill" style="background:${Q.STATUSCOL[c.status]}">${esc(t('cs_' + c.status))}</span></div><p>${esc(c.text)}</p>${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="">` : ''}<div class="row sb"><span class="muted sm">${new Date(c.t).toLocaleDateString(Q.locale())}</span><span><button class="btn sm" data-vote="${c.id}" ${voted[c.id] ? 'disabled' : ''}>▲ ${c.votes || 0}</button> <button class="lnk" data-ll="${c.lng},${c.lat}">${esc(t('flyTo'))}</button></span></div>
           ${Q.S.moderator ? `<div class="row wrap">${CS.map(s => `<button class="chip ${c.status === s ? 'on' : ''}" data-st="${c.id}:${s}">${esc(t('cs_' + s))}</button>`).join('')}<button class="lnk dng" data-delc="${c.id}">${esc(t('remove'))}</button></div>` : ''}</div>`).join('') : `<p class="muted">${esc(t('cEmpty'))}</p>`}
         <p class="muted sm">${esc(Q.S.moderator ? t('modOn') : t('modOff'))}</p></section>`;
     },
@@ -294,8 +333,8 @@
   /* ============ FUTURE MODE ============ */
   V.future = {
     sub: 'futSub',
-    form: () => `<div class="seg">${[2025, 2030, 2040, 2050].map(y => `<button class="${Q.S.futureYear === y ? 'on' : ''}" data-fy="${y}">${y === 2025 ? esc(t('baseline')) : y}</button>`).join('')}</div>
-      <div class="strats">${['green', 'economic', 'balanced'].map((s, i) => `<button class="strat ${Q.S.strategy === s ? 'on' : ''}" data-st="${s}"><b>${'ABC'[i]}. ${esc(t('str_' + s))}</b><span>${esc(t('strd_' + s))}</span></button>`).join('')}</div><p class="warn w-info">${esc(t('futNote'))}</p>`,
+    form: () => `<h3 class="sec-h">${esc(t('tl_title'))}</h3><div class="timeline">${[2025, 2030, 2040, 2050].map(y => `<button class="tl-n ${Q.S.futureYear === y ? 'on' : ''} ${Q.S.futureYear >= y ? 'past' : ''}" data-fy="${y}"><i></i><b>${y === 2025 ? esc(t('baseline')) : y}</b><em>${y === 2025 ? '' : E.futureProposals(Q.S.strategy, y).length + ' · ' + esc(t('hypo'))}</em></button>`).join('')}</div>
+      <h3 class="sec-h">${esc(t('dirTitle'))}</h3><div class="strats">${['green', 'economic', 'balanced'].map((s, i) => `<button class="strat st-${s} ${Q.S.strategy === s ? 'on' : ''}" data-st="${s}"><b>${'ABC'[i]}. ${esc(t('str_' + s))}</b><span>${esc(t('strd_' + s))}</span></button>`).join('')}</div><div class="calm-warn info"><b>i</b><span>${esc(t('futNote'))}</span></div>`,
     bind: el => { $$('[data-fy]', el).forEach(b => b.onclick = () => { Q.S.futureYear = +b.dataset.fy; if (Q.S.futureYear > 2025) Q.award('future'); Q.renderShell(); Q.refreshView(true); Q.changed(); }); $$('[data-st]', el).forEach(b => b.onclick = () => { Q.S.strategy = b.dataset.st; Q.refreshView(true); Q.changed(); }); },
     results: () => {
       const yrs = [2025, 2030, 2040, 2050], st = ['green', 'economic', 'balanced'];
@@ -304,7 +343,7 @@
         Q._futCache = { k: JSON.stringify([Q.S.assumptions, Q.S.proposals.length, Q.D.mode, Q.S.unitCosts]), res };
       }
       const R = Q._futCache.res, cur = R[Q.S.strategy];
-      const chart = (key, f, ttl) => { const W = 340, H = 150, P = 30; const vals = st.flatMap(s => R[s].map(f)); const mn = Math.min(...vals) * 0.97, mx = Math.max(...vals) * 1.03; const x = i => P + i * (W - P - 10) / 3, y = v => H - 22 - (v - mn) / ((mx - mn) || 1) * (H - 40); const col = { green: '#10b981', economic: '#f59e0b', balanced: '#22d3ee' };
+      const chart = (key, f, ttl) => { const W = 340, H = 150, P = 30; const vals = st.flatMap(s => R[s].map(f)); const mn = Math.min(...vals) * 0.97, mx = Math.max(...vals) * 1.03; const x = i => P + i * (W - P - 10) / 3, y = v => H - 22 - (v - mn) / ((mx - mn) || 1) * (H - 40); const col = { green: '#5e8a44', economic: '#c8643b', balanced: '#2244a8' };
         return `<figure class="lc"><figcaption>${esc(ttl)}</figcaption><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(ttl)}">${yrs.map((yy, i) => `<text x="${x(i)}" y="${H - 6}" text-anchor="middle">${yy}</text>`).join('')}<text x="4" y="${y(mx) + 4}">${Q.n(mx, key === 'chi' ? 0 : 2)}</text><text x="4" y="${y(mn) + 4}">${Q.n(mn, key === 'chi' ? 0 : 2)}</text>${st.map(s => `<polyline fill="none" stroke="${col[s]}" stroke-width="${s === Q.S.strategy ? 3 : 1.5}" points="${R[s].map((M, i) => x(i) + ',' + y(f(M))).join(' ')}"/>`).join('')}</svg><div class="lgnd">${st.map(s => `<span><i style="background:${col[s]}"></i>${esc(t('str_' + s))}</span>`).join('')}</div></figure>`; };
       return `<section class="card"><h4>${esc(t('str_' + Q.S.strategy))} ${Q.badge('MODEL')}</h4><div class="scroll"><table class="tbl"><thead><tr><th></th>${yrs.map(y => `<th>${y === 2025 ? esc(t('baseline')) : y}</th>`).join('')}</tr></thead><tbody>
         <tr><td>${esc(t('kPop'))}</td>${cur.map(M => `<td>${Q.n(M.pop / 1000, 0)}k</td>`).join('')}</tr>
@@ -354,10 +393,18 @@
       const pts = Q.bizPts || [], cat = Q.bizCat || 'cafe';
       if (!pts.length) return `<p class="muted">${esc(t('bizEmpty'))}</p>`;
       const res = pts.map(p => E.bizScore(cat, p[0], p[1], Q.D, Q.M));
-      return res.map((r, i) => `<section class="card"><div class="row sb"><h4>${esc(t('cand'))} ${i + 1}</h4><div class="big sm2 ${r.score >= 70 ? 'ok' : r.score >= 45 ? 'warn' : 'crit'}">${r.score}<small>/100</small></div></div>
-        ${hb(Object.entries(r.parts).map(([k, [v, w]]) => ({ l: t('bp_' + k) + ' ×' + w, v: v * 100, txt: Q.n(v * 100) })), 100)}
-        <div class="near2"><span>${esc(t('bp_residents'))}: <b>${Q.n(r.raw.residents)}</b></span><span>${esc(t('bpRoad'))}: <b>${Q.m(r.raw.roadM)}</b></span><span>${esc(t('bp_transit'))}: <b>${r.raw.stops}</b></span><span>${esc(t('bp_competition'))}: <b>${r.raw.competitors}</b></span><span>${esc(t('bp_institutions'))}: <b>${r.raw.institutions}</b></span></div>
-        ${kv(t('bizInvest'), Q.kzt(r.invest), 'EST')}</section>`).join('') + `<p class="muted sm">${Q.badge(Q.D.mode === 'osm' ? 'OPEN' : 'DEMO')} ${esc(t('bizNote'))}</p>`;
+      const best = Math.max(...res.map(r => r.score));
+      const row = (k, f) => `<tr><td>${esc(t(k))}</td>${res.map(r => `<td>${f(r)}</td>`).join('')}</tr>`;
+      return `<section class="card"><div class="row sb"><h4>${esc(t('bizCmp'))} · ${esc(t('bz_' + cat))}</h4>${Q.badge(Q.D.mode === 'osm' ? 'OPEN' : 'DEMO')}</div><div class="scroll"><table class="tbl cmp-t"><thead><tr><th></th>${res.map((r, i) => `<th>${esc(t('cand'))} ${i + 1}</th>`).join('')}</tr></thead><tbody>
+        ${row('bizRow_score', r => `<b class="${r.score === best ? 'ok' : ''}">${r.score}</b>/100`)}
+        ${row('bizRow_pop', r => Q.n(r.raw.residents))}
+        ${row('bizRow_road', r => Q.m(r.raw.roadM))}
+        ${row('bizRow_bus', r => r.raw.stops)}
+        ${row('bizRow_inst', r => r.raw.institutions)}
+        ${row('bizRow_comp', r => r.raw.competitors)}
+        ${row('bizInvest', r => Q.kzt(r.invest))}</tbody></table></div></section>` +
+        res.map((r, i) => `<section class="card"><div class="row sb"><h4>${esc(t('cand'))} ${i + 1}</h4><div class="big sm2 ${r.score >= 70 ? 'ok' : r.score >= 45 ? 'warn' : 'crit'}">${r.score}<small>/100</small></div></div>
+        ${hb(Object.entries(r.parts).map(([k, [v, w]]) => ({ l: t('bp_' + k) + ' ×' + w, v: v * 100, txt: Q.n(v * 100) })), 100)}</section>`).join('') + `<div class="calm-warn info"><b>i</b><span>${esc(t('bizNote'))}</span></div>`;
     }
   };
 
@@ -408,10 +455,18 @@
   /* ============ REPORTS ============ */
   V.reports = {
     sub: 'repSub',
-    form: () => `<div class="rep">${[['repScenario', 'scenarioReport'], ['repBudget', 'budgetCsv'], ['repCompare', 'compareReport'], ['repCitizen', 'citizenCsv'], ['repJson', 'exportJson'], ['repShot', 'screenshot'], ['repMethod', 'methodology']].map(([k, f]) => `<button class="btn" data-rep="${f}"><b>${esc(t(k))}</b><span>${esc(t(k + 'D'))}</span></button>`).join('')}
-      <label class="btn file"><b>${esc(t('repImport'))}</b><span>${esc(t('repImportD'))}</span><input type="file" id="impJson" accept="application/json,.json" hidden></label></div><p class="muted sm">${esc(t('repNote'))}</p>
-      ${location.protocol === 'file:' ? '' : `<h4>${esc(t('dlTitle'))}</h4><div class="rep">${[['QALA2050.html', 'dlApp', 'text/html'], ['QALA2050_PitchDeck_KZ.pptx', 'dlDeck', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'], ['QALA2050_PitchDeck_KZ.pdf', 'dlPdf', 'application/pdf'], ['QALA2050_project.zip', 'dlZip', 'application/zip']].map(([f, k, m]) => `<button class="btn" data-dl="${f}" data-mime="${m}"><b>⇩ ${esc(t(k))}</b><span>${esc(t(k + 'D'))}</span></button>`).join('')}</div>`}`,
-    bind: el => { $$('[data-rep]', el).forEach(b => b.onclick = () => G.QReports[b.dataset.rep]()); $$('[data-dl]', el).forEach(b => b.onclick = async () => { try { const BLOB = { 'QALA2050_PitchDeck_KZ.pptx': '/_blob/e14c1ab61072dabf654e69c2e91ef7d8', 'QALA2050_project.zip': '/_blob/e1493613fb88315c74d2c611a70f2a89' }; let r = await fetch('downloads/' + b.dataset.dl).catch(() => null); if ((!r || !r.ok) && BLOB[b.dataset.dl]) r = await fetch(BLOB[b.dataset.dl]); if (!r || !r.ok) throw new Error('missing'); const blob = new Blob([await r.arrayBuffer()], { type: b.dataset.mime }); await Q.download(b.dataset.dl, blob, b.dataset.mime); } catch (e) { Q.notify(t('dlFail'), 'warn'); } }); $('#impJson', el).onchange = e => { const f = e.target.files[0]; if (f) G.QReports.importJson(f); }; }
+    form: () => {
+      const item = (f, k, tag) => `<div class="arc"><span class="ftag">${tag}</span><div><b>${esc(t(k))}</b><span>${esc(t(k + 'D'))}</span></div><button class="btn sm" data-rep="${f}">⇩ ${esc(t('fileDl'))}</button></div>`;
+      const dl = location.protocol === 'file:' ? '' : `<h4>${esc(t('arch_dl'))}</h4>${[['QALA2050.html', 'dlApp', 'text/html', 'HTML'], ['QALA2050_PitchDeck_KZ.pptx', 'dlDeck', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'PPTX'], ['QALA2050_PitchDeck_KZ.pdf', 'dlPdf', 'application/pdf', 'PDF'], ['QALA2050_project.zip', 'dlZip', 'application/zip', 'ZIP']].map(([f, k, m, tg]) => `<div class="arc"><span class="ftag">${tg}</span><div><b>${esc(t(k))}</b><span>${esc(t(k + 'D'))}</span></div><button class="btn sm" data-dl="${f}" data-mime="${m}">⇩ ${esc(t('fileDl'))}</button></div>`).join('')}`;
+      return `<h3 class="sec-h">${esc(t('arch'))}</h3><div class="archive">
+        <h4>${esc(t('arch_rep'))}</h4>${item('scenarioReport', 'repScenario', 'HTML')}${item('compareReport', 'repCompare', 'HTML')}
+        <h4>${esc(t('arch_data'))}</h4>${item('budgetCsv', 'repBudget', 'CSV')}${item('citizenCsv', 'repCitizen', 'CSV')}${item('exportJson', 'repJson', 'JSON')}
+        <div class="arc"><span class="ftag">JSON</span><div><b>${esc(t('repImport'))}</b><span>${esc(t('repImportD'))}</span></div><label class="btn sm">⇧ ${esc(t('load'))}<input type="file" id="impJson" accept="application/json,.json" hidden></label></div>
+        <h4>${esc(t('arch_map'))}</h4>${item('screenshot', 'repShot', 'PNG')}
+        <h4>${esc(t('arch_method'))}</h4><div class="arc"><span class="ftag">§</span><div><b>${esc(t('repMethod'))}</b><span>${esc(t('repMethodD'))}</span></div><button class="btn sm" data-rep="methodology">→</button></div>
+        ${dl}</div><p class="muted sm">${esc(t('repNote'))}</p>`;
+    },
+    bind: el => { $$('[data-rep]', el).forEach(b => b.onclick = () => G.QReports[b.dataset.rep]()); $$('[data-dl]', el).forEach(b => b.onclick = async () => { try { const BLOB = { 'QALA2050_PitchDeck_KZ.pptx': '/_blob/e14c1ab61072dabf654e69c2e91ef7d8', 'QALA2050_project.zip': '/_blob/e1493613fb88315c74d2c611a70f2a89' }; const f = b.dataset.dl, LOCAL = { 'QALA2050.html': 'dist/QALA2050.html', 'QALA2050_PitchDeck_KZ.pptx': 'pitch/QALA2050_PitchDeck_KZ.pptx', 'QALA2050_PitchDeck_KZ.pdf': 'pitch/QALA2050_PitchDeck_KZ.pdf' }; if (f.endsWith('.zip') && /github\.io$/.test(location.hostname)) { const a = document.createElement('a'); a.href = 'https://github.com/Qala-2050creator/qala2050/archive/refs/heads/main.zip'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); return; } let r = null; for (const u of ['downloads/' + f, LOCAL[f], BLOB[f]].filter(Boolean)) { r = await fetch(u).catch(() => null); if (r && r.ok) break; } if (!r || !r.ok) throw new Error('missing'); const blob = new Blob([await r.arrayBuffer()], { type: b.dataset.mime }); await Q.download(b.dataset.dl, blob, b.dataset.mime); } catch (e) { Q.notify(t('dlFail'), 'warn'); } }); $('#impJson', el).onchange = e => { const f = e.target.files[0]; if (f) G.QReports.importJson(f); }; }
   };
 
   /* ============ SETTINGS & METHODOLOGY ============ */

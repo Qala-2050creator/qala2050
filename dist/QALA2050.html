@@ -6,237 +6,407 @@
 <title>QALA 2050 — Kyzylorda</title>
 <meta name="description" content="QALA 2050 — AI Urban Digital Twin Platform for Kyzylorda, Kazakhstan. Қаланың болашағын салмай тұрып көр!">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap&subset=cyrillic-ext">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap">
 <style>
-/* VOICE: a calm municipal control room — precise, sober, data first.
-   IDEA: the city operations wall: one large live map, instruments docked at the edges.
-   PICTURE: the real Kyzylorda 3D map fills the stage; panels float over it like glass instruments.
-   COLOUR and TYPE: midnight navy ground, graphite-blue glass, electric cyan signal, emerald good, amber warn, red critical. Inter (Kazakh Cyrillic).
-   LAYOUT: top bar · icon rail · map stage with floating module panel · metrics column · timeline/scenario dock. */
-:root{--bg:#060d1a;--bg2:#0a1528;--panel:rgba(11,21,38,.86);--panel2:rgba(16,29,52,.92);--line:rgba(148,163,184,.15);--line2:rgba(148,163,184,.28);--ink:#e6edf7;--muted:#8ea3c0;--cy:#22d3ee;--cy2:#67e8f9;--em:#10b981;--am:#f59e0b;--rd:#ef4444;--vi:#a78bfa;--nav:68px;--right:312px;--r:12px;color-scheme:dark}
-*{box-sizing:border-box;min-width:0}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;display:grid;grid-template-columns:var(--nav) minmax(0,1fr) var(--right);grid-template-rows:56px minmax(0,1fr) auto;height:100vh;height:100dvh}
-button,input,select,textarea{font:inherit;color:inherit}
-a{color:var(--cy)}
-.muted{color:var(--muted)}.sm{font-size:12.5px}.ok{color:var(--em)}.warn{color:var(--am)}.crit{color:var(--rd)}
-h2{font-size:19px;margin:0;line-height:1.2}h3{font-size:16px;margin:0 0 8px}h4{font-size:13.5px;margin:14px 0 8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}h5{font-size:12.5px;margin:12px 0 6px;color:var(--muted);font-weight:600}
-:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
-/* top bar */
-#top{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 12px;background:linear-gradient(180deg,#0a1630,#08122a);border-bottom:1px solid var(--line);z-index:30}
-.brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);flex:none}
-.brand svg{width:32px;height:32px}.bt{font-weight:800;letter-spacing:.02em;font-size:17px}.bt b{color:var(--cy);margin-left:2px}
-.brand .tag{color:var(--muted);font-size:11.5px;max-width:170px;line-height:1.15;border-left:1px solid var(--line2);padding-left:8px}
-#citySel,select{background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:6px 8px;min-height:34px}
-.gsearch{position:relative;flex:1;max-width:360px}
-.gsearch input{width:100%;background:var(--bg2);border:1px solid var(--line2);border-radius:999px;padding:7px 14px;min-height:34px}
-#gRes{position:absolute;top:40px;left:0;right:0;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:6px;max-height:60vh;overflow:auto;box-shadow:0 18px 40px rgba(0,0,0,.45)}
-.ychip{background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.4);color:var(--cy2);border-radius:999px;padding:4px 10px;font-weight:700;font-size:12.5px;white-space:nowrap}
-.ds{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--line2);border-radius:999px;padding:5px 10px;cursor:pointer;white-space:nowrap;font-size:12.5px}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.dot.ok{background:var(--em);box-shadow:0 0 8px var(--em)}.dot.warn{background:var(--am)}
-.seg{display:inline-flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden;flex:none}.seg.wrap{flex-wrap:wrap}
-.seg button{background:none;border:0;padding:6px 10px;cursor:pointer;color:var(--muted);font-weight:600;font-size:12.5px;min-height:32px}
-.seg button.on{background:rgba(34,211,238,.16);color:var(--cy2)}
-.ib{background:none;border:1px solid var(--line2);border-radius:9px;min-width:36px;height:36px;cursor:pointer;display:inline-grid;place-items:center;position:relative;flex:none}
-.ib:hover{border-color:var(--cy)}.ib.on{background:rgba(34,211,238,.18);border-color:var(--cy)}
-#noteCount{position:absolute;top:-5px;right:-5px;background:var(--rd);color:#fff;border-radius:999px;font-size:10px;padding:0 5px;line-height:16px}
-#notes{position:absolute;top:56px;right:120px;width:320px;max-height:60vh;overflow:auto;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:8px;z-index:60;box-shadow:0 18px 40px rgba(0,0,0,.5)}
-.note{display:flex;gap:8px;justify-content:space-between;padding:7px 8px;border-bottom:1px solid var(--line);font-size:12.5px}.note em{color:var(--muted);font-style:normal;flex:none}
-#burger,#kpiBtn{display:none}
-.btn{background:rgba(148,163,184,.08);border:1px solid var(--line2);border-radius:9px;padding:7px 12px;cursor:pointer;min-height:36px;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;justify-content:center}
-.btn:hover{border-color:var(--cy)}.btn.on{background:rgba(34,211,238,.18);border-color:var(--cy);color:var(--cy2)}
-.btn.pri{background:linear-gradient(180deg,#22d3ee,#0ea5c6);color:#03121d;border-color:transparent}.btn.pri:hover{filter:brightness(1.08)}
-.btn.dng{border-color:rgba(239,68,68,.5);color:#fca5a5}.btn.sm{min-height:28px;padding:3px 9px;font-size:12px}.btn.ic{min-width:36px;padding:0}.btn:disabled{opacity:.4;cursor:default}
-.lnk{background:none;border:0;color:var(--cy);cursor:pointer;padding:2px 4px;font-weight:600;font-size:12.5px}.lnk.dng{color:#fca5a5}
-#pitchBtn{flex:none}
-/* nav rail */
-#nav{grid-row:2;grid-column:1;background:#071125;border-right:1px solid var(--line);overflow-y:auto;padding:8px 6px;display:flex;flex-direction:column;gap:2px;z-index:20}
-.nav-i{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;border-radius:10px;padding:7px 2px;cursor:pointer;color:var(--muted);font-size:9.5px;line-height:1.1;text-align:center}
-.nav-i span{max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nav-i:hover{color:var(--ink);background:rgba(148,163,184,.08)}.nav-i.on{color:var(--cy2);background:rgba(34,211,238,.12)}
-/* stage */
-#stage{grid-row:2;grid-column:2;position:relative;overflow:hidden}
-#mapWrap{position:absolute;inset:0;display:flex}
-#map,#map2{position:relative;flex:1;height:100%;background:#070f1d}
-#map2{border-left:2px solid var(--cy)}
-.lite-canvas{display:block;touch-action:none}
-.cmp-l{display:none;position:absolute;top:56px;z-index:6;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:3px 10px;font-weight:700;font-size:12px}
-body.split .cmp-l{display:block}.cmp-l.b{left:calc(50% - 160px)}.cmp-l.a{right:72px}
-body.split #mapWrap{flex-direction:row}body.split #map{order:2}body.split #map2{order:3}
-#mapBadge{position:absolute;top:10px;left:400px;right:64px;width:max-content;z-index:5;background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:999px;padding:5px 12px;font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:calc(100% - 470px)}
-#tools{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;z-index:6}
-#tools .ib{background:var(--panel);backdrop-filter:blur(10px);width:40px;height:40px;font-weight:700}
-#compassN{display:inline-block;transform-origin:50% 50%;color:var(--rd)}#compassN::before{content:''}
-#tNorth span{transform:rotate(-90deg)}
-#scaleBox{position:absolute;left:400px;bottom:10px;z-index:5;display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--muted)}
-#scale{border:2px solid var(--ink);border-top:0;height:8px;line-height:0;padding-top:0;font-size:10.5px;color:var(--ink);text-align:center;min-width:40px;text-shadow:0 0 3px #000}
-#legend{position:absolute;right:62px;bottom:28px;z-index:5;background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:10px;padding:8px 10px;max-width:250px;font-size:11.5px;display:flex;flex-direction:column;gap:3px}
-#legend:empty{display:none}
-.lg{display:flex;align-items:center;gap:6px}.lg i{width:14px;height:8px;border-radius:2px;flex:none}.lg-t{font-weight:700;margin-top:3px;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-.ramp{height:8px;border-radius:3px;background:linear-gradient(90deg,#10b981,#84cc16,#eab308,#f97316,#ef4444)}.ramp-l{display:flex;justify-content:space-between;color:var(--muted)}
-#measureOut{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);z-index:6;background:var(--panel2);border:1px solid var(--cy);border-radius:999px;padding:6px 14px;font-size:13px}
-#mapBusy{position:absolute;top:52px;right:62px;z-index:6;width:22px;height:22px}#mapBusy i,.spin{display:block;width:100%;height:100%;border:2.5px solid rgba(34,211,238,.25);border-top-color:var(--cy);border-radius:50%;animation:sp 0.9s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.maplibregl-ctrl-attrib{font-size:10.5px!important;background:rgba(6,13,26,.7)!important;color:var(--muted)!important}.maplibregl-ctrl-attrib a{color:#a5f3fc!important}
-#info{position:absolute;right:62px;top:60px;width:300px;max-height:calc(100% - 200px);overflow:auto;z-index:7;background:var(--panel2);backdrop-filter:blur(12px);border:1px solid var(--line2);border-radius:var(--r);padding:12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
-.x{position:absolute;top:6px;right:8px;background:none;border:0;font-size:20px;cursor:pointer;color:var(--muted);width:32px;height:32px}
-/* module panel */
-#panel{position:absolute;left:12px;top:12px;bottom:12px;width:372px;z-index:8;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line2);border-radius:14px;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,.4)}
-body.panel-min #panel{bottom:auto}body.panel-min #mapBadge,body.panel-min #scaleBox{left:12px}body.panel-min .pbody{display:none}
-.ph{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:14px 14px 10px;border-bottom:1px solid var(--line)}.ph .x{position:static}
-.pbody{overflow:auto;padding:4px 14px 16px;flex:1}
-.card{background:rgba(148,163,184,.05);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0}
-.card>h4:first-child{margin-top:0}
-details.card>summary{cursor:pointer;font-weight:700;font-size:13px}
-.fld{display:flex;flex-direction:column;gap:4px;margin:8px 0}.fld>span{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:6px}.fld em{font-style:normal;opacity:.7}
-.fld input,.fld select,.fld textarea,.row input{background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font-size:15px;min-height:38px;width:100%}
-input[type=range]{accent-color:var(--cy);padding:0;min-height:28px;border:0;background:none}
-output{color:var(--cy2);font-weight:700}
-.chk{display:flex;gap:8px;align-items:center;margin:8px 0;font-size:13px}.chk input{width:18px;height:18px;accent-color:var(--cy)}
-.row{display:flex;gap:8px;align-items:center}.row.wrap{flex-wrap:wrap}.row.sb{justify-content:space-between}.row.end{justify-content:flex-end;margin-top:12px}
-.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px}.g3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
-.chip{background:rgba(148,163,184,.08);border:1px solid var(--line2);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--muted);min-height:28px;white-space:nowrap}
-.chip.on{color:var(--cy2);border-color:rgba(34,211,238,.6);background:rgba(34,211,238,.12)}.chip.q{white-space:normal;text-align:left;border-radius:10px}
-.hint{background:rgba(34,211,238,.08);border:1px dashed rgba(34,211,238,.4);border-radius:8px;padding:7px 10px;font-size:12.5px;color:#bdf3fb}
-.lead{font-size:14.5px;color:#cfe0f5}
-.hero .row{margin:10px 0}
-.kv{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px}.kv>span{color:var(--muted);flex:1}.kv>b{font-weight:600;text-align:right}.kv.col{flex-direction:column;align-items:stretch}
-.na{color:#64748b;font-weight:400}
-.near{margin:4px 0;padding-left:18px;font-size:12.5px}.near li{margin:2px 0}
-.near2{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--muted)}.near2 b{color:var(--ink)}
-.note{font-size:12px;color:var(--muted)}
-.results{display:flex;flex-direction:column;gap:3px;margin:4px 0}
-.res{display:flex;justify-content:space-between;align-items:center;gap:8px;background:none;border:1px solid transparent;border-radius:8px;padding:7px 8px;cursor:pointer;text-align:left;width:100%}
-.res:hover,.res.on{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.3)}.res span{color:var(--muted);font-size:12px;flex:none}
-.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-/* catalog */
-.cat-grid{display:flex;flex-direction:column;gap:8px;margin-top:8px}.cg{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.cgl{width:100%;font-size:11.5px;color:var(--muted);font-weight:600}
-.ty{display:inline-flex;gap:6px;align-items:center;background:rgba(148,163,184,.07);border:1px solid var(--line2);border-radius:8px;padding:5px 9px;cursor:pointer;font-size:12.5px;min-height:32px}
-.ty i{width:9px;height:9px;border-radius:2px}.ty.on{border-color:var(--cy);background:rgba(34,211,238,.16);color:var(--cy2)}
-.warn{border-radius:8px;padding:6px 9px;margin:4px 0;font-size:12.5px;border:1px solid}
-.w-crit{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.45);color:#fecaca}.w-warn{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.45);color:#fde68a}
-.w-info{background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.35);color:#cffafe}.w-ok{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.4);color:#a7f3d0}
-/* tables & bars */
-.tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin:4px 0}.tbl th,.tbl td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}.tbl th:first-child,.tbl td:first-child{text-align:left;white-space:normal}
-.tbl th{color:var(--muted);font-weight:600;font-size:11.5px}.tbl tr.clk{cursor:pointer}.tbl tr.clk:hover td{background:rgba(34,211,238,.06)}
-.tbl.inp input{width:64px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;padding:4px;text-align:right}
-.tbl.big{font-size:18px}.tbl.big th{font-size:14px}
-.scroll{overflow-x:auto}
-.dl{font-weight:700;font-size:11.5px}.dl.up{color:var(--em)}.dl.dn{color:var(--rd)}.dl.z{color:var(--muted)}
-.bar{height:6px;background:rgba(148,163,184,.15);border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;border-radius:999px}
-.hbars{display:flex;flex-direction:column;gap:6px;margin:6px 0}.hb{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr) auto;gap:8px;align-items:center;font-size:12.5px}.hb b{font-weight:600;white-space:nowrap}
-.big{font-size:30px;font-weight:800;line-height:1.1}.big small{font-size:13px;color:var(--muted)}.big.sm2{font-size:24px}
-.cmpbar{display:grid;grid-template-columns:minmax(0,1fr) 70px 70px auto;gap:6px;align-items:center;font-size:12px;margin:4px 0}
-.lgnd{display:flex;gap:12px;font-size:11.5px;color:var(--muted);margin-top:4px}.lgnd i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
-.lc{margin:8px 0}.lc figcaption{font-size:12px;color:var(--muted);font-weight:600}.lc svg{width:100%;height:auto;display:block}.lc text{fill:var(--muted);font-size:10px}
-.ucost{display:flex;flex-direction:column;gap:5px;margin:6px 0}.ucost label{display:grid;grid-template-columns:minmax(0,1fr) 110px 56px;gap:6px;align-items:center;font-size:12px}.ucost input{background:var(--bg2);border:1px solid var(--line2);border-radius:6px;padding:5px 6px;text-align:right;font-size:13px}.ucost em{font-style:normal;color:var(--muted);font-size:11px}
-/* status badges (mandatory data-status labels) */
-.st{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.03em;border-radius:4px;padding:1px 5px;border:1px solid;white-space:nowrap;vertical-align:1px;line-height:1.4}
-.st-VERIFIED{color:#6ee7b7;border-color:rgba(16,185,129,.55);background:rgba(16,185,129,.12)}.st-OPEN{color:#67e8f9;border-color:rgba(34,211,238,.55);background:rgba(34,211,238,.1)}
-.st-EST{color:#fcd34d;border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.1)}.st-SIM{color:#c4b5fd;border-color:rgba(167,139,250,.55);background:rgba(167,139,250,.12)}
-.st-DEMO{color:#fdba74;border-color:rgba(249,115,22,.55);background:rgba(249,115,22,.12)}.st-UNAVAILABLE{color:#94a3b8;border-color:rgba(148,163,184,.4)}
-.st-MODEL{color:#93c5fd;border-color:rgba(59,130,246,.5);background:rgba(59,130,246,.1)}.st-RULE{color:#cbd5e1;border-color:rgba(148,163,184,.45)}.st-PROPOSED{color:#ddd6fe;border-color:rgba(196,181,253,.6);background:rgba(196,181,253,.12)}
-.stl{display:flex;flex-direction:column;gap:6px}
-/* right column */
-#right{grid-row:2;grid-column:3;overflow:auto;background:#071125;border-left:1px solid var(--line);padding:10px 12px;z-index:20}
-.chi-top{display:flex;gap:12px;align-items:center}.chi-top h4{margin:0 0 2px}.ring-v{fill:var(--ink);font-size:24px;font-weight:800}.chi-d{font-size:12.5px;margin-top:4px}
-.cat{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;font-size:12.5px;margin:7px 0 0}.cat em{color:var(--muted);font-style:normal;font-size:11px}.cat .bar{grid-column:1/-1}
-.kpis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:10px 0}
-.kpi{background:rgba(148,163,184,.05);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}.kpi span{font-size:11.5px;color:var(--muted)}.kpi b{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}.kpi .st{white-space:normal;font-size:8.5px}.kpi small{font-size:11px;color:var(--muted);display:flex;gap:4px;flex-wrap:wrap;align-items:center}
-.rec{display:flex;flex-direction:column;gap:2px;border-left:3px solid var(--cy);padding:6px 9px;margin:6px 0;background:rgba(148,163,184,.05);border-radius:0 8px 8px 0;font-size:12.5px}.rec span{color:#c7d4e6}.rec .lnk{align-self:flex-start;padding-left:0}
-.rec-crit{border-color:var(--rd)}.rec-warn{border-color:var(--am)}.rec-info{border-color:var(--cy)}
-.mini{width:100%;font-size:12px;border-collapse:collapse}.mini td{padding:3px 2px;border-bottom:1px solid var(--line)}.mini td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}.mini td:last-child{color:var(--cy2);font-weight:700}
-/* bottom dock */
-#bottom{grid-row:3;grid-column:1/-1;display:flex;gap:14px;align-items:center;padding:8px 12px;background:#08122a;border-top:1px solid var(--line);overflow-x:auto;z-index:20;min-height:54px}
-.bgrp{display:flex;gap:6px;align-items:center;flex:none}.blbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:none}
-.bgrp.layers{flex-wrap:nowrap}
-/* overview bits */
-.lvl{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--cy),var(--em));color:#04121b;font-weight:800;display:grid;place-items:center;font-size:18px;flex:none}
-.mission{display:flex;flex-direction:column;padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px}.mission span{color:var(--muted)}.mission.done b{color:var(--em)}
-.achs{display:flex;flex-wrap:wrap;gap:5px}.ach{font-size:11.5px;padding:3px 8px;border-radius:999px;border:1px solid var(--line2);color:#64748b}.ach.on{color:#fde68a;border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.1)}
-.lb{margin:0;padding-left:20px}.lb li{display:flex;justify-content:space-between;padding:3px 0}
-.issue{border-bottom:1px solid var(--line);padding:8px 0}.issue p{margin:4px 0;font-size:13px}.pill{font-size:11px;padding:1px 8px;border-radius:999px;color:#04121b;font-weight:700}
-.thumb{max-width:100%;max-height:140px;border-radius:8px;display:block;margin:6px 0}
-.strats{display:flex;flex-direction:column;gap:6px;margin:10px 0}.strat{display:flex;flex-direction:column;gap:2px;text-align:left;background:rgba(148,163,184,.06);border:1px solid var(--line2);border-radius:10px;padding:8px 10px;cursor:pointer}.strat span{font-size:12px;color:var(--muted)}.strat.on{border-color:var(--cy);background:rgba(34,211,238,.1)}
-.sev{font-weight:800}.sev-crit{color:var(--rd)}.sev-high{color:#fb923c}.sev-mod{color:var(--am)}.sev-low{color:var(--em)}
-.rep{display:flex;flex-direction:column;gap:6px;margin-top:8px}.rep .btn{flex-direction:column;align-items:flex-start;text-align:left;gap:2px}.rep .btn span{font-weight:400;color:var(--muted);font-size:12px}
-.formulas p{margin:4px 0}.formulas code,code{font-size:11.5px;background:rgba(148,163,184,.1);padding:2px 5px;border-radius:4px;display:inline-block;white-space:normal;word-break:break-word}
-/* AI mayor */
-#mForm{margin:8px 0}#mForm input{flex:1}
-#chat{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.msg{border-radius:10px;padding:8px 10px;font-size:13px}.msg.me{align-self:flex-end;background:rgba(34,211,238,.15);border:1px solid rgba(34,211,238,.35);max-width:90%}
-.msg.ai{background:rgba(148,163,184,.06);border:1px solid var(--line2)}.ai-h{font-weight:700;margin-bottom:6px;display:flex;gap:6px;align-items:center}
-.ans{display:flex;flex-direction:column;padding:4px 0;border-bottom:1px dashed var(--line)}.ans b{font-size:11.5px;color:var(--cy2)}.ans span{color:#d4e0f0}
-/* toasts, modal, loading */
-#toasts{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:90;pointer-events:none;align-items:center}
-.toast{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:8px 14px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.4);transition:opacity .5s,transform .5s;max-width:min(560px,90vw)}.toast.out{opacity:0;transform:translateY(8px)}
-.t-ok{border-color:rgba(16,185,129,.6)}.t-warn{border-color:rgba(245,158,11,.7)}
-#modal{position:fixed;inset:0;background:rgba(2,6,15,.6);backdrop-filter:blur(4px);z-index:100;display:grid;place-items:center;padding:16px}#modal[hidden]{display:none}
-.mbox{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;width:min(520px,100%);max-height:90vh;overflow:auto}
-#loading{position:fixed;inset:0;z-index:95;background:radial-gradient(ellipse at center,#0b1a33 0%,#060d1a 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}#loading[hidden]{display:none}#loading .spin{width:44px;height:44px}#loadingMsg{color:var(--muted)}
-.logo-xl{display:flex;align-items:center;gap:14px;justify-content:center}.logo-xl svg{width:72px;height:72px}.logo-xl span{font-size:46px;font-weight:800;letter-spacing:.02em}.logo-xl b{color:var(--cy)}
-.logo-xl.sm svg{width:44px;height:44px}.logo-xl.sm span{font-size:28px}
-.slogan{font-size:20px;font-weight:700;color:#cffafe;text-align:center;margin:10px 0 2px}.slogan2{color:var(--muted);text-align:center;margin:0}
-.onb ol{padding-left:20px}.onb li{margin:6px 0}
-/* pitch */
-body.pitching #panel,body.pitching #right,body.pitching #bottom,body.pitching #nav,body.pitching #info{visibility:hidden}
-body.pitching{grid-template-columns:0 minmax(0,1fr) 0}body.pitching #toasts{bottom:auto;top:70px}
-#pitch{position:fixed;inset:56px 0 0 0;z-index:80;pointer-events:none}#pitch[hidden]{display:none}
-.pcap{pointer-events:auto;position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:min(860px,94vw);background:var(--panel2);backdrop-filter:blur(14px);border:1px solid rgba(34,211,238,.4);border-radius:16px;padding:14px 18px;box-shadow:0 30px 60px rgba(0,0,0,.5)}
-.pcap h3{font-size:20px;margin:2px 0 4px}.pcap p{margin:0 0 10px;color:#d4e0f0;font-size:15px}.pstep{font-size:12px;color:var(--cy2);font-weight:700}
-.pprog{height:4px;background:rgba(148,163,184,.2);border-radius:99px;overflow:hidden;margin-bottom:10px}.pprog i{display:block;height:100%;background:var(--cy);transition:width .6s}
-.pctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.pcard{pointer-events:auto;position:absolute;right:24px;top:24px;width:min(520px,92vw);max-height:calc(100% - 260px);overflow:auto;background:var(--panel2);border:1px solid var(--line2);border-radius:14px;padding:14px 16px}
-.splash{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(6,13,26,.72),rgba(6,13,26,.94));pointer-events:none}.splash .final{font-size:22px;font-weight:800;margin-top:18px;text-align:center}
-.tier{border:1px solid var(--line2);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:2px;font-size:12.5px}.tier span{color:var(--cy2);font-weight:700}
-.road{padding-left:20px;font-size:13px}.road li{margin:3px 0}
-/* deck */
-#deck{position:fixed;inset:0;z-index:110;background:#050b17}#deck[hidden]{display:none}
-.deck-sc{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;height:100%;scrollbar-width:none}.deck-sc::-webkit-scrollbar{display:none}
-.slide{flex:0 0 100%;height:100%;scroll-snap-align:start;display:grid;place-items:center;padding:4vh 6vw 80px;position:relative;background:radial-gradient(ellipse at 80% 10%,rgba(34,211,238,.10),transparent 50%),radial-gradient(ellipse at 10% 90%,rgba(16,185,129,.08),transparent 50%)}
-.sl-in{width:min(1100px,100%);display:flex;flex-direction:column;gap:18px}.sl-in h1{font-size:clamp(28px,4vw,52px);margin:0;text-align:center;line-height:1.08}.sl-in h2{font-size:clamp(24px,3.2vw,40px);line-height:1.1}
-.sl-in p{font-size:clamp(15px,1.5vw,20px);margin:0}.sl-title{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
-.sl-n{position:absolute;bottom:22px;right:30px;color:var(--muted);font-size:13px}
-.g5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.dk{border:1px solid var(--line2);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;background:rgba(148,163,184,.05)}.dk b{font-size:17px;color:var(--cy2)}.dk span{color:#c7d4e6;font-size:14px}
-.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}.flow span{border:1px solid rgba(34,211,238,.5);background:rgba(34,211,238,.08);border-radius:10px;padding:10px 14px;font-weight:700}.flow i{color:var(--cy);font-style:normal;font-size:20px}.flow.big span{font-size:18px;padding:16px 18px}
-.shot{width:100%;max-height:62vh;object-fit:cover;border-radius:12px;border:1px solid var(--line2)}
-.g2d{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;font-size:17px}
-.final{font-size:clamp(20px,2.4vw,30px);font-weight:800;color:#ecfeff}
-.deck-ctl{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 10px;z-index:111}
-/* responsive */
-@media (max-width:1400px){.brand .tag{display:none}}
-@media (max-width:1180px){body{grid-template-columns:var(--nav) minmax(0,1fr) 0}#right{position:fixed;right:0;top:56px;bottom:62px;width:min(340px,92vw);transform:translateX(105%);transition:transform .25s;box-shadow:-20px 0 40px rgba(0,0,0,.4)}body.right-open #right{transform:none}#kpiBtn{display:inline-grid}#yearChip{display:none}}
-@media (max-width:900px){
-  body{grid-template-columns:0 minmax(0,1fr) 0}
-  #burger{display:inline-grid}#nav{position:fixed;left:0;top:56px;bottom:0;width:230px;transform:translateX(-105%);transition:transform .25s;z-index:70}body.nav-open #nav{transform:none}
-  .nav-i{flex-direction:row;gap:10px;font-size:13px;padding:9px 10px}.nav-i span{max-width:none}
-  #panel{left:0;right:0;top:auto;bottom:0;width:auto;max-height:58%;border-radius:16px 16px 0 0}
-  body:not(.panel-open) #panel{max-height:56px;overflow:hidden}body.panel-open.panel-min #panel{max-height:56px}
-  #scaleBox{left:10px;bottom:auto;top:52px}#legend{bottom:auto;top:90px;right:62px;max-width:180px}#mapBadge{left:8px;max-width:calc(100% - 64px);top:auto;bottom:64px;font-size:11px}
-  #citySel,.ds .ds-t,.brand .bt{display:none}#info{left:8px;right:8px;width:auto;top:52px}
-  .pcard{top:10px;right:10px;left:10px;width:auto}.g5{grid-template-columns:repeat(2,minmax(0,1fr))}.g2d{grid-template-columns:1fr}
+/* QALA 2050 Urban Lab — design system
+   VOICE: a young planner's studio desk: practical, warm, honest about data.
+   IDEA: tracing paper over a city plan — blueprint grid, contour lines, a cobalt pen and a terracotta marker.
+   PICTURE: the Kyzylorda map is the work surface; panels are sheets laid beside it.
+   COLOUR and TYPE: warm paper, graphite ink, cobalt (primary), terracotta (attention), muted green (environment). Golos Text (Kazakh/Russian/Latin).
+   LAYOUT: top bar · grouped navigation · map workspace with one collapsible sheet · collapsible indicators · timeline dock. */
+:root {
+  --paper: #efe9df; --paper2: #f7f3ec; --card: #fffdf8; --ink: #23272f; --ink2: #4b505a; --muted: #7a7366;
+  --line: #ddd4c5; --line2: #c8bdab; --grid: rgba(34, 68, 168, .055);
+  --cobalt: #2244a8; --cobalt2: #3657c2; --cobalt-t: rgba(34, 68, 168, .09); --on-cobalt: #ffffff;
+  --terra: #c8643b; --terra-t: rgba(200, 100, 59, .11); --green: #5e8a44; --green-t: rgba(94, 138, 68, .12);
+  --amber: #a86f08; --amber-t: rgba(224, 168, 0, .14); --red: #b02a37; --red-t: rgba(176, 42, 55, .09);
+  --c-low: #2b8a3e; --c-mod: #e0a800; --c-high: #e8590c; --c-crit: #b02a37;
+  --r: 8px; --r2: 12px; --nav: 200px; --right: 304px; --shadow: 0 1px 2px rgba(35, 39, 47, .06), 0 6px 18px rgba(35, 39, 47, .07);
+  --font: "Golos Text", Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
 }
-@media (max-width:600px){#top{gap:6px;padding:0 8px}.gsearch,#dataStatus,#gear{display:none}#langSw button{padding:6px 6px}#bell{display:none}#pitchBtn span:last-child{display:none}.g3{grid-template-columns:repeat(2,minmax(0,1fr))}#tools .ib{width:36px;height:36px}#tools{top:8px;right:8px}#tOrbit,#tShot{display:none}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+:root[data-ui=dark] {
+  --paper: #15181d; --paper2: #1b1f26; --card: #21262e; --ink: #ece6da; --ink2: #c9c2b6; --muted: #9b9386;
+  --line: #2e343e; --line2: #3c4350; --grid: rgba(127, 156, 245, .05);
+  --cobalt: #7f9cf5; --cobalt2: #9bb2f8; --cobalt-t: rgba(127, 156, 245, .13); --on-cobalt: #0f1420;
+  --terra: #e08a62; --terra-t: rgba(224, 138, 98, .14); --green: #8fb873; --green-t: rgba(143, 184, 115, .14);
+  --amber: #e5b75a; --amber-t: rgba(229, 183, 90, .14); --red: #ef7a85; --red-t: rgba(239, 122, 133, .12);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 22px rgba(0, 0, 0, .3); color-scheme: dark;
+}
+* { box-sizing: border-box; min-width: 0 }
+[hidden] { display: none !important }
+html, body { height: 100% }
+body {
+  margin: 0; font: 14px/1.5 var(--font); color: var(--ink); background: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 24px 24px;
+  overflow: hidden; display: grid; grid-template-columns: var(--nav) minmax(0, 1fr) var(--right); grid-template-rows: 58px minmax(0, 1fr) auto; height: 100vh; height: 100dvh;
+  overflow-wrap: break-word; transition: grid-template-columns .22s ease;
+}
+body.right-off { grid-template-columns: var(--nav) minmax(0, 1fr) 0 }
+button, input, select, textarea { font: inherit; color: inherit }
+a { color: var(--cobalt) }
+h1, h2, h3, h4, h5 { margin: 0; line-height: 1.2; font-weight: 700; letter-spacing: -.01em }
+h2 { font-size: 18px } h3 { font-size: 16px } h4 { font-size: 13.5px; margin: 14px 0 8px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap }
+h5 { font-size: 12.5px; margin: 12px 0 6px; color: var(--ink2) }
+.muted { color: var(--muted) } .sm { font-size: 12.5px } .ok { color: var(--c-low) } .warn { color: var(--amber) } .crit { color: var(--red) } .grow { flex: 1 }
+:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px }
+.sec-h { font-size: 13px; margin: 18px 0 8px; color: var(--ink2); font-weight: 700 }
+.eyebrow { font-size: 12px; color: var(--terra); font-weight: 600; margin: 0 0 6px; font-style: italic; transform: rotate(-.6deg); display: inline-block }
+
+/* ---------- top bar ---------- */
+#top { grid-column: 1/-1; display: flex; align-items: center; gap: 12px; padding: 0 14px; background: var(--paper2); border-bottom: 1px solid var(--line2); z-index: 30 }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); flex: none; white-space: nowrap }
+.brand svg { width: 34px; height: 34px; transform: rotate(-2deg) }
+.bt { font-weight: 800; font-size: 17px; letter-spacing: .01em } .bt b { color: var(--cobalt) }
+.lab { font-size: 11px; color: var(--terra); font-style: italic; font-weight: 600; transform: translateY(3px) rotate(-3deg) }
+.ctx { display: flex; align-items: center; gap: 8px; flex: 1 1 auto; justify-content: center; min-width: 0 }
+.ctx select { background: transparent; border: 0; font-weight: 700; font-size: 14px; padding: 4px 2px; cursor: pointer; max-width: 150px }
+.ctx-sep { color: var(--line2) } .ctx-sc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px } .ctx-k { color: var(--muted); font-size: 12px }
+.ychip { border: 1px solid var(--cobalt); color: var(--cobalt); border-radius: 999px; padding: 2px 9px; font-weight: 700; font-size: 12px; white-space: nowrap }
+.gsearch { position: relative; flex: 0 1 240px }
+.gsearch input { width: 100%; background: var(--card); border: 1px solid var(--line2); border-radius: 999px; padding: 6px 13px; min-height: 34px; font-size: 13.5px }
+#gRes { position: absolute; top: 40px; left: 0; right: 0; min-width: 280px; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 6px; max-height: 60vh; overflow: auto; box-shadow: var(--shadow); z-index: 70 }
+.tb-r { display: flex; align-items: center; gap: 8px; flex: none }
+.ds { display: flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--line2); border-radius: 999px; padding: 4px 10px; cursor: pointer; white-space: nowrap; font-size: 12px; min-height: 32px }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted) } .dot.ok { background: var(--c-low) } .dot.warn { background: var(--terra) }
+.seg { display: inline-flex; border: 1px solid var(--line2); border-radius: var(--r); overflow: hidden; flex: none; background: var(--card) } .seg.wrap { flex-wrap: wrap }
+.seg button { background: none; border: 0; padding: 6px 10px; cursor: pointer; color: var(--ink2); font-weight: 600; font-size: 12.5px; min-height: 32px }
+.seg button + button { border-left: 1px solid var(--line) }
+.seg button.on { background: var(--cobalt); color: var(--on-cobalt) }
+.ib { background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); min-width: 36px; height: 36px; cursor: pointer; display: inline-grid; place-items: center; position: relative; flex: none; color: var(--ink) }
+.ib:hover { border-color: var(--cobalt); color: var(--cobalt) } .ib.on { background: var(--cobalt-t); border-color: var(--cobalt); color: var(--cobalt) }
+.avatar { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--ink); background: var(--terra-t); color: var(--ink); font-weight: 800; cursor: pointer; flex: none }
+#noteCount { position: absolute; top: -5px; right: -5px; background: var(--terra); color: #fff; border-radius: 999px; font-size: 10px; padding: 0 5px; line-height: 16px }
+#notes { position: absolute; top: 58px; right: 120px; width: 320px; max-height: 60vh; overflow: auto; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r2); padding: 8px; z-index: 60; box-shadow: var(--shadow) }
+.note { display: flex; gap: 8px; justify-content: space-between; padding: 7px 8px; border-bottom: 1px solid var(--line); font-size: 12.5px } .note em { color: var(--muted); font-style: normal; flex: none }
+.btn { background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 7px 12px; cursor: pointer; min-height: 36px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; justify-content: center; text-align: center; color: var(--ink) }
+.btn:hover { border-color: var(--cobalt); color: var(--cobalt) } .btn.on { background: var(--cobalt-t); border-color: var(--cobalt); color: var(--cobalt) }
+.btn.pri { background: var(--cobalt); border-color: var(--cobalt); color: var(--on-cobalt) } .btn.pri:hover { background: var(--cobalt2); color: var(--on-cobalt) }
+.btn.pitch { background: var(--terra); border-color: var(--terra); color: #fff } .btn.pitch:hover { filter: brightness(1.05); color: #fff }
+.btn.dng { border-color: var(--red); color: var(--red) } .btn.sm { min-height: 30px; padding: 3px 10px; font-size: 12px } .btn.ic { min-width: 36px; padding: 0 } .btn:disabled { opacity: .4; cursor: default }
+.lnk { background: none; border: 0; color: var(--cobalt); cursor: pointer; padding: 2px 4px; font-weight: 600; font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px } .lnk.dng { color: var(--red) }
+
+/* ---------- grouped navigation ---------- */
+#nav { grid-row: 2; grid-column: 1; background: var(--paper2); border-right: 1px solid var(--line2); overflow-y: auto; padding: 10px 8px 16px; display: flex; flex-direction: column; gap: 10px; z-index: 20 }
+.nav-g { display: flex; flex-direction: column; gap: 1px }
+.nav-gl { font-size: 10.5px; color: var(--muted); font-weight: 700; padding: 4px 10px 3px; text-transform: none; letter-spacing: .02em }
+.nav-i { position: relative; display: flex; align-items: center; gap: 10px; background: none; border: 0; border-radius: 6px; padding: 7px 10px; cursor: pointer; color: var(--ink2); font-size: 13px; text-align: left; line-height: 1.2; min-height: 34px }
+.nav-i svg { width: 18px; height: 18px; flex: none } .nav-i span { overflow: hidden; text-overflow: ellipsis; overflow-wrap: normal; word-break: normal; hyphens: manual }
+.nav-i:hover { background: var(--cobalt-t); color: var(--ink) }
+.nav-i.on { color: var(--cobalt); font-weight: 700; background: var(--cobalt-t) }
+.nav-i.on::before { content: ""; position: absolute; left: -8px; top: 6px; bottom: 6px; width: 3px; border-radius: 0 3px 3px 0; background: var(--cobalt) }
+
+/* ---------- workspace ---------- */
+#stage { grid-row: 2; grid-column: 2; position: relative; overflow: hidden }
+#mapWrap { position: absolute; inset: 0; display: flex }
+#map, #map2 { position: relative; flex: 1; height: 100%; background: var(--paper) }
+#map2 { border-left: 2px solid var(--cobalt) }
+.lite-canvas { display: block; touch-action: none }
+.cmp-l { display: none; position: absolute; top: 56px; z-index: 6; background: var(--card); border: 1px solid var(--line2); border-radius: 6px; padding: 3px 10px; font-weight: 700; font-size: 12px }
+body.split .cmp-l { display: block } .cmp-l.b { left: 400px } .cmp-l.a { right: 66px }
+body.split #mapWrap { flex-direction: row } body.split #map { order: 2 } body.split #map2 { order: 3 }
+#mapBadge { position: absolute; top: 12px; left: 410px; right: 66px; width: max-content; max-width: calc(100% - 480px); z-index: 5; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 5px 10px; font-size: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; box-shadow: var(--shadow) }
+#tools { position: absolute; right: 12px; top: 12px; display: flex; flex-direction: column; gap: 4px; z-index: 6; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 4px; box-shadow: var(--shadow) }
+#tools .ib { width: 36px; height: 34px; border-color: transparent; font-weight: 700; font-size: 13px; background: transparent }
+#tools .ib:hover { border-color: var(--line2) }
+#compassN { display: inline-block; color: var(--terra) } #tNorth span { transform: rotate(-90deg) }
+#scaleBox { position: absolute; left: 410px; bottom: 12px; z-index: 5; display: flex; align-items: center; gap: 10px; font-size: 11.5px; color: var(--ink2); background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px }
+#scale { border: 1.5px solid var(--ink); border-top: 0; height: 7px; line-height: 0; font-size: 10.5px; color: var(--ink); text-align: center; min-width: 40px; padding-top: 1px }
+#legend { position: absolute; right: 66px; bottom: 14px; z-index: 5; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 8px 10px; max-width: 250px; font-size: 11.5px; display: flex; flex-direction: column; gap: 4px; box-shadow: var(--shadow) }
+#legend:empty { display: none }
+.lg { display: flex; align-items: center; gap: 6px } .lg i { width: 16px; height: 8px; border-radius: 2px; flex: none } .lg-t { font-weight: 700; margin-top: 3px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap }
+.ramp { height: 8px; border-radius: 3px; background: linear-gradient(90deg, #5e8a44, #a3b35a, #e0a800, #e8590c, #b02a37) } .ramp-l { display: flex; justify-content: space-between; color: var(--muted) }
+#measureOut { position: absolute; bottom: 52px; left: 50%; transform: translateX(-50%); z-index: 6; background: var(--card); border: 1.5px solid var(--terra); border-radius: 999px; padding: 6px 14px; font-size: 13px }
+#mapBusy { position: absolute; top: 14px; right: 66px; z-index: 6; width: 20px; height: 20px }
+#mapBusy i, .spin { display: block; width: 100%; height: 100%; border: 2.5px solid var(--cobalt-t); border-top-color: var(--cobalt); border-radius: 50%; animation: sp .9s linear infinite }
+@keyframes sp { to { transform: rotate(360deg) } }
+.maplibregl-ctrl-attrib { font-size: 10.5px !important; background: rgba(247, 243, 236, .85) !important; color: var(--ink2) !important }
+#info { position: absolute; right: 66px; top: 58px; width: 300px; max-height: calc(100% - 200px); overflow: auto; z-index: 7; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r2); padding: 12px 14px; box-shadow: var(--shadow) }
+#info h3 { padding-right: 24px; margin-bottom: 6px }
+.x { position: absolute; top: 6px; right: 8px; background: none; border: 0; font-size: 20px; cursor: pointer; color: var(--muted); width: 32px; height: 32px; border-radius: 6px }
+.x:hover { background: var(--cobalt-t); color: var(--ink) }
+
+/* ---------- module sheet ---------- */
+#panel { position: absolute; left: 12px; top: 12px; bottom: 12px; width: 384px; z-index: 8; background: var(--paper2); border: 1px solid var(--line2); border-radius: var(--r2); display: flex; flex-direction: column; box-shadow: var(--shadow) }
+body.panel-min #panel { bottom: auto } body.panel-min .pbody { display: none } body.panel-min #mapBadge, body.panel-min #scaleBox { left: 12px } body.panel-min .cmp-l.b { left: 12px }
+.ph { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 14px 16px 10px; border-bottom: 1px dashed var(--line2) } .ph .x { position: static; flex: none }
+.ph h2 { font-size: 17px }
+.pbody { overflow: auto; padding: 4px 16px 18px; flex: 1; display: flex; flex-direction: column } .pbody > * { flex: none } .pbody.sel-first #vres { order: -1 }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; margin: 10px 0 }
+.card > h4:first-child { margin-top: 0 }
+details.card > summary, details > summary { cursor: pointer; font-weight: 700; font-size: 13px }
+details.limits { background: transparent; border-style: dashed }
+.fld { display: flex; flex-direction: column; gap: 4px; margin: 8px 0 } .fld > span { font-size: 12px; color: var(--ink2); display: flex; justify-content: space-between; gap: 6px } .fld em { font-style: normal; color: var(--muted) }
+.fld input, .fld select, .fld textarea, .row input, select { background: var(--card); border: 1px solid var(--line2); border-radius: 6px; padding: 7px 10px; font-size: 15px; min-height: 38px; width: 100%; color: var(--ink) }
+input[type=range] { accent-color: var(--cobalt); padding: 0; min-height: 28px; border: 0; background: none }
+output { color: var(--cobalt); font-weight: 700 }
+.chk { display: flex; gap: 8px; align-items: center; margin: 8px 0; font-size: 13px } .chk input { width: 18px; height: 18px; accent-color: var(--cobalt) }
+.row { display: flex; gap: 8px; align-items: center } .row.wrap { flex-wrap: wrap } .row.sb { justify-content: space-between } .row.end { justify-content: flex-end; margin-top: 12px }
+.g2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 10px } .g3 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 }
+.chip { background: var(--card); border: 1px solid var(--line2); border-radius: 999px; padding: 4px 11px; font-size: 12px; cursor: pointer; color: var(--ink2); min-height: 30px; line-height: 1.25 }
+.chip.on { color: var(--cobalt); border-color: var(--cobalt); background: var(--cobalt-t); font-weight: 600 } .chip.q { text-align: left; border-radius: var(--r) }
+.hint { background: var(--cobalt-t); border: 1px dashed var(--cobalt); border-radius: 6px; padding: 7px 10px; font-size: 12.5px; color: var(--ink) }
+.lead { font-size: 14.5px; color: var(--ink2); margin: 6px 0 0 }
+.plain { margin: 6px 0; font-size: 13.5px; color: var(--ink) }
+.kv { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13px; flex-wrap: wrap } .kv > span { color: var(--ink2); flex: 1 } .kv > b { font-weight: 600; text-align: right } .kv.col { flex-direction: column; align-items: stretch }
+.na { color: var(--muted); font-weight: 400 }
+.near { margin: 4px 0; padding-left: 18px; font-size: 12.5px } .near li { margin: 2px 0 }
+.near2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: var(--ink2) } .near2 b { color: var(--ink) }
+.note { font-size: 12px; color: var(--muted) }
+.results { display: flex; flex-direction: column; gap: 3px; margin: 4px 0 }
+.res { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: none; border: 1px solid transparent; border-radius: 6px; padding: 7px 8px; cursor: pointer; text-align: left; width: 100%; color: var(--ink) }
+.res:hover, .res.on { background: var(--cobalt-t); border-color: var(--cobalt) } .res span { color: var(--muted); font-size: 12px; flex: none }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px }
+div.warn, p.warn { border-radius: 6px; padding: 6px 9px; margin: 4px 0; font-size: 12.5px; border: 1px solid }
+.w-crit { background: var(--red-t); border-color: var(--red); color: var(--ink) } .w-warn { background: var(--amber-t); border-color: var(--c-mod); color: var(--ink) }
+.w-info { background: var(--cobalt-t); border-color: var(--cobalt); color: var(--ink) } .w-ok { background: var(--green-t); border-color: var(--green); color: var(--ink) }
+.calm-warn { display: flex; gap: 10px; align-items: flex-start; background: var(--amber-t); border: 1px solid var(--line2); border-radius: var(--r); padding: 9px 11px; font-size: 12.5px; margin: 8px 0 }
+.calm-warn b { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--card); border: 1px solid var(--amber); color: var(--amber); font-size: 12px }
+.calm-warn.info { background: var(--cobalt-t) } .calm-warn.info b { border-color: var(--cobalt); color: var(--cobalt); font-style: italic; font-family: Georgia, serif }
+
+/* data-status labels */
+.st { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; border-radius: 999px; padding: 1px 8px 1px 6px; border: 1px solid var(--line2); background: var(--card); white-space: nowrap; vertical-align: 1px; line-height: 1.5; color: var(--ink2) }
+.st i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: none }
+.st-VERIFIED i { background: var(--ink) } .st-OPEN i { background: var(--cobalt) } .st-EST i, .st-SIM i, .st-MODEL i { background: var(--amber) }
+.st-DEMO i { background: var(--terra) } .st-DEMO { border-color: var(--terra) } .st-PROPOSED i { background: transparent; border: 1.5px solid var(--terra) } .st-RULE i { background: var(--green) } .st-UNAVAILABLE i { background: transparent; border: 1px solid var(--muted) }
+.stl { display: flex; flex-direction: column; gap: 6px }
+.lvl-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 7px; color: #fff; white-space: nowrap }
+.lv-low { background: var(--c-low) } .lv-mod { background: var(--c-mod); color: #23272f } .lv-high { background: var(--c-high) } .lv-crit { background: var(--c-crit) }
+
+/* tables & bars */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 4px 0; font-variant-numeric: tabular-nums } .tbl th, .tbl td { padding: 5px 4px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap } .tbl th:first-child, .tbl td:first-child { text-align: left; white-space: normal }
+.tbl th { color: var(--muted); font-weight: 600; font-size: 11.5px } .tbl tr.clk { cursor: pointer } .tbl tr.clk:hover td { background: var(--cobalt-t) }
+.tbl.inp input { width: 64px; background: var(--card); border: 1px solid var(--line2); border-radius: 4px; padding: 4px; text-align: right }
+.tbl.big { font-size: 18px } .tbl.big th { font-size: 14px }
+.scroll { overflow-x: auto }
+.dl { font-weight: 700; font-size: 11.5px; white-space: nowrap } .dl.up { color: var(--c-low) } .dl.dn { color: var(--red) } .dl.z { color: var(--muted) }
+.bar { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden } .bar i { display: block; height: 100%; border-radius: 999px }
+.hbars { display: flex; flex-direction: column; gap: 6px; margin: 6px 0 } .hb { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto; gap: 8px; align-items: center; font-size: 12.5px } .hb b { font-weight: 600; white-space: nowrap }
+.big { font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; flex: none } .big small { font-size: 13px; color: var(--muted) } .big.sm2 { font-size: 24px }
+.cmpbar { display: grid; grid-template-columns: minmax(0, 1fr) 64px 64px auto; gap: 6px; align-items: center; font-size: 12px; margin: 4px 0 }
+.lgnd { display: flex; gap: 12px; font-size: 11.5px; color: var(--muted); margin-top: 4px; flex-wrap: wrap } .lgnd i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px }
+.lc { margin: 8px 0 } .lc figcaption { font-size: 12px; color: var(--ink2); font-weight: 600 } .lc svg { width: 100%; height: auto; display: block } .lc text { fill: var(--muted); font-size: 10px }
+.ucost { display: flex; flex-direction: column; gap: 5px; margin: 6px 0 } .ucost label { display: grid; grid-template-columns: minmax(0, 1fr) 110px 56px; gap: 6px; align-items: center; font-size: 12px } .ucost input { background: var(--card); border: 1px solid var(--line2); border-radius: 4px; padding: 5px 6px; text-align: right; font-size: 13px } .ucost em { font-style: normal; color: var(--muted); font-size: 11px }
+
+/* ---------- overview ---------- */
+.hero { position: relative; margin: 12px 0 6px; padding: 16px 16px 14px; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r2); overflow: hidden;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200' viewBox='0 0 360 200'%3E%3Cg fill='none' stroke='%232244a8' stroke-opacity='.10' stroke-width='1.2'%3E%3Cpath d='M210 10c40 10 90 0 140 25'/%3E%3Cpath d='M200 40c45 8 95-2 150 28'/%3E%3Cpath d='M190 72c50 6 100-4 160 32'/%3E%3Cpath d='M185 106c55 4 105-6 165 36'/%3E%3Cpath d='M190 140c50 2 110-8 160 40'/%3E%3C/g%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right top }
+.hero h1 { font-size: 25px; line-height: 1.12; text-wrap: balance; max-width: 15em }
+.acts { display: flex; flex-direction: column; gap: 8px; margin-top: 14px }
+.act { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto auto; gap: 0 10px; text-align: left; background: var(--paper2); border: 1px solid var(--line2); border-radius: var(--r); padding: 10px 12px; cursor: pointer; color: var(--ink) }
+.act:hover { border-color: var(--cobalt); background: var(--cobalt-t) }
+.act-ic { grid-row: 1/3; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--cobalt-t); color: var(--cobalt) }
+.act b { font-size: 14.5px } .act > span:last-child { font-size: 12.5px; color: var(--ink2) }
+.act-pitch .act-ic { background: var(--terra-t); color: var(--terra) } .act-pitch:hover { border-color: var(--terra); background: var(--terra-t) }
+.snapshot { margin: 14px 0 } .snapshot h3 { font-size: 14px; margin-bottom: 8px }
+.snaps { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px }
+.snap { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 9px 10px; display: flex; flex-direction: column; gap: 3px; align-items: flex-start }
+.snap-k { font-size: 12px; color: var(--ink2) } .snap-v { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums } .snap-s { font-size: 11.5px; color: var(--muted) }
+.lvl { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--cobalt); color: var(--cobalt); font-weight: 800; display: grid; place-items: center; font-size: 18px; flex: none }
+.mission { display: flex; flex-direction: column; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 12.5px } .mission span { color: var(--muted) } .mission.done b { color: var(--green) }
+.achs { display: flex; flex-wrap: wrap; gap: 5px } .ach { font-size: 11.5px; padding: 3px 8px; border-radius: 999px; border: 1px dashed var(--line2); color: var(--muted) } .ach.on { color: var(--ink); border: 1px solid var(--terra); background: var(--terra-t) }
+.lb { margin: 0; padding-left: 20px } .lb li { display: flex; justify-content: space-between; padding: 3px 0 }
+
+/* ---------- build: shelf & checklist ---------- */
+.shelf { display: flex; flex-direction: column; gap: 10px }
+.shelf-row { border-top: 1px solid var(--line); padding-top: 8px } .shelf-l { display: block; font-size: 11.5px; color: var(--muted); font-weight: 700; margin-bottom: 5px }
+.shelf-items { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px }
+.ty { display: flex; gap: 8px; align-items: flex-start; text-align: left; background: var(--card); border: 1px solid var(--line2); border-radius: 6px; padding: 7px 8px; cursor: pointer; min-height: 44px; color: var(--ink) }
+.ty i { width: 12px; height: 12px; border-radius: 3px; margin-top: 3px; flex: none } .ty span { display: flex; flex-direction: column } .ty b { font-size: 12.5px; line-height: 1.2 } .ty em { font-style: normal; font-size: 11px; color: var(--muted) }
+.ty:hover { border-color: var(--cobalt) } .ty.on { border-color: var(--cobalt); background: var(--cobalt-t); box-shadow: inset 0 0 0 1px var(--cobalt) }
+.ck-h { margin-top: 10px }
+.checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ck }
+.ck { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 8px 10px 8px 36px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper2); font-size: 12.5px; counter-increment: ck; align-items: flex-start }
+.ck::before { content: counter(ck); position: absolute; left: 9px; top: 8px; width: 19px; height: 19px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; background: var(--cobalt) }
+.ck-ok::before { content: "✓"; background: var(--green) } .ck-warn::before { content: "!"; background: var(--c-high) } .ck-bad::before { content: "✕"; background: var(--red) }
+.ck > b { font-size: 13px } .ck em { font-style: normal; color: var(--muted) } .ck-v { font-weight: 700; font-size: 14px } .ck .tbl { width: 100% } .ck details { width: 100% }
+.params { margin: 10px 0; border-top: 1px dashed var(--line2); padding-top: 8px }
+
+/* ---------- traffic ---------- */
+.road-card { background-image: repeating-linear-gradient(90deg, transparent 0 18px, var(--line) 18px 28px); background-size: 100% 2px; background-repeat: no-repeat; background-position: 0 100% }
+.lvl-scale { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; margin: 8px 0 }
+.lvl-scale span { display: flex; flex-direction: column; padding: 4px 6px; border-radius: 4px; font-size: 11px; color: #fff; opacity: .45 } .lvl-scale span.on { opacity: 1; outline: 2px solid var(--ink); outline-offset: 1px }
+.lvl-scale .lv-mod { color: #23272f } .lvl-scale em { font-style: normal; opacity: .9 }
+
+/* ---------- eco ---------- */
+.chains { margin: 8px 0 } .chain { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.4fr); gap: 0; border: 1px solid var(--line); border-radius: var(--r); margin: 8px 0; overflow: hidden; background: var(--card) }
+.ch-src { background: var(--green-t); padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; border-right: 1px dashed var(--green) } .ch-src b { font-size: 13px; color: var(--green) } .ch-src span { font-size: 11.5px; color: var(--ink2) }
+.ch-res { padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; font-size: 12.5px } .ch-l { font-size: 11px; color: var(--muted) }
+.chv em { font-style: normal; color: var(--muted) } .chv b { font-variant-numeric: tabular-nums }
+
+/* ---------- disaster tabs ---------- */
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0 4px } .tab { background: var(--card); border: 1px solid var(--line2); border-radius: 6px; padding: 5px 9px; font-size: 12px; cursor: pointer; color: var(--ink2); min-height: 32px; line-height: 1.2; text-align: left }
+.tab.on { background: var(--ink); color: var(--paper2); border-color: var(--ink) }
+.sev { font-weight: 800 } .sev-crit { color: var(--c-crit) } .sev-high { color: var(--c-high) } .sev-mod { color: var(--amber) } .sev-low { color: var(--c-low) }
+
+/* ---------- budget worksheet ---------- */
+.sheet { background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 12px 14px; margin: 10px 0; background-image: repeating-linear-gradient(transparent 0 31px, var(--line) 31px 32px) }
+.sheet h4 { margin: 0 0 6px }
+.ws-l { display: flex; align-items: baseline; gap: 6px; padding: 5px 0; font-size: 13.5px } .ws-l span { flex: none; max-width: 58% } .ws-l i { flex: 1; border-bottom: 1.5px dotted var(--line2); transform: translateY(-3px) } .ws-l b { flex: none; font-variant-numeric: tabular-nums }
+.ws-total { border-top: 1.5px solid var(--ink); margin-top: 4px; padding-top: 7px; font-size: 15px } .ws-total b { font-size: 16px } .ws-sub { color: var(--ink2); font-size: 12.5px }
+
+/* ---------- citizen noticeboard ---------- */
+.note-form { background: var(--paper2) }
+.board { margin: 12px 0; padding: 10px; border-radius: var(--r); background: var(--terra-t); border: 1px solid var(--line2) } .board h4 { margin: 0 0 6px }
+.issue { padding: 8px 0 } .issue p { margin: 4px 0; font-size: 13px }
+.issue.pin { position: relative; background: var(--card); border: 1px solid var(--line2); border-radius: 4px; padding: 12px 12px 8px; margin: 10px 2px; box-shadow: 0 1px 2px rgba(35, 39, 47, .08) }
+.issue.pin:nth-child(odd) { transform: rotate(-.5deg) } .issue.pin:nth-child(even) { transform: rotate(.4deg) }
+.issue.pin::before { content: ""; position: absolute; top: -5px; left: 50%; width: 11px; height: 11px; border-radius: 50%; background: var(--terra); box-shadow: 0 1px 1px rgba(0, 0, 0, .25) }
+.pill { font-size: 11px; padding: 1px 8px; border-radius: 999px; color: #fff; font-weight: 700 }
+.thumb { max-width: 100%; max-height: 140px; border-radius: 4px; display: block; margin: 6px 0 }
+
+/* ---------- future timeline ---------- */
+.timeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); position: relative; margin: 6px 0 4px }
+.timeline::before { content: ""; position: absolute; left: 12%; right: 12%; top: 11px; height: 2px; background: var(--line2) }
+.tl-n { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: 0; cursor: pointer; padding: 0 2px; color: var(--ink2); text-align: center }
+.tl-n i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line2); background: var(--card); z-index: 1 } .tl-n.past i { border-color: var(--cobalt) } .tl-n.on i { background: var(--cobalt); border-color: var(--cobalt); box-shadow: 0 0 0 4px var(--cobalt-t) }
+.tl-n b { font-size: 13px } .tl-n em { font-style: normal; font-size: 10.5px; color: var(--muted); line-height: 1.2 } .tl-n.on b { color: var(--cobalt) }
+.strats { display: flex; flex-direction: column; gap: 6px; margin: 6px 0 }
+.strat { display: flex; flex-direction: column; gap: 2px; text-align: left; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 9px 11px; cursor: pointer; color: var(--ink) }
+.strat span { font-size: 12px; color: var(--ink2) }
+.strat.st-green b { color: var(--green) } .strat.st-economic b { color: var(--terra) } .strat.st-balanced b { color: var(--cobalt) }
+.strat.on.st-green { border-color: var(--green); background: var(--green-t) } .strat.on.st-economic { border-color: var(--terra); background: var(--terra-t) } .strat.on.st-balanced { border-color: var(--cobalt); background: var(--cobalt-t) }
+
+/* ---------- archive ---------- */
+.archive h4 { margin: 14px 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--line2) }
+.arc { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px dashed var(--line) }
+.arc b { display: block; font-size: 13px } .arc span { font-size: 12px; color: var(--ink2) }
+.ftag { display: grid; place-items: center; height: 46px; border: 1px solid var(--line2); border-radius: 4px 12px 4px 4px; font-size: 10.5px; font-weight: 800; color: var(--cobalt); background: var(--card); letter-spacing: .03em }
+.rep { display: flex; flex-direction: column; gap: 6px; margin-top: 8px }
+
+/* ---------- AI Әкім briefing ---------- */
+#mForm { margin: 8px 0 } #mForm input { flex: 1 }
+#chat { display: flex; flex-direction: column; gap: 12px; margin-top: 12px }
+.brief { background: var(--card); border: 1px solid var(--line2); border-radius: 4px; padding: 12px 14px 10px 24px; position: relative; box-shadow: 0 1px 2px rgba(35, 39, 47, .07);
+  background-image: linear-gradient(90deg, transparent 15px, var(--terra-t) 15px, var(--terra-t) 16.5px, transparent 16.5px), repeating-linear-gradient(transparent 0 23px, var(--line) 23px 24px); background-position: 0 0, 0 36px }
+.brief-h { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); border-bottom: 1.5px solid var(--ink); padding-bottom: 5px }
+.brief-no { font-weight: 800; color: var(--ink); text-transform: none } .brief-src { display: flex; gap: 5px; align-items: center }
+.brief-q { margin: 8px 0 4px; font-size: 13.5px; font-weight: 600 } .brief-q em { font-style: normal; color: var(--muted); font-weight: 400 }
+.brief-l { margin: 4px 0; padding-left: 20px; font-size: 13px } .brief-l li { margin: 5px 0 } .brief-l li::marker { color: var(--terra); font-weight: 800 } .brief-l b { display: block; font-size: 12px; color: var(--cobalt) }
+.brief-f { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--muted); border-top: 1px dashed var(--line2); padding-top: 6px; margin-top: 6px }
+
+/* ---------- right: city indicators ---------- */
+#right { grid-row: 2; grid-column: 3; overflow: auto; background: var(--paper2); border-left: 1px solid var(--line2); padding: 0 12px 12px; z-index: 20 }
+body.right-off #right { display: none }
+.rp-h { position: sticky; top: 0; background: var(--paper2); display: flex; justify-content: space-between; align-items: center; padding: 12px 0 8px; border-bottom: 1px dashed var(--line2); z-index: 1 } .rp-h .x { position: static }
+.chi-top { display: flex; gap: 12px; align-items: center } .chi-top h4 { margin: 0 0 2px } .ring-v { fill: var(--ink); font-size: 24px; font-weight: 800 } .chi-d { font-size: 12.5px; margin-top: 4px }
+.cat { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; font-size: 12.5px; margin: 7px 0 0 } .cat em { color: var(--muted); font-style: normal; font-size: 11px } .cat .bar { grid-column: 1/-1 }
+.kpis { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin: 10px 0 }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 10px; display: flex; flex-direction: column; gap: 2px } .kpi span { font-size: 11.5px; color: var(--ink2) } .kpi b { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums } .kpi small { font-size: 11px; color: var(--muted); display: flex; gap: 4px; flex-wrap: wrap; align-items: center }
+.kpi b, .snap-v, .big, .ck-v, .ws-l b { overflow-wrap: normal; word-break: keep-all }
+.kpi .st { white-space: normal; font-size: 10.5px; border: 0; padding: 0; background: none; line-height: 1.25 }
+.rec { display: flex; flex-direction: column; gap: 2px; padding: 7px 9px 7px 26px; margin: 6px 0; background: var(--card); border: 1px solid var(--line); border-radius: 6px; font-size: 12.5px; position: relative } .rec span { color: var(--ink2) } .rec .lnk { align-self: flex-start; padding-left: 0 }
+.rec::before { content: ""; position: absolute; left: 9px; top: 11px; width: 9px; height: 9px; border-radius: 50%; background: var(--cobalt) }
+.rec-crit::before { background: var(--red) } .rec-warn::before { background: var(--c-high) }
+.mini { width: 100%; font-size: 12px; border-collapse: collapse } .mini td { padding: 3px 2px; border-bottom: 1px solid var(--line) } .mini td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums } .mini td:last-child { color: var(--cobalt); font-weight: 700 }
+
+/* ---------- bottom dock ---------- */
+#bottom { grid-row: 3; grid-column: 1/-1; display: flex; gap: 14px; align-items: center; padding: 7px 14px; background: var(--paper2); border-top: 1px solid var(--line2); overflow-x: auto; z-index: 20; min-height: 52px }
+.bgrp { display: flex; gap: 6px; align-items: center; flex: none } .blbl { font-size: 11px; color: var(--muted); font-weight: 700 }
+.bgrp + .bgrp { padding-left: 14px; border-left: 1px dashed var(--line2) }
+#bottom select { width: auto; min-height: 32px; padding: 4px 8px; font-size: 13px }
+
+/* ---------- toasts, modal, loading ---------- */
+#toasts { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 90; pointer-events: none; align-items: center }
+.toast { background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 8px 14px; font-size: 13px; box-shadow: var(--shadow); transition: opacity .5s, transform .5s; max-width: min(560px, 90vw) } .toast.out { opacity: 0; transform: translateY(8px) }
+.t-ok { border-color: var(--green) } .t-warn { border-color: var(--terra) }
+#modal { position: fixed; inset: 0; background: rgba(35, 39, 47, .35); z-index: 100; display: grid; place-items: center; padding: 16px } #modal[hidden] { display: none }
+.mbox { background: var(--paper2); border: 1px solid var(--line2); border-radius: var(--r2); padding: 18px 20px; width: min(520px, 100%); max-height: 90vh; overflow: auto; box-shadow: var(--shadow) }
+#loading { position: fixed; inset: 0; z-index: 95; background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px } #loading[hidden] { display: none } #loading .spin { width: 40px; height: 40px } #loadingMsg { color: var(--ink2) }
+.logo-xl { display: flex; align-items: center; gap: 14px; justify-content: center } .logo-xl svg { width: 68px; height: 68px; transform: rotate(-2deg) } .logo-xl span { font-size: 44px; font-weight: 800 } .logo-xl b { color: var(--cobalt) }
+.logo-xl.sm svg { width: 44px; height: 44px } .logo-xl.sm span { font-size: 28px }
+.slogan { font-size: 20px; font-weight: 700; text-align: center; margin: 10px 0 2px; color: var(--ink) } .slogan2 { color: var(--muted); text-align: center; margin: 0 }
+.onb ol { padding-left: 20px } .onb li { margin: 6px 0 }
+
+/* ---------- pitch mode: projector-first ---------- */
+body.pitching #panel, body.pitching #right, body.pitching #bottom, body.pitching #nav, body.pitching #info, body.pitching #legend, body.pitching #mapBadge { visibility: hidden }
+body.pitching { grid-template-columns: 0 minmax(0, 1fr) 0 } body.pitching #toasts { bottom: auto; top: 70px }
+#pitch { position: fixed; inset: 58px 0 0 0; z-index: 80; pointer-events: none } #pitch[hidden] { display: none }
+.pcap { pointer-events: auto; position: absolute; left: 0; right: 0; bottom: 0; padding: 22px max(4vw, 20px) 14px; background: linear-gradient(transparent, rgba(239, 233, 223, .92) 26%, var(--paper2) 60%); color: var(--ink) }
+:root[data-ui=dark] .pcap { background: linear-gradient(transparent, rgba(21, 24, 29, .92) 26%, var(--paper2) 60%) }
+.pstep { font-size: 13px; color: var(--terra); font-weight: 700; font-style: italic }
+.pcap h3 { font-size: clamp(26px, 3.2vw, 40px); margin: 2px 0 6px; max-width: 26em; text-wrap: balance }
+.pcap p { margin: 0 0 12px; font-size: clamp(16px, 1.6vw, 21px); color: var(--ink2); max-width: 48em }
+.pprog { height: 3px; background: var(--line); border-radius: 99px; overflow: hidden; margin-bottom: 10px } .pprog i { display: block; height: 100%; background: var(--cobalt); transition: width .6s }
+.pctl { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; opacity: .45; transition: opacity .25s } .pctl:hover, .pctl:focus-within { opacity: 1 }
+.pctl .btn { min-height: 32px; padding: 4px 10px; font-size: 12.5px } .ptip { font-size: 11.5px; color: var(--muted); margin-left: 6px }
+.pcard { pointer-events: auto; position: absolute; right: 24px; top: 20px; width: min(540px, 92vw); max-height: calc(100% - 300px); overflow: auto; background: var(--card); border: 1px solid var(--line2); border-radius: var(--r2); padding: 14px 16px; box-shadow: var(--shadow) }
+.pcard .tbl { font-size: 14px }
+.splash { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: var(--paper); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 24px 24px; pointer-events: none }
+.splash .final { font-size: 24px; font-weight: 800; margin-top: 18px; text-align: center; color: var(--cobalt) }
+.tier { border: 1px solid var(--line2); border-radius: var(--r); padding: 8px; display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; background: var(--card) } .tier span { color: var(--cobalt); font-weight: 700 }
+.road { padding-left: 20px; font-size: 13px } .road li { margin: 3px 0 } .road li::marker { color: var(--terra); font-weight: 700 }
+
+/* ---------- web presentation ---------- */
+#deck { position: fixed; inset: 0; z-index: 110; background: var(--paper) } #deck[hidden] { display: none }
+.deck-sc { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scrollbar-width: none } .deck-sc::-webkit-scrollbar { display: none }
+.slide { flex: 0 0 100%; height: 100%; scroll-snap-align: start; display: grid; place-items: center; padding: 4vh 6vw 80px; position: relative; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 28px 28px }
+.sl-in { width: min(1100px, 100%); display: flex; flex-direction: column; gap: 18px } .sl-in h1 { font-size: clamp(28px, 4vw, 50px); text-align: center; line-height: 1.08 } .sl-in h2 { font-size: clamp(24px, 3.2vw, 40px); line-height: 1.1 }
+.sl-in p { font-size: clamp(15px, 1.5vw, 20px); margin: 0 } .sl-title { display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center }
+.sl-n { position: absolute; bottom: 22px; right: 30px; color: var(--muted); font-size: 13px }
+.g5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px } .dk { border: 1px solid var(--line2); border-radius: var(--r2); padding: 14px; display: flex; flex-direction: column; gap: 6px; background: var(--card) } .dk b { font-size: 17px; color: var(--cobalt) } .dk span { color: var(--ink2); font-size: 14px }
+.flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center } .flow span { border: 1px solid var(--cobalt); background: var(--cobalt-t); border-radius: var(--r); padding: 10px 14px; font-weight: 700 } .flow i { color: var(--terra); font-style: normal; font-size: 20px } .flow.big span { font-size: 18px; padding: 16px 18px }
+.shot { width: 100%; max-height: 62vh; object-fit: cover; border-radius: var(--r2); border: 1px solid var(--line2) }
+.g2d { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; font-size: 17px }
+.final { font-size: clamp(20px, 2.4vw, 30px); font-weight: 800; color: var(--cobalt) }
+.deck-ctl { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; background: var(--card); border: 1px solid var(--line2); border-radius: 999px; padding: 6px 10px; z-index: 111; box-shadow: var(--shadow) }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1440px) { :root { --nav: 184px; --right: 286px } .gsearch { flex-basis: 190px } }
+@media (max-width: 1280px) { .ds .ds-t { display: none } .lab { display: none } }
+@media (max-width: 1180px) {
+  :root { --nav: 76px }
+  body, body.right-off { grid-template-columns: var(--nav) minmax(0, 1fr) 0 }
+  #right { position: fixed; right: 0; top: 58px; bottom: 58px; width: min(340px, 92vw); transform: translateX(105%); transition: transform .25s; box-shadow: var(--shadow); display: block !important; z-index: 60 }
+  body.right-open #right { transform: none }
+  .brand { width: auto } .bt { display: none } .nav-gl { font-size: 0; height: 1px; background: var(--line); margin: 4px 6px; padding: 0 }
+  .nav-i { flex-direction: column; gap: 3px; padding: 7px 2px; font-size: 9.5px; text-align: center } .nav-i span { max-width: 70px; white-space: normal; line-height: 1.1 }
+  .nav-i.on::before { left: -8px } .ctx-sc { max-width: 150px }
+}
+@media (max-width: 900px) { .gsearch { display: none } #yearChip { display: none } }
+@media (max-width: 760px) {
+  body, body.right-off { grid-template-columns: minmax(0, 1fr); grid-template-rows: 52px minmax(0, 1fr) auto 62px }
+  #top { gap: 6px; padding: 0 8px } .ctx { justify-content: flex-start } .ctx-sep, .ctx select { display: none } .ctx-sc { max-width: 40vw; font-size: 12.5px }
+  #dataStatus, #gear, #pitchBtn span:last-child { display: none } #langSw button { padding: 6px 6px; font-size: 11.5px } #bell { display: none }
+  #nav { grid-row: 4; grid-column: 1; flex-direction: row; overflow-x: auto; overflow-y: hidden; padding: 4px 6px; gap: 0; border-right: 0; border-top: 1px solid var(--line2) }
+  .nav-g { flex-direction: row; flex: none } .nav-gl { display: none }
+  .nav-i { flex: none; width: auto; min-width: 64px; padding: 6px 7px; font-size: 10px; flex-direction: column; gap: 2px } .nav-i span { white-space: nowrap; max-width: none } .nav-i.on::before { left: 14px; right: 14px; top: -4px; bottom: auto; width: auto; height: 3px; border-radius: 0 0 3px 3px }
+  #stage { grid-column: 1 } #bottom { grid-row: 3; grid-column: 1; padding: 6px 8px; min-height: 46px } #right { top: 52px; bottom: 62px }
+  #panel { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-height: 56%; border-radius: var(--r2) var(--r2) 0 0; border-bottom: 0 }
+  body:not(.panel-open) #panel { max-height: 54px; overflow: hidden } body.panel-open.panel-min #panel { max-height: 54px }
+  #mapBadge { left: 8px; right: auto; max-width: calc(100% - 64px); top: 8px; font-size: 11px; padding: 4px 8px } #mapBadge > span:not(.st), #mapBadge .lnk { display: none } #scaleBox { left: 8px; bottom: auto; top: 46px; padding: 2px 6px } #coords { display: none } #legend { bottom: auto; top: 46px; right: 52px; max-width: 160px; font-size: 10.5px; padding: 6px 8px }
+  #tools { top: 8px; right: 8px } #tools .ib { width: 32px; height: 30px } #tOrbit, #tShot { display: none } #info { left: 8px; right: 8px; width: auto; top: 52px }
+  .cmp-l.b { left: 8px } .pcard { top: 10px; right: 10px; left: 10px; width: auto; max-height: 40% } .g5 { grid-template-columns: repeat(2, minmax(0, 1fr)) } .g2d { grid-template-columns: 1fr } .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .hero h1 { font-size: 22px } .pcap h3 { font-size: 22px } .pcap p { font-size: 15px }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; scroll-behavior: auto !important } }
 
 </style>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22%3E%3Crect x=%223%22 y=%223%22 width=%2242%22 height=%2242%22 rx=%2211%22 fill=%22%230b1a30%22/%3E%3Crect x=%2220%22 y=%2213%22 width=%226%22 height=%2221%22 fill=%22%2322d3ee%22/%3E%3C/svg%3E">
 </head>
 <body>
 <header id="top">
-  <button id="burger" class="ib" data-i18n-title="menu">☰</button>
-  <a class="brand" href="#" id="brand"><span id="logo"></span><span class="bt">QALA<b>2050</b></span><span class="tag" data-i18n="tagline"></span></a>
-  <select id="citySel" data-i18n-title="citySel"></select>
+  <button id="burger" class="ib" data-i18n-title="menu" hidden>☰</button>
+  <a class="brand" href="#" id="brand"><span id="logo"></span><span class="bt">QALA <b>2050</b></span><span class="lab" data-i18n="labName"></span></a>
+  <div class="ctx">
+    <select id="citySel" data-i18n-title="citySel"></select>
+    <span class="ctx-sep">/</span>
+    <span class="ctx-sc"><span class="ctx-k" data-i18n="scLabel"></span> <b id="scName"></b></span>
+    <span id="yearChip" class="ychip"></span>
+  </div>
   <div class="gsearch"><input id="gSearch" type="search" autocomplete="off" data-i18n-ph="searchPh" data-i18n-title="searchPh"><div id="gRes" hidden></div></div>
-  <span id="yearChip" class="ychip"></span>
-  <button id="dataStatus" class="ds"></button>
-  <div id="langSw" class="seg" role="group"><button data-l="kk">ҚАЗ</button><button data-l="ru">РУС</button><button data-l="en">ENG</button></div>
-  <button id="bell" class="ib" data-i18n-title="notifications">🔔<span id="noteCount" hidden>0</span></button>
-  <div id="notes" hidden></div>
-  <button id="gear" class="ib" data-i18n-title="nav_settings">⚙</button>
-  <button id="kpiBtn" class="ib" data-i18n-title="metrics">▤</button>
-  <button id="pitchBtn" class="btn pri"><span>▶</span> <span data-i18n="pitchMode"></span></button>
+  <div class="tb-r">
+    <button id="dataStatus" class="ds"></button>
+    <div id="langSw" class="seg" role="group" aria-label="Language"><button data-l="kk">ҚАЗ</button><button data-l="ru">РУС</button><button data-l="en">ENG</button></div>
+    <button id="uiThemeBtn" class="ib" data-i18n-title="uiTheme">◐</button>
+    <button id="bell" class="ib" data-i18n-title="notifications"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span id="noteCount" hidden>0</span></button>
+    <div id="notes" hidden></div>
+    <button id="profileBtn" class="avatar" data-i18n-title="profileT">Q</button>
+    <button id="gear" class="ib" data-i18n-title="nav_settings" hidden>⚙</button>
+    <button id="kpiBtn" class="ib" data-i18n-title="collapseKpi"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg></button>
+    <button id="pitchBtn" class="btn pitch"><span>▶</span> <span data-i18n="pitchMode"></span></button>
+  </div>
 </header>
 <nav id="nav" aria-label="Modules"></nav>
 <main id="stage">
@@ -585,6 +755,59 @@ body.pitching{grid-template-columns:0 minmax(0,1fr) 0}body.pitching #toasts{bott
     d6t: "Кейс: гипотетический жилой комплекс", d6note: "Демо-сценарий, рассчитанный движком приложения на {d}.", d7t: "Целевой рынок", d7b: "Старт в Кызылорде, затем другие города Казахстана. Объём рынка оценивается снизу вверх по числу клиентов, без статистики без источника.", d8t: "Бизнес-модель", d9t: "Конкурентные преимущества и дорожная карта", d9a1: "Локальная адаптация для городов Казахстана", d9a2: "Казахский, русский и английский интерфейс", d9a3: "Интегрированная симуляция в одном сценарии", d9a4: "Встроенное участие горожан", d9a5: "Доступная модульная архитектура на открытых данных", d10t: "Умная Кызылорда будущего", d10b: "Предлагаем пилот с городом, университетами и инвесторами.",
     onb1h: "Исследуйте.", onb1: "Вращайте, приближайте и нажимайте на здания Кызылорды.", onb2h: "Стройте.", onb2: "Ставьте школы, жильё, парки или дороги и смотрите, как меняются показатели.", onb3h: "Презентуйте.", onb3: "Питч-режим — для 2- или 3-минутной демонстрации инвесторам.", onbData: "Каждое число помечено: проверенные, открытые картоданные, оценка, симуляция или демо-данные.", onbGo: "Начать"
   });
+
+  const X = {
+    en: { labName: "Urban Lab", ng_city: "City analysis", ng_plan: "Planning tools", ng_comm: "Community", ng_pres: "Presentation", uiTheme: "Light / dark theme", profileT: "Profile", scLabel: "Scenario", collapseKpi: "City indicators",
+      ovHead: "Test the city’s tomorrow today", ovText: "QALA 2050 is a digital city lab for modelling changes in Kyzylorda on the map.", act1: "Add a project to the map", act1d: "Place a school, housing, park or road and see its modelled effect.", act2: "Analyse a city problem", act2d: "Find areas far from schools, clinics, parks and bus stops.", act3: "Start Pitch Mode", act3d: "A guided 2- or 3-minute demonstration for the jury.",
+      snapTitle: "Today’s city snapshot", snapNote: "Values come from the QALA calculation engine with the current scenario. They are model results, not official statistics.", snapSchool: "School accessibility", snapGreen: "Green space per person", snapTraffic: "Traffic load", snapBudget: "Scenario budget used", moreOv: "Your progress",
+      sh_housing: "Housing", sh_education: "Education", sh_health: "Health", sh_green: "Green space & sport", sh_mobility: "Mobility", sh_energy: "Energy & water", sh_other: "Business & industry", shelf: "Project shelf", shelfHint: "Pick a project from the shelf, then click the map.",
+      ck_title: "Placement checklist", ck_budget: "Budget impact", ck_near: "Nearby services", ck_conf: "Possible conflicts", ck_impact: "Modelled impact", ck_params: "Project parameters", ck_share: "{p} of the scenario budget", ck_after: "Remaining after reserve: {x}", ck_life: "Lifecycle cost over {y} years: {x}", ck_more: "All modelled indicators",
+      tx_low: "Roads flow freely: little congestion even at peak hour.", tx_mod: "Moderate load: traffic may slow down on main streets at peak hour.", tx_high: "High load: congestion is modelled on several streets.", tx_crit: "Critical: on some streets demand exceeds capacity.", tx_worst: "Busiest link: {r} — demand is {p} of its capacity.", tx_level: "Level",
+      eco_chain1: "Trees & parks", eco_chain2: "Solar energy", eco_chain3: "Population", eco_res1: "green per person → heat risk", eco_res2: "renewable share → CO₂", eco_res3: "water → electricity demand",
+      bud_ws: "Budget worksheet", bud_avail: "Available budget", bud_costs: "Project costs ({n})", bud_reserve: "Reserve ({p}%)", bud_left: "Remaining balance", bud_yearly: "Operating cost per year", bud_life: "Lifecycle cost", 
+      board: "Neighbourhood noticeboard", browserOnly: "Demonstration: reports are stored only in this browser and are not sent anywhere.",
+      tl_title: "Development timeline", hypo: "Hypothetical scenario", dirTitle: "Planning direction",
+      bizCmp: "Location comparison", bizRow_pop: "Residents nearby", bizRow_road: "Road access", bizRow_bus: "Public transport", bizRow_inst: "Nearby institutions", bizRow_comp: "Competitors", bizRow_score: "Suitability score",
+      brief: "Briefing note", briefQ: "Question", briefSrc: "Source", srcRule: "Rule-based logic", srcClaude: "Claude",
+      arch: "Project archive", arch_rep: "Reports", arch_data: "Data files", arch_map: "Map images", arch_method: "Methodology", arch_dl: "Downloads", fileDl: "Download",
+      pitchTip: "← → steps · Space pause · Esc exit" },
+    kk: { labName: "Urban Lab", ng_city: "Қаланы талдау", ng_plan: "Жоспарлау құралдары", ng_comm: "Қоғамдастық", ng_pres: "Таныстырылым", uiTheme: "Ашық / қараңғы тақырып", profileT: "Профиль", scLabel: "Сценарий", collapseKpi: "Қала көрсеткіштері",
+      ovHead: "Қаланың ертеңін бүгін сынап көр", ovText: "QALA 2050 — Қызылордадағы өзгерістерді картада модельдеуге арналған цифрлық қала зертханасы.", act1: "Жобаны картаға қосу", act1d: "Мектеп, тұрғын үй, саябақ не жол қойып, модельдік әсерін көріңіз.", act2: "Қала мәселесін талдау", act2d: "Мектеп, емхана, саябақ пен аялдамадан алыс аудандарды табыңыз.", act3: "Питч режимін бастау", act3d: "Жюриге арналған 2 не 3 минуттық көрсетілім.",
+      snapTitle: "Қаланың бүгінгі суреті", snapNote: "Мәндер ағымдағы сценарий бойынша QALA есептеу қозғалтқышынан алынады. Бұл — модель нәтижесі, ресми статистика емес.", snapSchool: "Мектепке қолжетімділік", snapGreen: "Бір адамға жасыл аумақ", snapTraffic: "Көлік жүктемесі", snapBudget: "Сценарий бюджетінің жұмсалғаны", moreOv: "Сіздің жетістігіңіз",
+      sh_housing: "Тұрғын үй", sh_education: "Білім", sh_health: "Денсаулық", sh_green: "Жасыл аймақ және спорт", sh_mobility: "Көлік", sh_energy: "Энергия және су", sh_other: "Бизнес және өндіріс", shelf: "Жобалар сөресі", shelfHint: "Сөреден жобаны таңдап, картаны басыңыз.",
+      ck_title: "Орналастыру тізімі", ck_budget: "Бюджетке әсері", ck_near: "Жақын қызметтер", ck_conf: "Ықтимал қайшылықтар", ck_impact: "Модельдік әсер", ck_params: "Жоба параметрлері", ck_share: "сценарий бюджетінің {p}", ck_after: "Резервтен кейінгі қалдық: {x}", ck_life: "{y} жылдағы өмірлік цикл құны: {x}", ck_more: "Барлық модельдік көрсеткіштер",
+      tx_low: "Жолдар еркін: шың сағатында да кептеліс аз.", tx_mod: "Орташа жүктеме: шың сағатында негізгі көшелерде қозғалыс баяулауы мүмкін.", tx_high: "Жоғары жүктеме: бірнеше көшеде кептеліс модельденді.", tx_crit: "Сыни: кей көшелерде сұраныс өткізу қабілетінен асады.", tx_worst: "Ең жүктелген жол: {r} — сұраныс өткізу қабілетінің {p}.", tx_level: "Деңгей",
+      eco_chain1: "Ағаштар мен саябақтар", eco_chain2: "Күн энергиясы", eco_chain3: "Халық", eco_res1: "бір адамға жасыл аумақ → ыстық тәуекелі", eco_res2: "жаңартылатын үлес → CO₂", eco_res3: "су → электр сұранысы",
+      bud_ws: "Бюджет парағы", bud_avail: "Қолжетімді бюджет", bud_costs: "Жобалар құны ({n})", bud_reserve: "Резерв ({p}%)", bud_left: "Қалдық", bud_yearly: "Жылдық пайдалану шығыны", bud_life: "Өмірлік цикл құны",
+      board: "Аудан хабарландыру тақтасы", browserOnly: "Демонстрация: хабарламалар тек осы браузерде сақталады және ешқайда жіберілмейді.",
+      tl_title: "Даму уақыт сызығы", hypo: "Болжамды сценарий", dirTitle: "Жоспарлау бағыты",
+      bizCmp: "Орындарды салыстыру", bizRow_pop: "Жақын тұрғындар", bizRow_road: "Жолға жақындық", bizRow_bus: "Қоғамдық көлік", bizRow_inst: "Жақын мекемелер", bizRow_comp: "Бәсекелестер", bizRow_score: "Сәйкестік балы",
+      brief: "Брифинг жазбасы", briefQ: "Сұрақ", briefSrc: "Дереккөз", srcRule: "Ережелік логика", srcClaude: "Claude",
+      arch: "Жоба мұрағаты", arch_rep: "Есептер", arch_data: "Дерек файлдары", arch_map: "Карта суреттері", arch_method: "Әдістеме", arch_dl: "Жүктеулер", fileDl: "Жүктеу",
+      pitchTip: "← → қадамдар · Space кідірту · Esc шығу" },
+    ru: { labName: "Urban Lab", ng_city: "Анализ города", ng_plan: "Инструменты планирования", ng_comm: "Сообщество", ng_pres: "Презентация", uiTheme: "Светлая / тёмная тема", profileT: "Профиль", scLabel: "Сценарий", collapseKpi: "Показатели города",
+      ovHead: "Проверьте завтрашний город уже сегодня", ovText: "QALA 2050 — цифровая городская лаборатория для моделирования изменений в Кызылорде на карте.", act1: "Добавить проект на карту", act1d: "Поставьте школу, жильё, парк или дорогу и посмотрите модельный эффект.", act2: "Проанализировать проблему города", act2d: "Найдите районы далеко от школ, поликлиник, парков и остановок.", act3: "Начать питч-режим", act3d: "Демонстрация для жюри на 2 или 3 минуты.",
+      snapTitle: "Город сегодня", snapNote: "Значения берутся из расчётного движка QALA для текущего сценария. Это результаты модели, а не официальная статистика.", snapSchool: "Доступность школ", snapGreen: "Зелень на человека", snapTraffic: "Нагрузка трафика", snapBudget: "Использовано бюджета сценария", moreOv: "Ваш прогресс",
+      sh_housing: "Жильё", sh_education: "Образование", sh_health: "Здоровье", sh_green: "Зелёные зоны и спорт", sh_mobility: "Транспорт", sh_energy: "Энергия и вода", sh_other: "Бизнес и производство", shelf: "Полка проектов", shelfHint: "Выберите проект на полке и нажмите на карту.",
+      ck_title: "Чек-лист размещения", ck_budget: "Влияние на бюджет", ck_near: "Ближайшие службы", ck_conf: "Возможные конфликты", ck_impact: "Модельный эффект", ck_params: "Параметры проекта", ck_share: "{p} бюджета сценария", ck_after: "Остаток после резерва: {x}", ck_life: "Стоимость жизненного цикла за {y} лет: {x}", ck_more: "Все модельные показатели",
+      tx_low: "Дороги свободны: даже в час пик заторов мало.", tx_mod: "Средняя нагрузка: в час пик на главных улицах движение может замедляться.", tx_high: "Высокая нагрузка: на нескольких улицах смоделированы заторы.", tx_crit: "Критично: на некоторых улицах спрос превышает пропускную способность.", tx_worst: "Самый загруженный участок: {r} — спрос составляет {p} пропускной способности.", tx_level: "Уровень",
+      eco_chain1: "Деревья и парки", eco_chain2: "Солнечная энергия", eco_chain3: "Население", eco_res1: "зелень на человека → тепловой риск", eco_res2: "доля ВИЭ → CO₂", eco_res3: "вода → спрос на электроэнергию",
+      bud_ws: "Бюджетная ведомость", bud_avail: "Доступный бюджет", bud_costs: "Стоимость проектов ({n})", bud_reserve: "Резерв ({p}%)", bud_left: "Остаток", bud_yearly: "Эксплуатация в год", bud_life: "Стоимость жизненного цикла",
+      board: "Доска объявлений района", browserOnly: "Демонстрация: обращения хранятся только в этом браузере и никуда не отправляются.",
+      tl_title: "Шкала развития", hypo: "Гипотетический сценарий", dirTitle: "Направление планирования",
+      bizCmp: "Сравнение локаций", bizRow_pop: "Жители рядом", bizRow_road: "Доступ к дороге", bizRow_bus: "Общественный транспорт", bizRow_inst: "Учреждения рядом", bizRow_comp: "Конкуренты", bizRow_score: "Балл пригодности",
+      brief: "Справка", briefQ: "Вопрос", briefSrc: "Источник", srcRule: "Логика на правилах", srcClaude: "Claude",
+      arch: "Архив проекта", arch_rep: "Отчёты", arch_data: "Файлы данных", arch_map: "Изображения карты", arch_method: "Методология", arch_dl: "Загрузки", fileDl: "Скачать",
+      pitchTip: "← → шаги · Пробел пауза · Esc выход" }
+  };
+  Object.assign(en, X.en); Object.assign(kk, X.kk); Object.assign(ru, X.ru);
+  // Status labels — plain-language, sentence case
+  Object.assign(en, { st_VERIFIED: "Official data", st_OPEN: "Real open data", st_EST: "Model estimate · assumption", st_SIM: "Model calculation", st_MODEL: "Model calculation", st_DEMO: "Demonstration data", st_UNAVAILABLE: "No data", st_RULE: "Rule-based logic", st_PROPOSED: "Hypothetical project", ruleBased: "Rule-based logic", claudeEngine: "Claude" });
+  Object.assign(kk, { st_VERIFIED: "Ресми дерек", st_OPEN: "Нақты ашық дерек", st_EST: "Модель есебі · болжам", st_SIM: "Модель есебі", st_MODEL: "Модель есебі", st_DEMO: "Демонстрациялық дерек", st_UNAVAILABLE: "Дерек жоқ", st_RULE: "Ережелік логика", st_PROPOSED: "Болжамды жоба", ruleBased: "Ережелік логика", claudeEngine: "Claude" });
+  Object.assign(ru, { st_VERIFIED: "Официальные данные", st_OPEN: "Реальные открытые данные", st_EST: "Расчёт модели · допущение", st_SIM: "Расчёт модели", st_MODEL: "Расчёт модели", st_DEMO: "Демонстрационные данные", st_UNAVAILABLE: "Нет данных", st_RULE: "Логика на правилах", st_PROPOSED: "Гипотетический проект", ruleBased: "Логика на правилах", claudeEngine: "Claude" });
+  Object.assign(kk, { tagline: "Қызылорда цифрлық қала зертханасы", nav_present: "Презентация", nav_mayor: "AI Әкім", nav_reports: "Мұрағат" });
+  Object.assign(ru, { tagline: "Цифровая городская лаборатория Кызылорды", nav_reports: "Архив" });
+  Object.assign(en, { tagline: "Kyzylorda digital city lab", nav_reports: "Archive" });
   G.QI18N = { kk, ru, en };
 })(typeof window !== 'undefined' ? window : globalThis);
 
@@ -605,13 +828,15 @@ body.pitching{grid-template-columns:0 minmax(0,1fr) 0}body.pitching #toasts{bott
     future: s('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
     infra: s('<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8 7.5l3 8M16 7.5l-3 8M8.5 6h7"/>'),
     biz: s('<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>'),
-    mayor: s('<path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4 7.2 17l.9-5.4L4.2 7.7l5.4-.8z"/><path d="M8 21h8"/>'),
+    mayor: s('<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18"/><path d="M9.5 8h6M9.5 12h6M9.5 16h3.5"/><path d="M4 7h2M4 12h2M4 17h2"/>'),
     compare: s('<rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/>'),
-    reports: s('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/>'),
+    reports: s('<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/>'),
+    analyse: s('<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/><path d="M8 11h6M11 8v6"/>'),
     model: s('<path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'),
     present: s('<rect x="2" y="3" width="20" height="13" rx="2"/><path d="M8 21l4-5 4 5"/><path d="M9 8l5 2.5L9 13z"/>'),
     settings: s('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
-    logo: '<svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><defs><linearGradient id="qg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#10b981"/></linearGradient></defs><rect x="3" y="3" width="42" height="42" rx="11" fill="#0b1a30" stroke="url(#qg)" stroke-width="2"/><path d="M11 34h26" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round"/><rect x="13" y="20" width="5" height="14" rx="1" fill="#22d3ee"/><rect x="20" y="13" width="6" height="21" rx="1" fill="#67e8f9"/><rect x="28" y="23" width="5" height="11" rx="1" fill="#10b981"/><path d="M10 39c4-2.2 8-2.2 12 0s8 2.2 12 0 4-1 4-1" stroke="#38bdf8" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>'
+    logo: '<svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><rect x="3.5" y="4" width="41" height="40.5" rx="7" fill="var(--paper2,#f4efe6)" stroke="var(--ink,#23272f)" stroke-width="1.6"/><path d="M9.5 16.2c9.6-.6 19.3.3 29.2-.4M9.2 25.4c9.9.4 19.6-.5 29.6.2M9.8 34.3c9.4-.3 19 .4 28.8-.3" stroke="var(--ink,#23272f)" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".55"/><path d="M17.1 9.6c-.5 9.6.4 19.4-.2 29.2M26.4 9.3c.4 9.9-.5 19.6.1 29.6M35.2 9.8c-.3 9.4.5 19-.2 28.8" stroke="var(--ink,#23272f)" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".55"/><rect x="18.6" y="17.6" width="6.4" height="6.6" rx="1" fill="var(--cobalt,#2244a8)"/><rect x="27.8" y="26.8" width="6" height="6" rx="1" fill="var(--terra,#c8643b)"/><path d="M7 40.5c6-3 11-1.4 16.4-2.6 5.6-1.3 10.4-3.9 18.6-1.8" stroke="var(--cobalt,#2244a8)" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>'
+
   };
 })(window);
 
@@ -660,27 +885,27 @@ body.pitching{grid-template-columns:0 minmax(0,1fr) 0}body.pitching #toasts{bott
   // kind: bld = building (GFA = w*l*floors), area = flat site (area = w*l), line = linear (length l, width w), unit = per item
   // cap(p): default capacity from geometry. costM2: KZT per m² GFA / site m² / unit (hypothetical, NOT procurement prices)
   const CATALOG = {
-    school:       { grp: 'edu',  kind: 'bld',  w: 80,  l: 60,  floors: 3,  color: '#38bdf8', costM2: 450000, opex: 0.045, life: 50, capU: 'seats',    cap: g => g / 12,  jobs: g => g / 140, svc: 'school' },
-    kindergarten: { grp: 'edu',  kind: 'bld',  w: 50,  l: 40,  floors: 2,  color: '#7dd3fc', costM2: 420000, opex: 0.05,  life: 50, capU: 'places',   cap: g => g / 14,  jobs: g => g / 90,  svc: 'kinder' },
-    university:   { grp: 'edu',  kind: 'bld',  w: 110, l: 70,  floors: 5,  color: '#0ea5e9', costM2: 480000, opex: 0.04,  life: 60, capU: 'students', cap: g => g / 15,  jobs: g => g / 110, svc: 'university' },
-    hospital:     { grp: 'hlth', kind: 'bld',  w: 120, l: 60,  floors: 6,  color: '#f87171', costM2: 650000, opex: 0.08,  life: 50, capU: 'beds',     cap: g => g / 100, jobs: g => g / 40,  svc: 'hospital' },
-    clinic:       { grp: 'hlth', kind: 'bld',  w: 40,  l: 30,  floors: 3,  color: '#fca5a5', costM2: 520000, opex: 0.07,  life: 50, capU: 'visits',   cap: g => g / 7,   jobs: g => g / 60,  svc: 'clinic' },
-    residential:  { grp: 'res',  kind: 'bld',  w: 80,  l: 60,  floors: 12, color: '#c4b5fd', costM2: 330000, opex: 0.012, life: 60, capU: 'units',    cap: g => g * 0.78 / 65, jobs: g => g / 2500, res: true },
-    apartment:    { grp: 'res',  kind: 'bld',  w: 60,  l: 16,  floors: 9,  color: '#a78bfa', costM2: 320000, opex: 0.012, life: 60, capU: 'units',    cap: g => g * 0.78 / 65, jobs: g => g / 3000, res: true },
-    shopping:     { grp: 'biz',  kind: 'bld',  w: 120, l: 90,  floors: 3,  color: '#fbbf24', costM2: 380000, opex: 0.03,  life: 40, capU: 'jobs',     cap: g => g / 30,  jobs: g => g / 30,  attract: 0.012 },
-    business:     { grp: 'biz',  kind: 'bld',  w: 50,  l: 40,  floors: 14, color: '#f59e0b', costM2: 400000, opex: 0.03,  life: 50, capU: 'jobs',     cap: g => g / 18,  jobs: g => g / 18 },
-    hotel:        { grp: 'biz',  kind: 'bld',  w: 50,  l: 30,  floors: 10, color: '#fcd34d', costM2: 420000, opex: 0.05,  life: 40, capU: 'rooms',    cap: g => g / 45,  jobs: g => g / 120 },
-    stadium:      { grp: 'rec',  kind: 'area', w: 180, l: 130, floors: 1,  h: 25, color: '#34d399', costM2: 350000, opex: 0.02, life: 50, capU: 'seats', cap: a => a * 0.64, jobs: a => a / 900, svc: 'sport', attract: 0.004 },
-    sports:       { grp: 'rec',  kind: 'bld',  w: 70,  l: 50,  floors: 2,  color: '#6ee7b7', costM2: 380000, opex: 0.04,  life: 40, capU: 'visits',   cap: g => g / 10,  jobs: g => g / 250, svc: 'sport' },
-    park:         { grp: 'green', kind: 'area', w: 220, l: 160, floors: 0, h: 2, color: '#22c55e', costM2: 18000, opex: 0.04, life: 40, capU: 'm2', cap: a => a, jobs: a => a / 15000, svc: 'park', green: 1 },
-    playground:   { grp: 'green', kind: 'area', w: 40,  l: 30,  floors: 0, h: 2, color: '#86efac', costM2: 25000, opex: 0.05, life: 15, capU: 'm2', cap: a => a, jobs: () => 0, svc: 'park', green: 0.5 },
-    factory:      { grp: 'ind',  kind: 'bld',  w: 140, l: 90,  floors: 1,  h: 14, color: '#94a3b8', costM2: 280000, opex: 0.03, life: 40, capU: 'jobs', cap: g => g / 80, jobs: g => g / 80 },
-    road:         { grp: 'mob',  kind: 'line', w: 14,  l: 1200, floors: 0, h: 0.6, color: '#e2e8f0', costM2: 60000, opex: 0.02, life: 25, capU: 'veh/h', cap: (a, p) => Math.max(1, Math.floor(p.w / 3.5)) * 900, jobs: () => 0, road: true },
-    bridge:       { grp: 'mob',  kind: 'line', w: 18,  l: 450, floors: 0, h: 6, color: '#cbd5e1', costM2: 900000, opex: 0.015, life: 80, capU: 'veh/h', cap: (a, p) => Math.max(1, Math.floor(p.w / 3.5)) * 900, jobs: () => 0, road: true, bridge: true },
-    bus_stop:     { grp: 'mob',  kind: 'unit', w: 12,  l: 4,   floors: 0, h: 3, color: '#22d3ee', costM2: 6000000, opex: 0.06, life: 15, capU: 'stops', cap: () => 1, jobs: () => 0, svc: 'transit' },
-    parking:      { grp: 'mob',  kind: 'area', w: 80,  l: 50,  floors: 0, h: 0.5, color: '#64748b', costM2: 45000, opex: 0.02, life: 25, capU: 'spaces', cap: a => a / 25, jobs: () => 0, parking: true },
-    solar:        { grp: 'eng',  kind: 'area', w: 220, l: 150, floors: 0, h: 2.5, color: '#facc15', costM2: 18000, opex: 0.015, life: 25, capU: 'MW', cap: a => a * 0.055 / 1000, jobs: a => a / 20000, solar: true },
-    water:        { grp: 'eng',  kind: 'area', w: 90,  l: 60,  floors: 0, h: 8, color: '#60a5fa', costM2: 250000, opex: 0.04, life: 50, capU: 'm3/day', cap: a => a * 2, jobs: a => a / 600, water: true }
+    school:       { grp: 'edu',  kind: 'bld',  w: 80,  l: 60,  floors: 3,  color: '#2f5bd3', costM2: 450000, opex: 0.045, life: 50, capU: 'seats',    cap: g => g / 12,  jobs: g => g / 140, svc: 'school' },
+    kindergarten: { grp: 'edu',  kind: 'bld',  w: 50,  l: 40,  floors: 2,  color: '#6f8fe0', costM2: 420000, opex: 0.05,  life: 50, capU: 'places',   cap: g => g / 14,  jobs: g => g / 90,  svc: 'kinder' },
+    university:   { grp: 'edu',  kind: 'bld',  w: 110, l: 70,  floors: 5,  color: '#1e3a8a', costM2: 480000, opex: 0.04,  life: 60, capU: 'students', cap: g => g / 15,  jobs: g => g / 110, svc: 'university' },
+    hospital:     { grp: 'hlth', kind: 'bld',  w: 120, l: 60,  floors: 6,  color: '#c2412d', costM2: 650000, opex: 0.08,  life: 50, capU: 'beds',     cap: g => g / 100, jobs: g => g / 40,  svc: 'hospital' },
+    clinic:       { grp: 'hlth', kind: 'bld',  w: 40,  l: 30,  floors: 3,  color: '#e07a5f', costM2: 520000, opex: 0.07,  life: 50, capU: 'visits',   cap: g => g / 7,   jobs: g => g / 60,  svc: 'clinic' },
+    residential:  { grp: 'res',  kind: 'bld',  w: 80,  l: 60,  floors: 12, color: '#c8794a', costM2: 330000, opex: 0.012, life: 60, capU: 'units',    cap: g => g * 0.78 / 65, jobs: g => g / 2500, res: true },
+    apartment:    { grp: 'res',  kind: 'bld',  w: 60,  l: 16,  floors: 9,  color: '#d99a6c', costM2: 320000, opex: 0.012, life: 60, capU: 'units',    cap: g => g * 0.78 / 65, jobs: g => g / 3000, res: true },
+    shopping:     { grp: 'biz',  kind: 'bld',  w: 120, l: 90,  floors: 3,  color: '#b8860b', costM2: 380000, opex: 0.03,  life: 40, capU: 'jobs',     cap: g => g / 30,  jobs: g => g / 30,  attract: 0.012 },
+    business:     { grp: 'biz',  kind: 'bld',  w: 50,  l: 40,  floors: 14, color: '#8a6d3b', costM2: 400000, opex: 0.03,  life: 50, capU: 'jobs',     cap: g => g / 18,  jobs: g => g / 18 },
+    hotel:        { grp: 'biz',  kind: 'bld',  w: 50,  l: 30,  floors: 10, color: '#c9a227', costM2: 420000, opex: 0.05,  life: 40, capU: 'rooms',    cap: g => g / 45,  jobs: g => g / 120 },
+    stadium:      { grp: 'rec',  kind: 'area', w: 180, l: 130, floors: 1,  h: 25, color: '#4f7d4a', costM2: 350000, opex: 0.02, life: 50, capU: 'seats', cap: a => a * 0.64, jobs: a => a / 900, svc: 'sport', attract: 0.004 },
+    sports:       { grp: 'rec',  kind: 'bld',  w: 70,  l: 50,  floors: 2,  color: '#7aa874', costM2: 380000, opex: 0.04,  life: 40, capU: 'visits',   cap: g => g / 10,  jobs: g => g / 250, svc: 'sport' },
+    park:         { grp: 'green', kind: 'area', w: 220, l: 160, floors: 0, h: 2, color: '#6b8f4e', costM2: 18000, opex: 0.04, life: 40, capU: 'm2', cap: a => a, jobs: a => a / 15000, svc: 'park', green: 1 },
+    playground:   { grp: 'green', kind: 'area', w: 40,  l: 30,  floors: 0, h: 2, color: '#93b071', costM2: 25000, opex: 0.05, life: 15, capU: 'm2', cap: a => a, jobs: () => 0, svc: 'park', green: 0.5 },
+    factory:      { grp: 'ind',  kind: 'bld',  w: 140, l: 90,  floors: 1,  h: 14, color: '#6c6c6c', costM2: 280000, opex: 0.03, life: 40, capU: 'jobs', cap: g => g / 80, jobs: g => g / 80 },
+    road:         { grp: 'mob',  kind: 'line', w: 14,  l: 1200, floors: 0, h: 0.6, color: '#5c5f66', costM2: 60000, opex: 0.02, life: 25, capU: 'veh/h', cap: (a, p) => Math.max(1, Math.floor(p.w / 3.5)) * 900, jobs: () => 0, road: true },
+    bridge:       { grp: 'mob',  kind: 'line', w: 18,  l: 450, floors: 0, h: 6, color: '#3f444c', costM2: 900000, opex: 0.015, life: 80, capU: 'veh/h', cap: (a, p) => Math.max(1, Math.floor(p.w / 3.5)) * 900, jobs: () => 0, road: true, bridge: true },
+    bus_stop:     { grp: 'mob',  kind: 'unit', w: 12,  l: 4,   floors: 0, h: 3, color: '#1d4ed8', costM2: 6000000, opex: 0.06, life: 15, capU: 'stops', cap: () => 1, jobs: () => 0, svc: 'transit' },
+    parking:      { grp: 'mob',  kind: 'area', w: 80,  l: 50,  floors: 0, h: 0.5, color: '#8d99ae', costM2: 45000, opex: 0.02, life: 25, capU: 'spaces', cap: a => a / 25, jobs: () => 0, parking: true },
+    solar:        { grp: 'eng',  kind: 'area', w: 220, l: 150, floors: 0, h: 2.5, color: '#d4a017', costM2: 18000, opex: 0.015, life: 25, capU: 'MW', cap: a => a * 0.055 / 1000, jobs: a => a / 20000, solar: true },
+    water:        { grp: 'eng',  kind: 'area', w: 90,  l: 60,  floors: 0, h: 8, color: '#3a7ca5', costM2: 250000, opex: 0.04, life: 50, capU: 'm3/day', cap: a => a * 2, jobs: a => a / 600, water: true }
   };
   const TYPES = Object.keys(CATALOG);
 
@@ -785,7 +1010,7 @@ body.pitching{grid-template-columns:0 minmax(0,1fr) 0}body.pitching #toasts{bott
   }
   function lineCoords(p) { const r = (p.rot || 0) * Math.PI / 180, L = p.d.l / 2; return [toLL(p.d.xy[0] - L * Math.sin(r), p.d.xy[1] - L * Math.cos(r)), toLL(p.d.xy[0] + L * Math.sin(r), p.d.xy[1] + L * Math.cos(r))]; }
   const congClass = vc => vc >= 1 ? 'critical' : vc >= 0.8 ? 'high' : vc >= 0.6 ? 'moderate' : 'low';
-  const congColor = vc => vc >= 1 ? '#ef4444' : vc >= 0.8 ? '#f97316' : vc >= 0.6 ? '#eab308' : '#22c55e';
+  const congColor = vc => vc >= 1 ? '#b02a37' : vc >= 0.8 ? '#e8590c' : vc >= 0.6 ? '#e0a800' : '#2b8a3e';   // colour-blind-checked ramp; always paired with a text label
 
   /* ---------- Main computation: one shared scenario state → all metrics ---------- */
   function compute(S, D) {
@@ -1281,8 +1506,8 @@ way["waterway"="river"](${b});out geom qt;`;
   'use strict';
   const E = G.QEngine, RAD = Math.PI / 180, MPP0 = 156543.03 * Math.cos(E.LAT0 * RAD);
   const THEMES = {
-    night: { bg: '#070f1d', grid: 'rgba(80,120,180,0.06)', water: '#0f3357', waterEdge: '#1d5a8c', park: '#0f3b2c', road: { trunk: '#3b5378', primary: '#33496b', secondary: '#2a3d5c', tertiary: '#233450' }, wallA: [36, 52, 80], roof: [92, 122, 170], text: '#c9d6ea', halo: '#070f1d' },
-    day:   { bg: '#eef2f6', grid: 'rgba(30,60,100,0.05)', water: '#a9cfe9', waterEdge: '#7fb2d8', park: '#cfe8c9', road: { trunk: '#f6c66f', primary: '#ffffff', secondary: '#fbfbfb', tertiary: '#f4f4f4' }, wallA: [168, 176, 190], roof: [214, 219, 228], text: '#1d2a3a', halo: '#ffffff' }
+    night: { casing: '#1b2a44', bg: '#070f1d', grid: 'rgba(80,120,180,0.06)', water: '#0f3357', waterEdge: '#1d5a8c', park: '#0f3b2c', road: { trunk: '#3b5378', primary: '#33496b', secondary: '#2a3d5c', tertiary: '#233450' }, wallA: [36, 52, 80], roof: [92, 122, 170], text: '#c9d6ea', halo: '#070f1d' },
+    day:   { bg: '#ece6da', grid: 'rgba(34,68,168,0.07)', water: '#b7cbdd', waterEdge: '#7f9fbf', park: '#cfd8bd', road: { trunk: '#f7f3ea', primary: '#fbf8f1', secondary: '#f6f1e7', tertiary: '#f1ebdf' }, casing: '#c9bfae', wallA: [176, 168, 154], roof: [222, 214, 200], text: '#23272f', halo: '#f4efe6' }
   };
   const BCOL = { house: [0.92, 0.9, 0.85], apartments: [1, 1, 1], commercial: [1.05, 0.98, 0.85], public: [0.9, 1.0, 1.1] };
 
@@ -1398,6 +1623,10 @@ way["waterway"="river"](${b});out geom qt;`;
       // roads
       const traf = this.visible('traffic') && (this.data.traffic || []).length;
       const wd = { trunk: 22, primary: 18, secondary: 13, tertiary: 10 };
+      if (T.casing) for (const r of this.D.roads) {
+        c.strokeStyle = T.casing; c.lineWidth = Math.max(1.6, (wd[r.cls] || 10) * s + 2); c.lineCap = 'round';
+        c.beginPath(); r.xy.forEach((q, i) => { const p = this.proj(q[0], q[1]); i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.stroke();
+      }
       for (const r of this.D.roads) {
         c.strokeStyle = T.road[r.cls] || T.road.tertiary; c.lineWidth = Math.max(1, (wd[r.cls] || 10) * s); c.lineCap = 'round';
         c.beginPath(); r.xy.forEach((q, i) => { const p = this.proj(q[0], q[1]); i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.stroke();
@@ -1439,20 +1668,20 @@ way["waterway"="river"](${b});out geom qt;`;
         }
       }
       c.fillStyle = rgb(col, 1); c.beginPath(); this._poly(c, ring, flat ? 0 : top); c.fill();
-      if (it.glow || it.outline) { c.strokeStyle = it.outline || 'rgba(255,255,255,0.55)'; c.lineWidth = it.outline ? 2.2 : 0.8; c.stroke(); }
+      if (it.glow || it.outline) { c.strokeStyle = it.outline || 'rgba(35,39,47,0.45)'; c.lineWidth = it.outline ? 2.2 : 0.8; c.stroke(); }
       c.globalAlpha = 1;
     }
     _ccw(r) { if (r._ccw !== undefined) return r._ccw; let a = 0; for (let i = 0; i < r.length - 1; i++) a += (r[i + 1][0] - r[i][0]) * (r[i + 1][1] + r[i][1]); return (r._ccw = a < 0); }
     _drawDynamic(c) {
       const T = this.th, s = this.s();
-      const pts = (id, def) => { if (!this.visible(id)) return; for (const f of this.data[id] || []) if (f.t === 'pt') { const p = this.proj(f.xy[0], f.xy[1], f.P.z || 0); if (p[0] < -20 || p[0] > this.W + 20 || p[1] < -20 || p[1] > this.H + 20) continue; const r = f.P.r || def; c.fillStyle = f.P.color || '#22d3ee'; c.strokeStyle = f.P.stroke || 'rgba(7,15,29,0.9)'; c.lineWidth = 1.5; c.beginPath(); c.arc(p[0], p[1], r, 0, 7); c.fill(); if (r > 2.5) c.stroke(); if (f.P.ring) { c.strokeStyle = f.P.ring; c.lineWidth = 2; c.beginPath(); c.arc(p[0], p[1], r + 4, 0, 7); c.stroke(); } } };
+      const pts = (id, def) => { if (!this.visible(id)) return; for (const f of this.data[id] || []) if (f.t === 'pt') { const p = this.proj(f.xy[0], f.xy[1], f.P.z || 0); if (p[0] < -20 || p[0] > this.W + 20 || p[1] < -20 || p[1] > this.H + 20) continue; const r = f.P.r || def; c.fillStyle = f.P.color || '#2244a8'; c.strokeStyle = f.P.stroke || T.halo; c.lineWidth = 1.5; c.beginPath(); c.arc(p[0], p[1], r, 0, 7); c.fill(); if (r > 2.5) c.stroke(); if (f.P.ring) { c.strokeStyle = f.P.ring; c.lineWidth = 2; c.beginPath(); c.arc(p[0], p[1], r + 4, 0, 7); c.stroke(); } } };
       pts('trees', 2.2); pts('fac', 4.5); pts('citizen', 6); pts('vehicles', 2.4);
       if (this.visible('measure')) for (const f of this.data.measure || []) {
-        if (f.t === 'ln') { c.strokeStyle = '#22d3ee'; c.lineWidth = 2; c.setLineDash([6, 4]); c.beginPath(); f.xy.forEach((q, i) => { const p = this.proj(q[0], q[1]); i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.stroke(); c.setLineDash([]); }
-        else { const p = this.proj(f.xy[0], f.xy[1]); c.fillStyle = '#fff'; c.beginPath(); c.arc(p[0], p[1], 4, 0, 7); c.fill(); }
+        if (f.t === 'ln') { c.strokeStyle = '#c8643b'; c.lineWidth = 2; c.setLineDash([6, 4]); c.beginPath(); f.xy.forEach((q, i) => { const p = this.proj(q[0], q[1]); i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.stroke(); c.setLineDash([]); }
+        else { const p = this.proj(f.xy[0], f.xy[1]); c.fillStyle = '#c8643b'; c.beginPath(); c.arc(p[0], p[1], 4, 0, 7); c.fill(); }
       }
       // labels
-      c.font = '600 12px Inter, system-ui, sans-serif'; c.textAlign = 'center'; c.lineJoin = 'round';
+      c.font = '600 12px "Golos Text", Inter, system-ui, sans-serif'; c.textAlign = 'center'; c.lineJoin = 'round';
       const lbl = (id, minZ) => { if (!this.visible(id) || this.v.zoom < minZ) return; for (const f of this.data[id] || []) if (f.t === 'pt' && f.P.label) { const p = this.proj(f.xy[0], f.xy[1], f.P.z || 0); if (p[0] < 0 || p[0] > this.W || p[1] < 0 || p[1] > this.H) continue; c.strokeStyle = T.halo; c.lineWidth = 3.5; c.strokeText(f.P.label, p[0], p[1] - 10); c.fillStyle = f.P.lc || T.text; c.fillText(f.P.label, p[0], p[1] - 10); } };
       pts('landmarks', 6); lbl('landmarks', 9); lbl('fac', 15.2); lbl('proposals', 14);
       void s;
@@ -1591,12 +1820,12 @@ way["waterway"="river"](${b});out geom qt;`;
       });
       const ext = (id, op) => m.addLayer({ id: 'q-' + id, type: 'fill-extrusion', source: id, paint: { 'fill-extrusion-color': ['get', 'color'], 'fill-extrusion-height': ['get', 'height'], 'fill-extrusion-base': ['coalesce', ['get', 'base'], 0], 'fill-extrusion-opacity': op } });
       ext('future', 0.7); ext('proposals', 0.95); ext('sel', 0.6);
-      const circ = (id, r, extra) => m.addLayer(Object.assign({ id: 'q-' + id, type: 'circle', source: id, paint: { 'circle-color': ['coalesce', ['get', 'color'], '#22d3ee'], 'circle-radius': ['coalesce', ['get', 'r'], r], 'circle-stroke-color': ['coalesce', ['get', 'stroke'], '#081322'], 'circle-stroke-width': 1.5 } }, extra || {}));
+      const circ = (id, r, extra) => m.addLayer(Object.assign({ id: 'q-' + id, type: 'circle', source: id, paint: { 'circle-color': ['coalesce', ['get', 'color'], '#22d3ee'], 'circle-radius': ['coalesce', ['get', 'r'], r], 'circle-stroke-color': ['coalesce', ['get', 'stroke'], '#ffffff'], 'circle-stroke-width': 1.5 } }, extra || {}));
       circ('trees', 2.5); circ('fac', 5); circ('citizen', 7); circ('landmarks', 6); circ('vehicles', 2.6);
-      m.addLayer({ id: 'q-measure-l', type: 'line', source: 'measure', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-color': '#22d3ee', 'line-width': 2.5, 'line-dasharray': [2, 1.5] } });
-      m.addLayer({ id: 'q-measure-p', type: 'circle', source: 'measure', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-color': '#fff', 'circle-radius': 4 } });
+      m.addLayer({ id: 'q-measure-l', type: 'line', source: 'measure', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-color': '#c8643b', 'line-width': 2.5, 'line-dasharray': [2, 1.5] } });
+      m.addLayer({ id: 'q-measure-p', type: 'circle', source: 'measure', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-color': '#c8643b', 'circle-radius': 4 } });
       const font = ((st.layers.find(l => l.layout && l.layout['text-font']) || {}).layout || {})['text-font'] || ['Noto Sans Regular'];
-      const lbl = (id, minz) => m.addLayer({ id: 'q-' + id + '-lbl', type: 'symbol', source: id, minzoom: minz, layout: { 'text-field': ['coalesce', ['get', 'label'], ''], 'text-font': font, 'text-size': 12, 'text-offset': [0, -1.3], 'text-anchor': 'bottom', 'text-optional': true }, paint: { 'text-color': '#e6eefb', 'text-halo-color': '#081322', 'text-halo-width': 1.6 } });
+      const lbl = (id, minz) => m.addLayer({ id: 'q-' + id + '-lbl', type: 'symbol', source: id, minzoom: minz, layout: { 'text-field': ['coalesce', ['get', 'label'], ''], 'text-font': font, 'text-size': 12, 'text-offset': [0, -1.3], 'text-anchor': 'bottom', 'text-optional': true }, paint: { 'text-color': '#23272f', 'text-halo-color': '#f4efe6', 'text-halo-width': 1.6 } });
       lbl('landmarks', 9); lbl('fac', 15); lbl('proposals', 14);
       this.ids = { heat: ['q-heat'], flood: ['q-flood'], traffic: ['q-traffic'], gaps: ['q-gaps'], buildings: ['q-3d'], future: ['q-future'], proposals: ['q-proposals', 'q-proposals-lbl'], sel: ['q-sel'], trees: ['q-trees'], fac: ['q-fac', 'q-fac-lbl'], citizen: ['q-citizen'], landmarks: ['q-landmarks', 'q-landmarks-lbl'], measure: ['q-measure-l', 'q-measure-p'], vehicles: ['q-vehicles'] };
       // remember original paint for day/night switching
@@ -1625,7 +1854,7 @@ way["waterway"="river"](${b});out geom qt;`;
       try {
         this.map.setPaintProperty('q-3d', 'fill-extrusion-color', t === 'night'
           ? ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 5], 0, '#2c3e5f', 12, '#3d5683', 30, '#5574a8', 60, '#7b97c9']
-          : ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 5], 0, '#d9dde4', 20, '#c3cad6', 60, '#a9b4c6']);
+          : ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 5], 0, '#ddd5c7', 20, '#cbc1b0', 60, '#b3a893']);
       } catch (e) { }
     }
     setSatellite(url) {
@@ -1715,15 +1944,15 @@ way["waterway"="river"](${b});out geom qt;`;
   Q.locale = () => ({ kk: 'kk-KZ', ru: 'ru-RU', en: 'en-GB' }[Q.S.lang] || 'kk-KZ');
   Q.n = (x, d) => Number.isFinite(x) ? x.toLocaleString(Q.locale(), { maximumFractionDigits: d === undefined ? 0 : d, minimumFractionDigits: d && d > 0 ? Math.min(d, 1) : 0 }) : '—';
   Q.pct = (x, d) => Number.isFinite(x) ? Q.n(x * 100, d === undefined ? 0 : d) + '%' : '—';
-  Q.kzt = x => { if (!Number.isFinite(x)) return '—'; const a = Math.abs(x); return a >= 1e9 ? Q.n(x / 1e9, 2) + ' ' + t('bn') : a >= 1e6 ? Q.n(x / 1e6, 1) + ' ' + t('mn') : Q.n(x) + ' ₸'; };
+  Q.kzt = x => { if (!Number.isFinite(x)) return '—'; const a = Math.abs(x); return (a >= 1e9 ? Q.n(x / 1e9, 2) + ' ' + t('bn') : a >= 1e6 ? Q.n(x / 1e6, 1) + ' ' + t('mn') : Q.n(x) + ' ₸').replace(/ /g, '\u00a0'); };
   Q.m = x => !Number.isFinite(x) ? '—' : x >= 1000 ? Q.n(x / 1000, 2) + ' ' + t('km') : Q.n(x) + ' ' + t('m');
-  Q.badge = s => `<span class="st st-${esc(s)}" title="${esc(t('st_' + s + '_d'))}">${esc(t('st_' + s))}</span>`;
+  Q.badge = s => `<span class="st st-${esc(s)}" title="${esc(t('st_' + s + '_d'))}"><i></i>${esc(t('st_' + s))}</span>`;
   Q.typeName = k => t('ty_' + k);
 
   /* ---------------- state & persistence ---------------- */
   const KEY = 'qala.state.v1';
   const DEF = {
-    lang: 'kk', theme: 'night', view: 'overview', proposals: [], trees: [], closures: [], trafficMode: 'morning', transitBoost: false,
+    lang: 'kk', theme: 'day', uiTheme: 'light', scName: '', view: 'overview', proposals: [], trees: [], closures: [], trafficMode: 'morning', transitBoost: false,
     budget: 10e9, unitCosts: {}, assumptions: {}, futureYear: 2025, strategy: 'balanced', floodLevel: 2, disaster: 'flood', heatC: 4, drought: 25, failCat: 'clinic', failShare: 0.3,
     citizen: [], profile: { name: '', ach: {}, xp: 0 }, history: [], saved: {}, presenter: 'Ернұр Батырхан Төлеухан',
     layers: { buildings: true, proposals: true, fac: true, traffic: false, heat: false, flood: false, citizen: true, future: true, gaps: false, trees: true, landmarks: true },
@@ -1732,6 +1961,7 @@ way["waterway"="river"](${b});out geom qt;`;
   };
   function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { const m = Object.assign(JSON.parse(JSON.stringify(DEF)), s); m.layers = Object.assign({}, DEF.layers, s.layers); m.facFilter = Object.assign({}, DEF.facFilter, s.facFilter); return m; } } catch (e) { } return JSON.parse(JSON.stringify(DEF)); }
   Q.S = load();
+  if (!Q.S.uiTheme) { Q.S.uiTheme = 'light'; Q.S.theme = 'day'; }
   if (Q.S.view === 'present') Q.S.view = 'overview';
   let saveT = 0;
   Q.save = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { const c = Object.assign({}, Q.S); localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) { Q.notify(t('nStorage'), 'warn'); } }, 250); };
@@ -1786,7 +2016,7 @@ way["waterway"="river"](${b});out geom qt;`;
   Q.weekly = () => { const d = new Date(), w = Math.floor((d - new Date(d.getFullYear(), 0, 1)) / 6048e5); return Q.MISSIONS[w % Q.MISSIONS.length]; };
 
   /* ---------------- facilities & categories ---------------- */
-  Q.FCOL = { school: '#38bdf8', kinder: '#7dd3fc', university: '#0ea5e9', education: '#93c5fd', hospital: '#f87171', clinic: '#fca5a5', pharmacy: '#fecaca', park: '#22c55e', playground: '#86efac', sport: '#34d399', transit: '#22d3ee', station: '#67e8f9', fire: '#fb923c', government: '#e879f9', worship: '#cbd5e1', business: '#f59e0b', cafe: '#fbbf24', restaurant: '#fbbf24', grocery: '#fcd34d', mall: '#f59e0b', hotel: '#fde68a', gym: '#fde047', coworking: '#facc15' };
+  Q.FCOL = { school: '#2f5bd3', kinder: '#6f8fe0', university: '#1e3a8a', education: '#5876c9', hospital: '#c2412d', clinic: '#e07a5f', pharmacy: '#d98b74', park: '#5e8a44', playground: '#8aac6a', sport: '#4f7d4a', transit: '#1d4ed8', station: '#3355aa', fire: '#d9480f', government: '#7b4ea3', worship: '#8b8174', business: '#a87b2d', cafe: '#b8860b', restaurant: '#b8860b', grocery: '#c49a3a', mall: '#a87b2d', hotel: '#c9a227', gym: '#9c7a2a', coworking: '#b08a2e' };
   Q.FGROUP = { education: ['school', 'kinder', 'university', 'education'], healthcare: ['hospital', 'clinic', 'pharmacy'], residential: [], business: ['business', 'cafe', 'restaurant', 'grocery', 'mall', 'hotel', 'gym', 'coworking'], transportation: ['transit', 'station'], recreation: ['sport', 'playground'], government: ['government', 'fire', 'worship'], industrial: [], green: ['park'] };
   Q.sectorOf = (xy) => { const [x, y] = xy; if (y < -1500) return 'left'; if (Math.hypot(x, y - 500) < 2200) return 'center'; const a = Math.atan2(y - 500, x) * 180 / Math.PI; return a > 45 && a < 135 ? 'north' : (a >= -45 && a <= 45) ? 'east' : (a >= 135 || a <= -135) ? 'west' : 'south'; };
   Q.facVisible = f => { if (Q.S.sector !== 'all' && Q.sectorOf(f.xy) !== Q.S.sector) return false; for (const g in Q.FGROUP) if (Q.FGROUP[g].includes(f.cat)) return !!Q.S.facFilter[g]; return false; };
@@ -1797,9 +2027,9 @@ way["waterway"="river"](${b});out geom qt;`;
   const pg = (ring, P) => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: P });
   const ln = (c, P) => ({ type: 'Feature', geometry: { type: 'LineString', coordinates: c }, properties: P });
   Q.FC = FC; Q.pt = pt; Q.ln = ln; Q.pg = pg;
-  const heatCol = v => v < 0.35 ? '#10b981' : v < 0.5 ? '#84cc16' : v < 0.62 ? '#eab308' : v < 0.75 ? '#f97316' : '#ef4444';
+  const heatCol = v => v < 0.35 ? '#5e8a44' : v < 0.5 ? '#a3b35a' : v < 0.62 ? '#e0a800' : v < 0.75 ? '#e8590c' : '#b02a37';
   Q.heatCol = heatCol;
-  Q.STATUSCOL = { submitted: '#94a3b8', review: '#60a5fa', planned: '#a78bfa', progress: '#f59e0b', resolved: '#10b981' };
+  Q.STATUSCOL = { submitted: '#8b8174', review: '#2f5bd3', planned: '#7b4ea3', progress: '#c8643b', resolved: '#2b8a3e' };
   Q.layerOn = id => {
     const v = Q.S.view, L = Q.S.layers;
     if (id === 'traffic') return L.traffic || v === 'traffic';
@@ -1815,23 +2045,23 @@ way["waterway"="river"](${b});out geom qt;`;
     const realMap = map.kind === 'live', demoOnReal = realMap && Q.D.mode === 'demo';
     const props = M.props.filter(p => !p.future), fut = M.props.filter(p => p.future);
     const lbl = p => p.name || Q.typeName(p.type);
-    map.setData('proposals', FC(props.map(p => pg(p.d.ring, { id: p.id, color: p.d.c.color, height: p.d.height + (p.d.c.bridge ? 4 : 0), base: p.d.c.bridge ? 4 : 0, label: lbl(p), outline: p.id === S.selId ? '#ffffff' : null }))));
-    map.setData('future', FC(fut.map(p => pg(p.d.ring, { id: p.id, color: '#a78bfa', height: p.d.height, label: Q.typeName(p.type) + ' ' + p.year }))));
+    map.setData('proposals', FC(props.map(p => pg(p.d.ring, { id: p.id, color: p.d.c.color, height: p.d.height + (p.d.c.bridge ? 4 : 0), base: p.d.c.bridge ? 4 : 0, label: lbl(p), outline: p.id === S.selId ? '#1d4ed8' : null }))));
+    map.setData('future', FC(fut.map(p => pg(p.d.ring, { id: p.id, color: '#8a9bd1', height: p.d.height, label: Q.typeName(p.type) + ' ' + p.year }))));
     map.setData('fac', FC(demoOnReal ? [] : Q.D.fac.filter(Q.facVisible).map(f => pt([f.lng, f.lat], { id: f.id, cat: f.cat, color: Q.FCOL[f.cat] || '#94a3b8', r: f.cat === 'transit' ? 3 : 4.5, label: f.name, kind: 'fac' }))));
-    map.setData('landmarks', FC(Q.D.landmarks.map(l => pt([l.lng, l.lat], { id: l.id, color: l.status === 'VERIFIED' ? '#22d3ee' : '#e2e8f0', r: 6, label: l.key ? t(l.key) : l.name, ring: l.status === 'VERIFIED' ? 'rgba(34,211,238,0.5)' : null, kind: 'landmark', status: l.status, src: l.src }))));
-    map.setData('trees', FC((S.trees || []).map(tr => pt([tr.lng, tr.lat], { color: '#4ade80', r: 3 + Math.min(4, (tr.n || 1) / 20) }))));
+    map.setData('landmarks', FC(Q.D.landmarks.map(l => pt([l.lng, l.lat], { id: l.id, color: l.status === 'VERIFIED' ? '#c8643b' : '#23272f', r: 6, label: l.key ? t(l.key) : l.name, ring: l.status === 'VERIFIED' ? 'rgba(200,100,59,0.45)' : null, kind: 'landmark', status: l.status, src: l.src }))));
+    map.setData('trees', FC((S.trees || []).map(tr => pt([tr.lng, tr.lat], { color: '#5e8a44', r: 3 + Math.min(4, (tr.n || 1) / 20), stroke: '#ffffff' }))));
     const clusters = Q.citizenClusters();
     map.setData('citizen', FC((S.citizen || []).map(c => pt([c.lng, c.lat], { id: c.id, color: Q.STATUSCOL[c.status] || '#94a3b8', r: 6, ring: clusters.ids.has(c.id) ? 'rgba(239,68,68,0.8)' : null, kind: 'citizen' }))));
     // traffic
-    map.setData('traffic', FC(demoOnReal ? [] : M.traffic.segs.map(s => ln(s.coords, { color: s.closed ? '#64748b' : s.isNew ? '#22d3ee' : E.congColor(s.vc), wm: s.cls === 'trunk' ? 22 : s.cls === 'primary' ? 18 : 13, dash: s.closed ? 1 : 0, id: s.id }))));
+    map.setData('traffic', FC(demoOnReal ? [] : M.traffic.segs.map(s => ln(s.coords, { color: s.closed ? '#868e96' : s.isNew ? '#1d4ed8' : E.congColor(s.vc), wm: s.cls === 'trunk' ? 22 : s.cls === 'primary' ? 18 : 13, dash: s.closed ? 1 : 0, id: s.id }))));
     // heat
-    map.setData('heat', FC(demoOnReal ? [] : M.heat.cells.map(c => { const h = 300; const r = [[c.x - h, c.y - h], [c.x + h, c.y - h], [c.x + h, c.y + h], [c.x - h, c.y + h], [c.x - h, c.y - h]].map(q => E.toLL(q[0], q[1])); return pg(r, { color: heatCol(c.v), opacity: 0.38 }); })));
+    map.setData('heat', FC(demoOnReal ? [] : M.heat.cells.map(c => { const h = 300; const r = [[c.x - h, c.y - h], [c.x + h, c.y - h], [c.x + h, c.y + h], [c.x - h, c.y + h], [c.x - h, c.y - h]].map(q => E.toLL(q[0], q[1])); return pg(r, { color: heatCol(c.v), opacity: 0.32 }); })));
     // flood band (educational proxy)
     const band = (S.floodLevel || 0) / M.A.floodSlope;
-    map.setData('flood', FC(band > 0 ? (Q.D.riverXY || []).map(l => { const r = G.LiteMap.buffer(l, band + (Q.D.riverWidth || 180) / 2).map(q => E.toLL(q[0], q[1])); r.push(r[0]); return pg(r, { color: '#3b82f6', opacity: 0.33 }); }) : []));
+    map.setData('flood', FC(band > 0 ? (Q.D.riverXY || []).map(l => { const r = G.LiteMap.buffer(l, band + (Q.D.riverWidth || 180) / 2).map(q => E.toLL(q[0], q[1])); r.push(r[0]); return pg(r, { color: '#2f6fb0', opacity: 0.3 }); }) : []));
     // access gaps
     const svc = Q.gapSvc || 'school', cv = M.cov[svc];
-    map.setData('gaps', FC(demoOnReal || !cv ? [] : M.homes.map((h, i) => { const d = cv.dist[i]; return pt(E.toLL(h.xy[0], h.xy[1]), { color: d <= cv.radius ? '#10b981' : d <= cv.radius * 2 ? '#f59e0b' : '#ef4444', r: Math.max(3, Math.min(9, Math.sqrt(h.w) / 9)) }); })));
+    map.setData('gaps', FC(demoOnReal || !cv ? [] : M.homes.map((h, i) => { const d = cv.dist[i]; return pt(E.toLL(h.xy[0], h.xy[1]), { color: d <= cv.radius ? '#2b8a3e' : d <= cv.radius * 2 ? '#e0a800' : '#b02a37', r: Math.max(3, Math.min(9, Math.sqrt(h.w) / 9)) }); })));
     map.setData('measure', FC(Q.measureFeatures()));
     for (const id of ['buildings', 'proposals', 'future', 'fac', 'landmarks', 'trees', 'citizen', 'traffic', 'heat', 'flood', 'gaps', 'measure']) map.setVisible(id, id === 'measure' ? true : Q.layerOn(id));
     if (map === Q.map) Q.renderLegend();
@@ -1854,7 +2084,7 @@ way["waterway"="river"](${b});out geom qt;`;
       const speed = 0.08 * Math.max(0.15, 1.15 - Math.min(1.1, s.vc));
       for (let i = 0; i < n; i++) {
         let f = ((sec * speed * 600 / Math.max(L, 50)) + i / n + (s.id.length * 0.13)) % 1; if (i % 2) f = 1 - f;
-        out.push(pt(along(s.coords, f), { color: s.vc >= 1 ? '#fecaca' : s.vc >= 0.8 ? '#fed7aa' : '#ecfeff', r: 2.4 }));
+        out.push(pt(along(s.coords, f), { color: s.vc >= 1 ? '#b02a37' : s.vc >= 0.8 ? '#e8590c' : '#23272f', r: 2.4, stroke: '#ffffff' }));
       }
     }
     Q.map.setData('vehicles', FC(out));
@@ -1940,14 +2170,19 @@ way["waterway"="river"](${b});out geom qt;`;
     Q.map.on('move', () => { Q.renderScale(); Q.renderCompass(); if (Q.map2 && Q.syncing !== 2) { Q.syncing = 1; Q.map2.setView(Q.map.getView()); Q.syncing = 0; } });
     await Q.opening();
   };
+  Q.pad = (ll, zoom) => {   // keep the subject visible beside the module sheet on wide screens
+    if (G.innerWidth <= 760 || document.body.classList.contains('panel-min')) return ll;
+    const mpp = 156543.03 * Math.cos(E.LAT0 * Math.PI / 180) / Math.pow(2, zoom);
+    return [ll[0] - 200 * mpp / (111320 * Math.cos(E.LAT0 * Math.PI / 180)), ll[1]];
+  };
   Q.opening = async () => {
     const m = Q.map;
-    if (m.kind === 'live') { await m.flyTo({ center: [65.509, 44.842], zoom: 12.3, pitch: 35, bearing: -10, duration: 3800 }); await m.flyTo({ center: [65.506, 44.847], zoom: 15.2, pitch: 58, bearing: 28, duration: 3200 }); await m.flyTo({ center: [65.51, 44.846], zoom: 13.6, pitch: 52, bearing: -15, duration: 2200 }); }
-    else { m.setView({ center: [65.509, 44.84], zoom: 10.2, pitch: 10, bearing: 30 }); await m.flyTo({ center: [65.509, 44.846], zoom: 12.6, pitch: 52, bearing: -12, duration: 2600 }); }
+    if (m.kind === 'live') { await m.flyTo({ center: [65.509, 44.842], zoom: 12.3, pitch: 35, bearing: -10, duration: 3800 }); await m.flyTo({ center: [65.506, 44.847], zoom: 15.2, pitch: 58, bearing: 28, duration: 3200 }); await m.flyTo({ center: Q.pad([65.51, 44.846], 13.6), zoom: 13.6, pitch: 52, bearing: -15, duration: 2200 }); }
+    else { m.setView({ center: [65.509, 44.84], zoom: 10.2, pitch: 10, bearing: 30 }); await m.flyTo({ center: Q.pad([65.509, 44.846], 12.6), zoom: 12.6, pitch: 52, bearing: -12, duration: 2600 }); }
     Q.renderScale(); Q.renderCompass();
   };
   Q.home = { center: [65.51, 44.846], zoom: 13.4, pitch: 52, bearing: -15 };
-  Q.resetCamera = () => Q.map.flyTo(Object.assign({}, Q.home, { zoom: Q.map.kind === 'live' ? 13.4 : 12.6, duration: 1200 }));
+  Q.resetCamera = () => { const z = Q.map.kind === 'live' ? 13.4 : 12.6; return Q.map.flyTo(Object.assign({}, Q.home, { center: Q.pad(Q.home.center, z), zoom: z, duration: 1200 })); };
 
   function bindMap(map) {
     map.on('click', e => {
@@ -1990,7 +2225,7 @@ way["waterway"="river"](${b});out geom qt;`;
         <div class="kv col"><span>${esc(t('iNearby'))}</span><ul class="near">${nr.list}</ul></div>
         <p class="note">${esc(live ? t('iHeightNote') : t('iDemoNote'))}</p>
         ${row('iSource', live ? 'OpenStreetMap · OpenMapTiles (OpenFreeMap)' : t('srcDemo'))}`;
-      Q.map.setData('sel', FC(ring ? [pg(ring, { color: '#22d3ee', height: (+hgt || 5) + 0.6, base: 0 })] : []));
+      Q.map.setData('sel', FC(ring ? [pg(ring, { color: '#2244a8', height: (+hgt || 5) + 0.6, base: 0 })] : []));
     } else if (hit.layer === 'fac') {
       const f = Q.D.fac.find(x => x.id === P.id) || {}; const nr = near(f.xy || xy);
       h = `<h3>${esc(f.name || t('fc_' + f.cat))}</h3>${row('iCategory', t('fc_' + f.cat), f.src === 'osm' ? 'OPEN' : 'DEMO')}${row('iAddress', f.addr || null, f.addr ? 'OPEN' : null)}${row('iCoords', (+f.lat).toFixed(5) + ', ' + (+f.lng).toFixed(5))}${row('iRoad', nr.road)}<div class="kv col"><span>${esc(t('iNearby'))}</span><ul class="near">${nr.list}</ul></div>${row('iSource', f.src === 'osm' ? 'OpenStreetMap ' + (f.osm || '') : t('srcDemo'))}`;
@@ -2009,12 +2244,15 @@ way["waterway"="river"](${b});out geom qt;`;
 
   /* ---------------- shell rendering ---------------- */
   Q.NAV = ['overview', 'city', 'build', 'traffic', 'eco', 'disaster', 'budget', 'citizen', 'future', 'infra', 'biz', 'mayor', 'compare', 'reports', 'model', 'present', 'settings'];
+  Q.NAVG = [['ng_city', ['overview', 'city', 'infra', 'traffic', 'eco', 'disaster']], ['ng_plan', ['build', 'budget', 'future', 'compare', 'biz']], ['ng_comm', ['citizen', 'mayor']], ['ng_pres', ['present', 'model', 'reports', 'settings']]];
   Q.renderShell = () => {
     document.documentElement.lang = Q.S.lang;
     $$('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
     $$('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', t(el.dataset.i18nTitle)); });
     $$('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
-    $('#nav').innerHTML = Q.NAV.map(k => `<button class="nav-i${Q.S.view === k ? ' on' : ''}" data-v="${k}" title="${esc(t('nav_' + k))}">${G.QIcons[k] || ''}<span>${esc(t('nav_' + k))}</span></button>`).join('');
+    $('#nav').innerHTML = Q.NAVG.map(([g, ks]) => `<div class="nav-g"><span class="nav-gl">${esc(t(g))}</span>${ks.map(k => `<button class="nav-i${Q.S.view === k ? ' on' : ''}" data-v="${k}" title="${esc(t('nav_' + k))}" aria-current="${Q.S.view === k ? 'page' : 'false'}">${G.QIcons[k] || ''}<span>${esc(t('nav_' + k))}</span></button>`).join('')}</div>`).join('');
+    const sc = $('#scName'); if (sc) sc.textContent = Q.S.scName || t('currentSc');
+    const pb = $('#profileBtn'); if (pb) pb.textContent = ((Q.S.profile.name || 'Q').trim()[0] || 'Q').toUpperCase();
     $$('#langSw button').forEach(b => b.classList.toggle('on', b.dataset.l === Q.S.lang));
     $('#yearChip').textContent = Q.S.futureYear > 2025 ? Q.S.futureYear : t('baseline');
     Q.renderStatus();
@@ -2041,27 +2279,27 @@ way["waterway"="river"](${b});out geom qt;`;
 
   Q.renderLegend = () => {
     const el = $('#legend'); if (!el) return; const it = [];
-    if (Q.layerOn('traffic')) it.push(`<div class="lg-t">${esc(t('lgTraffic'))} ${Q.badge('SIM')}</div>` + [['#22c55e', 'cLow'], ['#eab308', 'cMod'], ['#f97316', 'cHigh'], ['#ef4444', 'cCrit'], ['#22d3ee', 'cNewLink'], ['#64748b', 'cClosed']].map(([c, k]) => `<span class="lg"><i style="background:${c}"></i>${esc(t(k))}</span>`).join(''));
+    if (Q.layerOn('traffic')) it.push(`<div class="lg-t">${esc(t('lgTraffic'))} ${Q.badge('SIM')}</div>` + [['#2b8a3e', 'cLow'], ['#e0a800', 'cMod'], ['#e8590c', 'cHigh'], ['#b02a37', 'cCrit'], ['#1d4ed8', 'cNewLink'], ['#868e96', 'cClosed']].map(([c, k]) => `<span class="lg"><i style="background:${c}"></i>${esc(t(k))}</span>`).join(''));
     if (Q.layerOn('heat')) it.push(`<div class="lg-t">${esc(t('lgHeat'))} ${Q.badge('EST')}</div><div class="ramp"></div><div class="ramp-l"><span>${esc(t('low'))}</span><span>${esc(t('high'))}</span></div>`);
-    if (Q.layerOn('flood') && Q.S.floodLevel > 0) it.push(`<div class="lg-t">${esc(t('lgFlood'))} ${Q.badge('DEMO')}</div><span class="lg"><i style="background:#3b82f6"></i>${esc(t('lgFloodBand', { m: Q.n(Q.S.floodLevel, 1) }))}</span>`);
-    if (Q.layerOn('gaps')) it.push(`<div class="lg-t">${esc(t('lgGaps'))}: ${esc(t('fc_' + (Q.gapSvc === 'health' ? 'clinic' : Q.gapSvc === 'kinder' ? 'kinder' : Q.gapSvc || 'school')))} ${Q.badge('EST')}</div>` + [['#10b981', 'gIn'], ['#f59e0b', 'gNear'], ['#ef4444', 'gOut']].map(([c, k]) => `<span class="lg"><i style="background:${c}"></i>${esc(t(k))}</span>`).join(''));
-    if (Q.layerOn('proposals') && Q.S.proposals.length) it.push(`<span class="lg"><i style="background:#c4b5fd;outline:1px solid #fff"></i>${esc(t('lgProposed'))}</span>`);
-    if (Q.layerOn('future')) it.push(`<span class="lg"><i style="background:#a78bfa;opacity:.7"></i>${esc(t('lgFuture'))}</span>`);
-    if (Q.layerOn('citizen') && (Q.S.citizen || []).length) it.push(`<span class="lg"><i style="background:#94a3b8"></i>${esc(t('lgCitizen'))}</span>`);
-    it.push(`<span class="lg"><i style="background:#22d3ee;border-radius:50%"></i>${esc(t('lgVerified'))}</span>`);
+    if (Q.layerOn('flood') && Q.S.floodLevel > 0) it.push(`<div class="lg-t">${esc(t('lgFlood'))} ${Q.badge('DEMO')}</div><span class="lg"><i style="background:#2f6fb0"></i>${esc(t('lgFloodBand', { m: Q.n(Q.S.floodLevel, 1) }))}</span>`);
+    if (Q.layerOn('gaps')) it.push(`<div class="lg-t">${esc(t('lgGaps'))}: ${esc(t('fc_' + (Q.gapSvc === 'health' ? 'clinic' : Q.gapSvc === 'kinder' ? 'kinder' : Q.gapSvc || 'school')))} ${Q.badge('EST')}</div>` + [['#2b8a3e', 'gIn'], ['#e0a800', 'gNear'], ['#b02a37', 'gOut']].map(([c, k]) => `<span class="lg"><i style="background:${c}"></i>${esc(t(k))}</span>`).join(''));
+    if (Q.layerOn('proposals') && Q.S.proposals.length) it.push(`<span class="lg"><i style="background:#c8794a;outline:1.5px solid #1d4ed8"></i>${esc(t('lgProposed'))}</span>`);
+    if (Q.layerOn('future')) it.push(`<span class="lg"><i style="background:#8a9bd1"></i>${esc(t('lgFuture'))}</span>`);
+    if (Q.layerOn('citizen') && (Q.S.citizen || []).length) it.push(`<span class="lg"><i style="background:#8b8174;border-radius:50%"></i>${esc(t('lgCitizen'))}</span>`);
+    it.push(`<span class="lg"><i style="background:#c8643b;border-radius:50%"></i>${esc(t('lgVerified'))}</span>`);
     el.innerHTML = it.join('');
   };
 
   /* ---------------- right panel: KPIs, CHI, recommendations ---------------- */
   const delta = (a, b, d, inv, unit) => { const x = a - b; if (!Number.isFinite(x) || Math.abs(x) < Math.pow(10, -(d || 0)) / 2) return '<span class="dl z">±0</span>'; const good = inv ? x < 0 : x > 0; return `<span class="dl ${good ? 'up' : 'dn'}">${x > 0 ? '+' : '−'}${Q.n(Math.abs(x), d)}${unit || ''}</span>`; };
   Q.delta = delta;
-  Q.ring = (v, size, label) => { const r = size / 2 - 7, c = 2 * Math.PI * r, col = v >= 75 ? '#10b981' : v >= 55 ? '#f59e0b' : '#ef4444'; return `<svg class="ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="${esc(label || '')} ${Math.round(v)}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="rgba(148,163,184,.18)" stroke-width="8" fill="none"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${col}" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${c * v / 100} ${c}" transform="rotate(-90 ${size / 2} ${size / 2})"/><text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" class="ring-v">${Math.round(v)}</text></svg>`; };
+  Q.ring = (v, size, label) => { const r = size / 2 - 7, c = 2 * Math.PI * r, col = v >= 75 ? 'var(--green)' : v >= 55 ? 'var(--amber)' : 'var(--red)'; return `<svg class="ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="${esc(label || '')} ${Math.round(v)}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="var(--line)" stroke-width="8" fill="none"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${col}" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${c * v / 100} ${c}" transform="rotate(-90 ${size / 2} ${size / 2})"/><text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" class="ring-v">${Math.round(v)}</text></svg>`; };
   Q.bar = (v, col) => `<div class="bar"><i style="width:${Math.max(0, Math.min(100, v))}%;background:${col || 'var(--cy)'}"></i></div>`;
   Q.renderRight = () => {
     const el = $('#right'); const M = Q.before ? Q.M0 : Q.M, M0 = Q.M0; if (!el || !M) return;
     const sc = M.scores, cats = ['transport', 'environment', 'infrastructure', 'access', 'economy', 'resilience'];
     const recs = G.QMayor ? G.QMayor.recs(M, M0).slice(0, 3) : [];
-    el.innerHTML = `
+    el.innerHTML = `<header class="rp-h"><h3>${esc(t('collapseKpi'))}</h3><button class="x" onclick="document.body.classList.toggle('right-off');document.body.classList.remove('right-open')" aria-label="${esc(t('collapse'))}" title="${esc(t('collapse'))}">×</button></header>
       <section class="card chi"><div class="chi-top">${Q.ring(M.chi, 92, t('chi'))}<div><h4>${esc(t('chi'))} ${Q.badge('MODEL')}</h4><div class="muted sm">${esc(t('chiSub'))}</div><div class="chi-d">${esc(t('vsBase'))}: ${delta(M.chi, M0.chi, 1)}</div></div></div>
         ${cats.map(k => `<div class="cat"><span>${esc(t('sc_' + k))} <em>${Math.round(E.WEIGHTS[k] * 100)}%</em></span><b>${Math.round(sc[k])}</b>${Q.bar(sc[k], sc[k] >= 75 ? 'var(--em)' : sc[k] >= 55 ? 'var(--am)' : 'var(--rd)')}</div>`).join('')}
       </section>
@@ -2115,8 +2353,8 @@ way["waterway"="river"](${b});out geom qt;`;
 
   /* ---------------- scenarios ---------------- */
   Q.scenarioData = () => ({ v: 1, proposals: Q.S.proposals, trees: Q.S.trees, closures: Q.S.closures, budget: Q.S.budget, unitCosts: Q.S.unitCosts, assumptions: Q.S.assumptions, futureYear: Q.S.futureYear, strategy: Q.S.strategy, trafficMode: Q.S.trafficMode, transitBoost: Q.S.transitBoost });
-  Q.saveScenarioDialog = () => Q.prompt(t('scName'), t('scDefault') + ' ' + (Object.keys(Q.S.saved).length + 1), name => { if (!name) return; Q.S.saved[name] = Object.assign(Q.scenarioData(), { t: Date.now(), chi: Q.M.chi }); Q.S.history.unshift({ name, t: Date.now(), chi: Q.M.chi, n: Q.S.proposals.length }); Q.S.history = Q.S.history.slice(0, 30); Q.save(); Q.award('save'); Q.notify(t('nScSaved') + ': ' + name, 'ok'); Q.renderBottom(); Q.refreshView(); });
-  Q.loadScenario = name => { const s = Q.S.saved[name]; if (!s) return; Q.commit(S => { S.proposals = JSON.parse(JSON.stringify(s.proposals || [])); S.trees = JSON.parse(JSON.stringify(s.trees || [])); S.closures = (s.closures || []).slice(); S.budget = s.budget || S.budget; S.unitCosts = Object.assign({}, s.unitCosts); S.assumptions = Object.assign({}, s.assumptions); S.futureYear = s.futureYear || 2025; S.strategy = s.strategy || 'balanced'; S.trafficMode = s.trafficMode || 'morning'; S.transitBoost = !!s.transitBoost; }); Q._m0k = null; Q.renderShell(); Q.notify(t('nScLoaded') + ': ' + name, 'ok'); };
+  Q.saveScenarioDialog = () => Q.prompt(t('scName'), t('scDefault') + ' ' + (Object.keys(Q.S.saved).length + 1), name => { if (!name) return; Q.S.saved[name] = Object.assign(Q.scenarioData(), { t: Date.now(), chi: Q.M.chi }); Q.S.scName = name; Q.renderShell(); Q.S.history.unshift({ name, t: Date.now(), chi: Q.M.chi, n: Q.S.proposals.length }); Q.S.history = Q.S.history.slice(0, 30); Q.save(); Q.award('save'); Q.notify(t('nScSaved') + ': ' + name, 'ok'); Q.renderBottom(); Q.refreshView(); });
+  Q.loadScenario = name => { const s = Q.S.saved[name]; if (!s) return; Q.commit(S => { S.proposals = JSON.parse(JSON.stringify(s.proposals || [])); S.trees = JSON.parse(JSON.stringify(s.trees || [])); S.closures = (s.closures || []).slice(); S.budget = s.budget || S.budget; S.unitCosts = Object.assign({}, s.unitCosts); S.assumptions = Object.assign({}, s.assumptions); S.futureYear = s.futureYear || 2025; S.strategy = s.strategy || 'balanced'; S.trafficMode = s.trafficMode || 'morning'; S.transitBoost = !!s.transitBoost; }); Q._m0k = null; Q.S.scName = name; Q.renderShell(); Q.notify(t('nScLoaded') + ': ' + name, 'ok'); };
   Q.metricsFor = key => {
     if (key === 'baseline') return Q.M0; if (key === 'current') return Q.M;
     if (key && key.startsWith('y:')) return E.compute(Q.scenarioState({ futureYear: +key.slice(2) }), Q.D);
@@ -2198,22 +2436,39 @@ way["waterway"="river"](${b});out geom qt;`;
   const GROUPS = [['edu', ['school', 'kindergarten', 'university']], ['hlth', ['hospital', 'clinic']], ['res', ['residential', 'apartment']], ['biz', ['shopping', 'business', 'hotel']], ['rec', ['stadium', 'sports', 'park', 'playground']], ['ind', ['factory']], ['mob', ['road', 'bridge', 'bus_stop', 'parking']], ['eng', ['solar', 'water']]];
 
   /* ============ OVERVIEW ============ */
+  Q.trafficLevel = v => v >= 1 ? 'crit' : v >= 0.8 ? 'high' : v >= 0.6 ? 'mod' : 'low';
+  Q.levelChip = v => { const l = Q.trafficLevel(v); return `<span class="lvl-chip lv-${l}">${esc(t({ low: 'cLow', mod: 'cMod', high: 'cHigh', crit: 'cCrit' }[l]))}</span>`; };
   V.overview = {
     sub: 'ovSub',
-    form: () => `<div class="hero"><p class="lead">${esc(t('ovLead'))}</p><div class="row wrap"><button class="btn pri" data-go="build">${esc(t('ovStart'))}</button><button class="btn" data-pitch="2">▶ ${esc(t('pitchMode'))}</button><button class="btn" data-go="mayor">${esc(t('nav_mayor'))}</button>${location.protocol === 'file:' ? '' : `<button class="btn" data-go="reports">⇩ ${esc(t('dlTitle'))}</button>`}</div></div>
-      <label class="fld"><span>${esc(t('profName'))}</span><input id="profName" value="${esc(Q.S.profile.name)}" placeholder="${esc(t('profPh'))}" maxlength="40"></label>`,
-    bind: el => { $$('[data-go]', el).forEach(b => b.onclick = () => Q.open(b.dataset.go)); $$('[data-pitch]', el).forEach(b => b.onclick = () => G.QPitch.start(+b.dataset.pitch)); $('#profName', el).oninput = e => { Q.S.profile.name = e.target.value; Q.save(); }; },
+    form: () => `<section class="hero"><p class="eyebrow">QALA 2050 · ${esc(t('labName'))}</p><h1>${esc(t('ovHead'))}</h1><p class="lead">${esc(t('ovText'))}</p>
+      <div class="acts">
+        <button class="act" data-go="build"><span class="act-ic">${G.QIcons.build}</span><b>${esc(t('act1'))}</b><span>${esc(t('act1d'))}</span></button>
+        <button class="act" data-go="infra"><span class="act-ic">${G.QIcons.analyse}</span><b>${esc(t('act2'))}</b><span>${esc(t('act2d'))}</span></button>
+        <button class="act act-pitch" data-pitchm="1"><span class="act-ic">${G.QIcons.present}</span><b>${esc(t('act3'))}</b><span>${esc(t('act3d'))}</span></button>
+      </div></section>`,
+    bind: el => { $$('[data-go]', el).forEach(b => b.onclick = () => Q.open(b.dataset.go)); $$('[data-pitchm]', el).forEach(b => b.onclick = () => document.getElementById('pitchBtn').click()); },
     results: () => {
-      const M = Q.M, ach = Q.S.profile.ach, xp = Q.S.profile.xp || 0, lvl = 1 + Math.floor(xp / 300), wk = Q.weekly();
-      const lb = Object.entries(Q.S.saved).map(([n, s]) => [n, s.chi || 0]).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      return `<section class="card"><h4>${esc(t('profile'))}</h4><div class="row"><div class="lvl">${lvl}</div><div><b>${esc(Q.S.profile.name || t('planner'))}</b><div class="muted sm">${Q.n(xp)} XP · ${esc(t('level'))} ${lvl}</div>${Q.bar((xp % 300) / 3)}</div></div></section>
+      const M = Q.M, M0 = Q.M0, ach = Q.S.profile.ach, xp = Q.S.profile.xp || 0, lvl = 1 + Math.floor(xp / 300), wk = Q.weekly();
+      const lb = Object.entries(Q.S.saved).map(([n, sv]) => [n, sv.chi || 0]).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const used = M.budget > 0 ? M.capexC / M.budget : 0;
+      const tile = (k, v, sub, st) => `<div class="snap"><span class="snap-k">${esc(t(k))}</span><b class="snap-v">${v}</b><span class="snap-s">${sub}</span>${Q.badge(st)}</div>`;
+      return `<section class="snapshot"><h3>${esc(t('snapTitle'))}</h3><div class="snaps">
+          ${tile('snapSchool', Q.pct(M.school.cov), esc(t('vsBase')) + ' ' + Q.delta(M.school.cov * 100, M0.school.cov * 100, 1, false, ' pp'), 'SIM')}
+          ${tile('snapGreen', Q.n(M.greenPerCap, 1) + ' ' + esc(t('m2')), esc(t('benchmark')) + ' ' + Q.n(M.A.greenTarget) + ' ' + esc(t('m2')), 'EST')}
+          ${tile('snapTraffic', Q.n(M.traffic.index, 2), Q.levelChip(M.traffic.index), 'SIM')}
+          ${tile('snapBudget', Q.pct(used), Q.kzt(M.capexC) + ' / ' + Q.kzt(M.budget), 'EST')}
+        </div><p class="note">${esc(t('snapNote'))}</p></section>
+      <h3 class="sec-h">${esc(t('moreOv'))}</h3>
+      <label class="fld"><span>${esc(t('profName'))}</span><input id="profName" value="${esc(Q.S.profile.name)}" placeholder="${esc(t('profPh'))}" maxlength="40"></label>
+      <section class="card"><h4>${esc(t('profile'))}</h4><div class="row"><div class="lvl">${lvl}</div><div class="grow"><b>${esc(Q.S.profile.name || t('planner'))}</b><div class="muted sm">${Q.n(xp)} XP · ${esc(t('level'))} ${lvl}</div>${Q.bar((xp % 300) / 3)}</div></div></section>
       <section class="card"><h4>${esc(t('weekly'))}</h4><div class="mission ${wk.done ? 'done' : ''}"><b>${esc(t('mis_' + wk.k))}</b><span>${wk.done ? '✓ ' + esc(t('completed')) : esc(t('inProgress'))}</span></div></section>
       <section class="card"><h4>${esc(t('missions'))} <span class="muted sm">${Q.MISSIONS.filter(m => m.done).length}/${Q.MISSIONS.length}</span></h4>${Q.MISSIONS.map(m => `<div class="mission ${m.done ? 'done' : ''}"><b>${m.done ? '✓ ' : ''}${esc(t('mis_' + m.k))}</b><span>${esc(t('misd_' + m.k))}</span></div>`).join('')}<p class="muted sm">${esc(t('misNote'))}</p></section>
       <section class="card"><h4>${esc(t('achievements'))} <span class="muted sm">${Q.ACH.filter(k => ach[k]).length}/${Q.ACH.length}</span></h4><div class="achs">${Q.ACH.map(k => `<span class="ach ${ach[k] ? 'on' : ''}" title="${esc(t('achd_' + k))}">${esc(t('ach_' + k))}</span>`).join('')}</div></section>
       <section class="card"><h4>${esc(t('compMode'))}</h4>${lb.length ? `<ol class="lb">${lb.map(([n, c]) => `<li><span>${esc(n)}</span><b>${Q.n(c, 1)}</b></li>`).join('')}</ol>` : `<p class="muted">${esc(t('compEmpty'))}</p>`}<p class="muted sm">${esc(t('compNote'))}</p></section>
       <section class="card"><h4>${esc(t('history'))}</h4>${Q.S.history.length ? Q.S.history.slice(0, 6).map(h => `<div class="kv"><span>${esc(h.name)}</span><b>${Q.n(h.chi, 1)}</b><em class="muted sm">${new Date(h.t).toLocaleDateString(Q.locale())}</em></div>`).join('') : `<p class="muted">${esc(t('histEmpty'))}</p>`}</section>
       <section class="card"><h4>${esc(t('dataQ'))}</h4>${kv(t('dsMap'), esc(Q.mode === 'live' ? 'OpenFreeMap / OSM' : t('srcDemo')), Q.mode === 'live' ? 'OPEN' : 'DEMO')}${kv(t('dsAnalytics'), esc(Q.D.mode === 'osm' ? 'Overpass / OSM' : t('srcDemo')), Q.D.mode === 'osm' ? 'OPEN' : 'DEMO')}${kv(t('kPop'), Q.n(M.popBase), 'VERIFIED')}<p class="muted sm">${esc(t('popSrc'))}</p></section>`;
-    }
+    },
+    bindResults: r => { const i = $('#profName', r); if (i) i.onchange = e => { Q.S.profile.name = e.target.value.slice(0, 40); Q.save(); Q.renderShell(); }; }
   };
 
   /* ============ DIGITAL CITY ============ */
@@ -2240,11 +2495,13 @@ way["waterway"="river"](${b});out geom qt;`;
   };
 
   /* ============ BUILD SIMULATOR ============ */
+  const SHELF = [['sh_housing', ['residential', 'apartment']], ['sh_education', ['school', 'kindergarten', 'university']], ['sh_health', ['hospital', 'clinic']], ['sh_green', ['park', 'playground', 'sports', 'stadium']], ['sh_mobility', ['road', 'bridge', 'bus_stop', 'parking']], ['sh_energy', ['solar', 'water']], ['sh_other', ['shopping', 'business', 'hotel', 'factory']]];
+  const capHint = ty => { const d = E.derive({ type: ty, lng: E.LNG0, lat: E.LAT0 }, E.mergeA(Q.S.assumptions), Q.S.unitCosts); return Q.n(d.cap) + ' ' + t('u_' + d.c.capU); };
   V.build = {
     sub: 'buildSub',
-    form: () => `<div class="cat-grid">${GROUPS.map(([g, ts]) => `<div class="cg"><span class="cgl">${esc(t('grp_' + g))}</span>${ts.map(ty => `<button class="ty ${Q.placeType === ty ? 'on' : ''}" data-ty="${ty}" title="${esc(Q.typeName(ty))}"><i style="background:${E.CATALOG[ty].color}"></i>${esc(Q.typeName(ty))}</button>`).join('')}</div>`).join('')}</div>
-      <p class="hint" id="placeHint">${esc(Q.placeType ? t('placeHint', { ty: Q.typeName(Q.placeType) }) : t('pickType'))}</p>`,
-    bind: el => $$('[data-ty]', el).forEach(b => b.onclick = () => { Q.placeType = Q.placeType === b.dataset.ty ? null : b.dataset.ty; $$('[data-ty]', el).forEach(x => x.classList.toggle('on', x.dataset.ty === Q.placeType)); $('#placeHint', el).textContent = Q.placeType ? t('placeHint', { ty: Q.typeName(Q.placeType) }) : t('pickType'); Q.map.cursor(Q.placeType ? 'crosshair' : ''); }),
+    form: () => `<h3 class="sec-h">${esc(t('shelf'))}</h3><div class="shelf">${SHELF.map(([g, ts]) => `<div class="shelf-row"><span class="shelf-l">${esc(t(g))}</span><div class="shelf-items">${ts.map(ty => `<button class="ty ${Q.placeType === ty ? 'on' : ''}" data-ty="${ty}" title="${esc(Q.typeName(ty))}"><i style="background:${E.CATALOG[ty].color}"></i><span><b>${esc(Q.typeName(ty))}</b><em>${esc(capHint(ty))}</em></span></button>`).join('')}</div></div>`).join('')}</div>
+      <p class="hint" id="placeHint">${esc(Q.placeType ? t('placeHint', { ty: Q.typeName(Q.placeType) }) : t('shelfHint'))}</p>`,
+    bind: el => $$('[data-ty]', el).forEach(b => b.onclick = () => { Q.placeType = Q.placeType === b.dataset.ty ? null : b.dataset.ty; $$('[data-ty]', el).forEach(x => x.classList.toggle('on', x.dataset.ty === Q.placeType)); $('#placeHint', el).textContent = Q.placeType ? t('placeHint', { ty: Q.typeName(Q.placeType) }) : t('shelfHint'); Q.map.cursor(Q.placeType ? 'crosshair' : ''); }),
     onMapClick: e => {
       if (Q.placeType) { Q.addProposal(Q.placeType, e.lngLat); return true; }
       if (!(e.hit && e.hit.layer === 'proposals')) { if (Q.S.selId) { Q.S.selId = null; Q.changed(); } }
@@ -2255,26 +2512,33 @@ way["waterway"="river"](${b});out geom qt;`;
       let h = '';
       if (p) {
         const r = Q.validate(p) || { warn: [], near: {} }, d = r.d || E.derive(p, E.mergeA(Q.S.assumptions), Q.S.unitCosts), c = E.CATALOG[p.type];
-        const without = E.compute(Q.scenarioState({ proposals: Q.S.proposals.filter(x => x.id !== p.id) }), Q.D);
+        const without = E.compute(Q.scenarioState({ proposals: Q.S.proposals.filter(x => x.id !== p.id) }), Q.D), M = Q.M;
+        const share = M.budget > 0 ? d.capex * (1 + M.A.contingency) / M.budget : 0;
+        const crit = r.warn.some(w => w.lvl === 'crit'), warnOnly = r.warn.length && !crit;
+        const keyRows = `${dRow(t('kPop'), without.pop, M.pop)}${dRow(t('iSchoolPress'), without.school.pressure * 100, M.school.pressure * 100, 1, true, '%')}${dRow(t('covSchool'), without.school.cov * 100, M.school.cov * 100, 1, false, ' pp')}${dRow(t('kTraffic'), without.traffic.index, M.traffic.index, 3, true)}${dRow(t('kGreen'), without.greenPerCap, M.greenPerCap, 2)}${dRow(t('chi'), without.chi, M.chi, 1)}`;
         h += `<section class="card edit"><div class="row sb"><h4><i class="sw" style="background:${c.color}"></i>${esc(p.name || Q.typeName(p.type))}</h4>${Q.badge('PROPOSED')}</div>
+          <h5 class="ck-h">${esc(t('ck_title'))}</h5>
+          <ol class="checklist">
+            <li class="ck ${M.overrun > 0 ? 'ck-warn' : 'ck-ok'}"><b>${esc(t('ck_budget'))}</b><span class="ck-v">${Q.kzt(d.capex)} <em>${esc(t('ck_share', { p: Q.pct(share, 1) }))}</em></span><span>${esc(t('ck_after', { x: Q.kzt(M.remaining) }))}</span><span>${esc(t('ck_life', { y: d.life, x: Q.kzt(d.capex + d.opex * d.life) }))}</span>${Q.badge('EST')}</li>
+            <li class="ck ck-info"><b>${esc(t('ck_near'))} <em>(${esc(t('straight'))})</em></b><div class="near2">${Object.entries(r.near || {}).map(([k, v]) => `<span>${esc(t('fc_' + k))}: <b>${Q.m(v)}</b></span>`).join('')}</div></li>
+            <li class="ck ${crit ? 'ck-bad' : warnOnly ? 'ck-warn' : 'ck-ok'}"><b>${esc(t('ck_conf'))}</b>${r.warn.length ? r.warn.map(w => `<div class="warn w-${w.lvl}">${esc(t('w_' + w.k, { n: w.n || '' }))}</div>`).join('') : `<span>${esc(t('w_ok'))}</span>`}${r.live && r.live.unknown ? `<span class="muted sm">${esc(t('w_zoom'))}</span>` : ''}<span class="muted sm">${esc(t('screenNote'))}</span></li>
+            <li class="ck ck-info"><b>${esc(t('ck_impact'))}</b><table class="tbl"><thead><tr><th></th><th>${esc(t('before'))}</th><th>${esc(t('after'))}</th><th>Δ</th></tr></thead><tbody>${keyRows}</tbody></table>${Q.badge('SIM')}<details><summary>${esc(t('ck_more'))}</summary>${impactTable(without, M)}</details></li>
+          </ol>
+          <details class="params" open><summary>${esc(t('ck_params'))}</summary>
           <label class="fld"><span>${esc(t('pName'))}</span><input id="eName" value="${esc(p.name)}" maxlength="50" placeholder="${esc(Q.typeName(p.type))}"></label>
           <div class="g2">${num('eW', Math.round(d.w), c.kind === 'line' ? t('pWidth') : t('pW'), 2, 3000, 1, t('m'))}${num('eL', Math.round(d.l), c.kind === 'line' ? t('pLen') : t('pL'), 2, 6000, 1, t('m'))}</div>
           ${c.kind === 'bld' ? rng('eF', d.floors, t('pFloors'), 1, 40, 1, d.floors) : ''}
           ${rng('eR', p.rot || 0, t('pRot'), -180, 180, 5, (p.rot || 0) + '°')}
           <div class="g2">${num('eCap', p.capacity || '', t('pCap') + ' (' + t('u_' + c.capU) + ')', 0, 1e7, 1)}${num('eBud', p.budget ? Math.round(p.budget / 1e6) : '', t('pBudget'), 0, 1e7, 1, t('mn'))}</div>
-          <p class="muted sm">${esc(t('autoVals', { cap: Q.n(d.capAuto) + ' ' + t('u_' + c.capU), cost: Q.kzt(d.capexAuto) }))}</p>
-          <div class="row wrap"><button class="btn" id="eDup">${esc(t('duplicate'))}</button><button class="btn" id="eFly">${esc(t('flyTo'))}</button><button class="btn dng" id="eDel">${esc(t('remove'))}</button></div>
-          <h5>${esc(t('screening'))}</h5>${r.warn.length ? r.warn.map(w => `<div class="warn w-${w.lvl}">${esc(t('w_' + w.k, { n: w.n || '' }))}</div>`).join('') : `<div class="warn w-ok">${esc(t('w_ok'))}</div>`}
-          ${r.live && r.live.unknown ? `<p class="muted sm">${esc(t('w_zoom'))}</p>` : ''}<p class="muted sm">${esc(t('screenNote'))}</p>
-          <h5>${esc(t('nearbySvc'))} <span class="muted sm">(${esc(t('straight'))})</span></h5><div class="near2">${Object.entries(r.near || {}).map(([k, v]) => `<span>${esc(t('fc_' + (k === 'transit' ? 'transit' : k)))}: <b>${Q.m(v)}</b></span>`).join('')}</div>
-          <h5>${esc(t('impact'))} ${Q.badge('MODEL')}</h5>${impactTable(without, Q.M)}</section>`;
+          <p class="muted sm">${esc(t('autoVals', { cap: Q.n(d.capAuto) + ' ' + t('u_' + c.capU), cost: Q.kzt(d.capexAuto) }))}</p></details>
+          <div class="row wrap"><button class="btn" id="eDup">${esc(t('duplicate'))}</button><button class="btn" id="eFly">${esc(t('flyTo'))}</button><button class="btn dng" id="eDel">${esc(t('remove'))}</button></div></section>`;
       } else h += `<p class="muted">${esc(t('noSel'))}</p>`;
       h += `<section class="card"><h4>${esc(t('proposals'))} (${list.length})</h4>${list.length ? list.map(x => `<button class="res ${x.id === Q.S.selId ? 'on' : ''}" data-pid="${x.id}"><b><i class="sw" style="background:${E.CATALOG[x.type].color}"></i>${esc(x.name || Q.typeName(x.type))}</b><span>${Q.kzt((Q.M.props.find(m => m.id === x.id) || { d: { capex: 0 } }).d.capex)}${x._screen && x._screen.warn.some(w => w.lvl === 'crit') ? ' · ⚠' : ''}</span></button>`).join('') : `<p class="muted">${esc(t('noProps'))}</p>`}</section>`;
       return h;
     },
     bindResults: r => {
       $$('[data-pid]', r).forEach(b => b.onclick = () => { Q.S.selId = b.dataset.pid; Q.changed(); });
-      const p = Q.getSel(); if (!p) return;
+      const p = Q.getSel(), pb = r.closest('.pbody'); if (pb) pb.classList.toggle('sel-first', !!p); if (!p) return;
       const upd = (k, v, final) => { if (final) Q.commit(() => { p[k] = v; }); else { p[k] = v; Q.changed(); } };
       const bindNum = (id, k, mul) => { const i = $('#' + id, r); if (i) i.onchange = () => { const v = i.value === '' ? 0 : +i.value * (mul || 1); upd(k, Number.isFinite(v) ? Math.max(0, v) : 0, true); }; };
       $('#eName', r).onchange = e => upd('name', e.target.value.slice(0, 50), true);
@@ -2310,13 +2574,16 @@ way["waterway"="river"](${b});out geom qt;`;
       return true;
     },
     results: () => {
-      const M = Q.M, M0 = Q.M0, tr = M.traffic, demoReal = Q.D.mode === 'demo' && Q.mode === 'live';
-      return `<section class="card"><h4>${esc(t('tIndex'))} ${Q.badge('SIM')}</h4><div class="big ${tr.index >= 0.9 ? 'crit' : tr.index >= 0.75 ? 'warn' : 'ok'}">${Q.n(tr.index, 3)}</div><div class="muted sm">${esc(t('vsBase'))}: ${Q.delta(tr.index, M0.traffic.index, 3, true)} · ${esc(t('tIndexD'))}</div>
-        ${hb([{ l: t('cCrit'), v: tr.critical, txt: tr.critical, c: '#ef4444' }, { l: t('cHigh'), v: tr.high, txt: tr.high, c: '#f97316' }, { l: t('tSegs'), v: tr.segs.length, txt: tr.segs.length, c: '#64748b' }], tr.segs.length)}</section>
-        <section class="card"><h4>${esc(t('tBott'))}</h4><table class="tbl"><thead><tr><th>${esc(t('road'))}</th><th>V/C</th><th>${esc(t('tLoad'))}</th></tr></thead><tbody>${tr.bott.map(s => `<tr data-ll="${s.mid[0]},${s.mid[1]}" class="clk"><td>${esc(s.name || t('unnamedRoad'))}${s.bridge ? ' 🌉' : ''}</td><td style="color:${E.congColor(s.vc)}">${Q.n(s.vc, 2)}</td><td>${Q.n(s.load)} / ${Q.n(s.cap)}</td></tr>`).join('')}</tbody></table>
+      const M = Q.M, M0 = Q.M0, tr = M.traffic, demoReal = Q.D.mode === 'demo' && Q.mode === 'live', lv = Q.trafficLevel(tr.index), w = tr.bott[0];
+      return `<section class="card road-card"><div class="row sb"><h4>${esc(t('tIndex'))}</h4>${Q.badge('SIM')}</div>
+        <div class="row"><div class="big">${Q.n(tr.index, 2)}</div>${Q.levelChip(tr.index)}<span class="muted sm">${esc(t('vsBase'))}: ${Q.delta(tr.index, M0.traffic.index, 3, true)}</span></div>
+        <p class="plain">${esc(t('tx_' + lv))}</p>${w ? `<p class="plain">${esc(t('tx_worst', { r: w.name || t('unnamedRoad'), p: Q.pct(w.vc) }))}</p>` : ''}
+        <div class="lvl-scale">${[['low', 'cLow', '< 0,60'], ['mod', 'cMod', '0,60–0,79'], ['high', 'cHigh', '0,80–0,99'], ['crit', 'cCrit', '≥ 1,00']].map(([k, l, r]) => `<span class="lv-${k} ${k === lv ? 'on' : ''}"><b>${esc(t(l))}</b><em>${r}</em></span>`).join('')}</div>
+        ${hb([{ l: t('cCrit'), v: tr.critical, txt: tr.critical, c: 'var(--c-crit)' }, { l: t('cHigh'), v: tr.high, txt: tr.high, c: 'var(--c-high)' }, { l: t('tSegs'), v: tr.segs.length, txt: tr.segs.length, c: 'var(--muted)' }], tr.segs.length)}</section>
+        <section class="card"><h4>${esc(t('tBott'))}</h4><table class="tbl"><thead><tr><th>${esc(t('road'))}</th><th>${esc(t('tx_level'))}</th><th>V/C</th></tr></thead><tbody>${tr.bott.map(sg => `<tr data-ll="${sg.mid[0]},${sg.mid[1]}" class="clk"><td>${esc(sg.name || t('unnamedRoad'))}${sg.bridge ? ' · ' + esc(t('ty_bridge')) : ''}<div class="muted sm">${Q.n(sg.load)} / ${Q.n(sg.cap)} ${esc(t('u_veh/h'))}</div></td><td>${Q.levelChip(sg.vc)}</td><td>${Q.n(sg.vc, 2)}</td></tr>`).join('')}</tbody></table>
         <p class="muted sm">${esc(t('tClosed'))}: ${Q.S.closures.length}${Q.S.closures.length ? ` <button class="lnk" id="tOpenAll">${esc(t('tOpenAll'))}</button>` : ''}</p></section>
         ${demoReal ? `<p class="warn w-warn">${esc(t('mbDemoAnalytics'))}</p>` : ''}
-        <details class="card"><summary>${esc(t('method'))}</summary><p class="sm">${esc(t('tMethod'))}</p></details>`;
+        <details class="card limits" open><summary>${esc(t('method'))}</summary><p class="sm">${esc(t('tMethod'))}</p></details>`;
     },
     bindResults: r => { $$('tr[data-ll]', r).forEach(tr => tr.onclick = () => Q.map.flyTo({ center: tr.dataset.ll.split(',').map(Number), zoom: 15.6, pitch: 50, duration: 1200 })); const b = $('#tOpenAll', r); if (b) b.onclick = () => Q.commit(S => { S.closures = []; }); }
   };
@@ -2334,14 +2601,15 @@ way["waterway"="river"](${b});out geom qt;`;
     onMapClick: e => { if (Q.tool !== 'tree') return false; Q.commit(S => { S.trees.push({ lng: +e.lngLat[0].toFixed(6), lat: +e.lngLat[1].toFixed(6), n: 50 }); }); Q.award('tree'); return true; },
     results: () => {
       const M = Q.M, M0 = Q.M0;
-      return `<section class="card"><h4>${esc(t('ecoInd'))}</h4><table class="tbl"><thead><tr><th></th><th>${esc(t('baseline'))}</th><th>${esc(t('scenario'))}</th><th>Δ</th></tr></thead><tbody>
-        ${dRow(t('greenArea') + ' (' + t('ha') + ')', M0.greenArea / 1e4, M.greenArea / 1e4, 1)}${dRow(t('kGreen') + ' (' + t('m2') + ')', M0.greenPerCap, M.greenPerCap, 2)}
-        ${dRow(t('covPark'), M0.cov.park.share * 100, M.cov.park.share * 100, 1, false, ' pp')}${dRow(t('heatIdx'), M0.heat.city * 100, M.heat.city * 100, 1, true)}
-        ${dRow(t('co2') , M0.co2, M.co2, 1, true)}${dRow(t('water'), M0.waterDemand, M.waterDemand, 0, true)}${dRow(t('energy'), M0.energy, M.energy, 1, true)}${dRow(t('renew'), M0.renew * 100, M.renew * 100, 2, false, '%')}
-        ${dRow(t('trees'), M0.treeCount, M.treeCount)}</tbody></table>
-        <p class="muted sm">${Q.badge('EST')} ${esc(t('ecoNote'))}</p></section>
-        <section class="card"><h4>${esc(t('greenTarget'))}</h4>${hb([{ l: t('scenario'), v: M.greenPerCap, txt: Q.n(M.greenPerCap, 1) + ' ' + t('m2'), c: 'var(--em)' }, { l: t('benchmark'), v: M.A.greenTarget, txt: Q.n(M.A.greenTarget) + ' ' + t('m2'), c: '#64748b' }], Math.max(M.greenPerCap, M.A.greenTarget) * 1.1)}<p class="muted sm">${esc(t('greenTargetNote'))}</p></section>
-        <details class="card"><summary>${esc(t('method'))}</summary><p class="sm">${esc(t('ecoMethod'))}</p></details>`;
+      const arrow = (a0, a1, d, inv, u) => `<span class="chv"><em>${Q.n(a0, d)}</em> → <b>${Q.n(a1, d)}${u || ''}</b> ${Q.delta(a1, a0, d, inv)}</span>`;
+      const solar = M.props.filter(p => p.d.c.solar).length;
+      return `<section class="chains"><h4>${esc(t('ecoInd'))} ${Q.badge('EST')}</h4>
+        <div class="chain"><div class="ch-src"><b>${esc(t('eco_chain1'))}</b><span>${Q.n(M.treeCount)} ${esc(t('trees')).toLowerCase()} · ${Q.n(M.greenNew / 1e4, 1)} ${esc(t('ha'))}</span></div><div class="ch-res"><span class="ch-l">${esc(t('eco_res1'))}</span>${arrow(M0.greenPerCap, M.greenPerCap, 2, false, ' ' + t('m2'))}${arrow(M0.heat.city * 100, M.heat.city * 100, 1, true)}</div></div>
+        <div class="chain"><div class="ch-src"><b>${esc(t('eco_chain2'))}</b><span>${Q.n(M.solarMW, 1)} ${esc(t('u_MW'))} · ${solar}</span></div><div class="ch-res"><span class="ch-l">${esc(t('eco_res2'))}</span>${arrow(M0.renew * 100, M.renew * 100, 2, false, '%')}${arrow(M0.co2, M.co2, 1, true, ' kt')}</div></div>
+        <div class="chain"><div class="ch-src"><b>${esc(t('eco_chain3'))}</b><span>${Q.n(M.pop)}</span></div><div class="ch-res"><span class="ch-l">${esc(t('eco_res3'))}</span>${arrow(M0.waterDemand, M.waterDemand, 0, true, ' ' + t('m3d'))}${arrow(M0.energy, M.energy, 1, true, ' ' + t('gwh'))}</div></div>
+        <p class="muted sm">${esc(t('ecoNote'))}</p></section>
+        <section class="card"><h4>${esc(t('greenTarget'))}</h4>${hb([{ l: t('scenario'), v: M.greenPerCap, txt: Q.n(M.greenPerCap, 1) + ' ' + t('m2'), c: 'var(--green)' }, { l: t('benchmark'), v: M.A.greenTarget, txt: Q.n(M.A.greenTarget) + ' ' + t('m2'), c: 'var(--muted)' }], Math.max(M.greenPerCap, M.A.greenTarget) * 1.1)}${kv(t('covPark'), Q.pct(M.cov.park.share, 1) + ' ' + Q.delta(M.cov.park.share * 100, M0.cov.park.share * 100, 1, false, ' pp'), 'SIM')}<p class="muted sm">${esc(t('greenTargetNote'))}</p></section>
+        <details class="card limits"><summary>${esc(t('method'))}</summary><p class="sm">${esc(t('ecoMethod'))}</p></details>`;
     }
   };
 
@@ -2349,13 +2617,13 @@ way["waterway"="river"](${b});out geom qt;`;
   const DIS = ['flood', 'heat', 'drought', 'fire', 'failure', 'water', 'closure', 'evac'];
   V.disaster = {
     sub: 'disSub',
-    form: () => `<div class="warn w-info">${esc(t('disBanner'))}</div>${sel('dType', DIS.map(k => [k, t('dis_' + k)]), Q.S.disaster, t('scenario'))}<div id="dCtl"></div>`,
+    form: () => `<div class="calm-warn"><b>⚠</b><span>${esc(t('disBanner'))}</span></div><div class="tabs" role="tablist">${DIS.map(k => `<button role="tab" class="tab ${Q.S.disaster === k ? 'on' : ''}" data-dis="${k}" aria-selected="${Q.S.disaster === k}">${esc(t('dis_' + k))}</button>`).join('')}</div><div id="dCtl"></div>`,
     bind: el => { const draw = () => { const k = Q.S.disaster, c = $('#dCtl', el); c.innerHTML = k === 'flood' ? rng('dLvl', Q.S.floodLevel, t('dLevel'), 0, 6, 0.25, Q.n(Q.S.floodLevel, 2) + ' ' + t('m')) : k === 'heat' ? rng('dHeat', Q.S.heatC, t('dHeatC'), 1, 8, 0.5, '+' + Q.S.heatC + '°C') : (k === 'drought' || k === 'water') ? rng('dDr', Q.S.drought, t('dDrought'), 0, 60, 5, Q.S.drought + '%') : k === 'failure' ? sel('dFail', ['clinic', 'hospital', 'school', 'kinder', 'fire'].map(x => [x, t('fc_' + x)]), Q.S.failCat, t('dFailCat')) + rng('dFailS', Q.S.failShare * 100, t('dFailShare'), 10, 80, 10, Math.round(Q.S.failShare * 100) + '%') : k === 'closure' ? `<button class="btn" id="dGoTraffic">${esc(t('tCloseTool'))} →</button>` : '';
         const b = (id, f) => { const i = $('#' + id, c); if (i) i.oninput = () => { f(+i.value); Q.changed(); }; };
         b('dLvl', v => { Q.S.floodLevel = v; $('#dLvlO', c).textContent = Q.n(v, 2) + ' ' + t('m'); if (v >= 1) Q.award('flood'); }); b('dHeat', v => { Q.S.heatC = v; $('#dHeatO', c).textContent = '+' + v + '°C'; }); b('dDr', v => { Q.S.drought = v; $('#dDrO', c).textContent = v + '%'; }); b('dFailS', v => { Q.S.failShare = v / 100; $('#dFailSO', c).textContent = v + '%'; });
         const f = $('#dFail', c); if (f) f.onchange = () => { Q.S.failCat = f.value; Q.changed(); };
         const g = $('#dGoTraffic', c); if (g) g.onclick = () => { Q.open('traffic'); Q.tool = 'close'; Q.refreshView(true); };
-      }; $('#dType', el).onchange = e => { Q.S.disaster = e.target.value; draw(); Q.changed(); }; draw(); },
+      }; $$('[data-dis]', el).forEach(b => b.onclick = () => { Q.S.disaster = b.dataset.dis; $$('[data-dis]', el).forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); }); draw(); Q.changed(); }); draw(); },
     results: () => {
       const M = Q.M, k = Q.S.disaster, A = M.A; let h = '';
       const sev = s => `<span class="sev sev-${s > 0.15 ? 'crit' : s > 0.05 ? 'high' : s > 0.01 ? 'mod' : 'low'}">${esc(t(s > 0.15 ? 'cCrit' : s > 0.05 ? 'cHigh' : s > 0.01 ? 'cMod' : 'cLow'))}</span>`;
@@ -2419,10 +2687,19 @@ way["waterway"="river"](${b});out geom qt;`;
       const M = Q.M, us = M.props.filter(p => !p.future), grp = {};
       for (const p of us) grp[p.d.c.grp] = (grp[p.d.c.grp] || 0) + p.d.capex;
       const mx = Math.max(1, ...Object.values(grp));
-      return `<section class="card"><h4>${esc(t('budSummary'))}</h4>${kv(t('budget'), Q.kzt(M.budget))}${kv(t('capex'), Q.kzt(M.capex))}${kv(t('contingency', { p: Q.n(M.A.contingency * 100) }), Q.kzt(M.capexC - M.capex))}${kv(t('remaining'), `<span class="${M.overrun > 0 ? 'crit' : 'ok'}">${Q.kzt(M.remaining)}</span>`)}${M.overrun > 0 ? `<div class="warn w-crit">${esc(t('overrunMsg', { x: Q.kzt(M.overrun) }))}</div>` : ''}
-        ${kv(t('opex'), Q.kzt(M.opex) + ' / ' + t('yr'))}${kv(t('lifeCost'), Q.kzt(M.life))}${kv(t('jobs'), Q.n(M.jobs), 'EST')}${kv(t('cJobs'), Q.n(M.cJobs), 'EST')}${kv(t('payroll'), Q.kzt(M.payroll) + ' / ' + t('yr'), 'EST')}</section>
-        <section class="card"><h4>${esc(t('allocation'))}</h4>${Object.keys(grp).length ? hb(Object.entries(grp).map(([g, v]) => ({ l: t('grp_' + g), v, txt: Q.kzt(v) })), mx) : `<p class="muted">${esc(t('noProps'))}</p>`}</section>
-        <section class="card"><h4>${esc(t('breakdown'))}</h4><table class="tbl"><thead><tr><th>${esc(t('object'))}</th><th>${esc(t('capex'))}</th><th>${esc(t('opex'))}/${esc(t('yr'))}</th><th>${esc(t('lifeYrs'))}</th></tr></thead><tbody>${us.map(p => `<tr><td>${esc(p.name || Q.typeName(p.type))}${p.budget ? ' *' : ''}</td><td>${Q.kzt(p.d.capex)}</td><td>${Q.kzt(p.d.opex)}</td><td>${p.d.life}</td></tr>`).join('') || `<tr><td colspan="4" class="muted">${esc(t('noProps'))}</td></tr>`}</tbody></table><p class="muted sm">${esc(t('budNote'))}</p>
+      const line = (k, v, cls) => `<div class="ws-l ${cls || ''}"><span>${k}</span><i></i><b>${v}</b></div>`;
+      return `<section class="sheet"><div class="row sb"><h4>${esc(t('bud_ws'))}</h4>${Q.badge('EST')}</div>
+        ${line(esc(t('bud_avail')), Q.kzt(M.budget))}
+        ${line(esc(t('bud_costs', { n: us.length })), '− ' + Q.kzt(M.capex))}
+        ${line(esc(t('bud_reserve', { p: Q.n(M.A.contingency * 100) })), '− ' + Q.kzt(M.capexC - M.capex))}
+        ${line(esc(t('bud_left')), `<span class="${M.overrun > 0 ? 'crit' : 'ok'}">${Q.kzt(M.remaining)}</span>`, 'ws-total')}
+        ${line(esc(t('bud_yearly')), Q.kzt(M.opex) + ' / ' + esc(t('yr')), 'ws-sub')}
+        ${line(esc(t('bud_life')), Q.kzt(M.life), 'ws-sub')}
+        ${M.overrun > 0 ? `<div class="warn w-crit">${esc(t('overrunMsg', { x: Q.kzt(M.overrun) }))}</div>` : ''}
+        <p class="muted sm">${esc(t('unitNote'))}</p></section>
+        <section class="card"><h4>${esc(t('allocation'))}</h4>${Object.keys(grp).length ? hb(Object.entries(grp).map(([g, v]) => ({ l: t('grp_' + g), v, txt: Q.kzt(v) })), mx) : `<p class="muted">${esc(t('noProps'))}</p>`}
+        ${kv(t('jobs'), Q.n(M.jobs), 'EST')}${kv(t('cJobs'), Q.n(M.cJobs), 'EST')}${kv(t('payroll'), Q.kzt(M.payroll) + ' / ' + t('yr'), 'EST')}</section>
+        <section class="card"><h4>${esc(t('breakdown'))}</h4><div class="scroll"><table class="tbl"><thead><tr><th>${esc(t('object'))}</th><th>${esc(t('capex'))}</th><th>${esc(t('opex'))}/${esc(t('yr'))}</th><th>${esc(t('lifeYrs'))}</th></tr></thead><tbody>${us.map(p => `<tr><td>${esc(p.name || Q.typeName(p.type))}${p.budget ? ' *' : ''}</td><td>${Q.kzt(p.d.capex)}</td><td>${Q.kzt(p.d.opex)}</td><td>${p.d.life}</td></tr>`).join('') || `<tr><td colspan="4" class="muted">${esc(t('noProps'))}</td></tr>`}</tbody></table></div><p class="muted sm">${esc(t('budNote'))}</p>
         <button class="btn" id="budCsv">⇩ ${esc(t('dlBudget'))}</button></section>`;
     },
     bindResults: r => { $('#budCsv', r).onclick = () => G.QReports.budgetCsv(); }
@@ -2432,8 +2709,8 @@ way["waterway"="river"](${b});out geom qt;`;
   const CC = ['road', 'light', 'waste', 'park', 'school', 'transport', 'infra', 'other'], CS = ['submitted', 'review', 'planned', 'progress', 'resolved'];
   V.citizen = {
     sub: 'citSub',
-    form: () => `<div class="warn w-info">${esc(t('cNotOfficial'))}</div>
-      <form id="cForm" class="card"><h4>${esc(t('cNew'))}</h4>${sel('cCat', CC.map(c => [c, t('cc_' + c)]), 'road', t('iCategory'))}
+    form: () => `<div class="calm-warn info"><b>i</b><span>${esc(t('browserOnly'))} ${esc(t('cNotOfficial'))}</span></div>
+      <form id="cForm" class="card note-form"><h4>${esc(t('cNew'))}</h4>${sel('cCat', CC.map(c => [c, t('cc_' + c)]), 'road', t('iCategory'))}
         <label class="fld"><span>${esc(t('cText'))}</span><textarea id="cText" maxlength="400" rows="3" required placeholder="${esc(t('cTextPh'))}"></textarea></label>
         <label class="fld"><span>${esc(t('cPhoto'))}</span><input id="cImg" type="file" accept="image/*"></label>
         <div class="row wrap"><button type="button" class="btn ${Q.tool === 'cpick' ? 'on' : ''}" id="cPick">📍 ${esc(t('cPick'))}</button><span id="cLoc" class="muted sm">${Q.cLoc ? Q.cLoc[1].toFixed(5) + ', ' + Q.cLoc[0].toFixed(5) : esc(t('cNoLoc'))}</span></div>
@@ -2456,7 +2733,7 @@ way["waterway"="river"](${b});out geom qt;`;
       const voted = Q.S.voted || {}; const L = (Q.S.citizen || []).filter(c => (!Q.cf || Q.cf === 'all' || c.cat === Q.cf) && (!Q.cfs || Q.cfs === 'all' || c.status === Q.cfs)).sort((a, b) => (b.votes || 0) - (a.votes || 0));
       const cl = Q.citizenClusters();
       return `<section class="card"><h4>${esc(t('cClusters'))} <span class="st st-RULE">${esc(t('ruleBased'))}</span></h4>${cl.groups.length ? cl.groups.map(g => `<div class="rec rec-warn"><b>${esc(t('cc_' + g.cat))} × ${g.n}</b><span>${esc(t('cClusterTxt', { v: g.votes }))}</span><button class="lnk" data-ll="${g.ll}">${esc(t('flyTo'))}</button></div>`).join('') : `<p class="muted sm">${esc(t('cNoClusters'))}</p>`}</section>
-        <section class="card"><h4>${esc(t('cList'))} (${L.length})</h4>${L.length ? L.map(c => `<div class="issue"><div class="row sb"><b>${esc(t('cc_' + c.cat))}</b><span class="pill" style="background:${Q.STATUSCOL[c.status]}">${esc(t('cs_' + c.status))}</span></div><p>${esc(c.text)}</p>${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="">` : ''}<div class="row sb"><span class="muted sm">${new Date(c.t).toLocaleDateString(Q.locale())}</span><span><button class="btn sm" data-vote="${c.id}" ${voted[c.id] ? 'disabled' : ''}>▲ ${c.votes || 0}</button> <button class="lnk" data-ll="${c.lng},${c.lat}">${esc(t('flyTo'))}</button></span></div>
+        <section class="board"><h4>${esc(t('board'))} · ${L.length}</h4>${L.length ? L.map(c => `<div class="issue pin"><div class="row sb"><b>${esc(t('cc_' + c.cat))}</b><span class="pill" style="background:${Q.STATUSCOL[c.status]}">${esc(t('cs_' + c.status))}</span></div><p>${esc(c.text)}</p>${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="">` : ''}<div class="row sb"><span class="muted sm">${new Date(c.t).toLocaleDateString(Q.locale())}</span><span><button class="btn sm" data-vote="${c.id}" ${voted[c.id] ? 'disabled' : ''}>▲ ${c.votes || 0}</button> <button class="lnk" data-ll="${c.lng},${c.lat}">${esc(t('flyTo'))}</button></span></div>
           ${Q.S.moderator ? `<div class="row wrap">${CS.map(s => `<button class="chip ${c.status === s ? 'on' : ''}" data-st="${c.id}:${s}">${esc(t('cs_' + s))}</button>`).join('')}<button class="lnk dng" data-delc="${c.id}">${esc(t('remove'))}</button></div>` : ''}</div>`).join('') : `<p class="muted">${esc(t('cEmpty'))}</p>`}
         <p class="muted sm">${esc(Q.S.moderator ? t('modOn') : t('modOff'))}</p></section>`;
     },
@@ -2472,8 +2749,8 @@ way["waterway"="river"](${b});out geom qt;`;
   /* ============ FUTURE MODE ============ */
   V.future = {
     sub: 'futSub',
-    form: () => `<div class="seg">${[2025, 2030, 2040, 2050].map(y => `<button class="${Q.S.futureYear === y ? 'on' : ''}" data-fy="${y}">${y === 2025 ? esc(t('baseline')) : y}</button>`).join('')}</div>
-      <div class="strats">${['green', 'economic', 'balanced'].map((s, i) => `<button class="strat ${Q.S.strategy === s ? 'on' : ''}" data-st="${s}"><b>${'ABC'[i]}. ${esc(t('str_' + s))}</b><span>${esc(t('strd_' + s))}</span></button>`).join('')}</div><p class="warn w-info">${esc(t('futNote'))}</p>`,
+    form: () => `<h3 class="sec-h">${esc(t('tl_title'))}</h3><div class="timeline">${[2025, 2030, 2040, 2050].map(y => `<button class="tl-n ${Q.S.futureYear === y ? 'on' : ''} ${Q.S.futureYear >= y ? 'past' : ''}" data-fy="${y}"><i></i><b>${y === 2025 ? esc(t('baseline')) : y}</b><em>${y === 2025 ? '' : E.futureProposals(Q.S.strategy, y).length + ' · ' + esc(t('hypo'))}</em></button>`).join('')}</div>
+      <h3 class="sec-h">${esc(t('dirTitle'))}</h3><div class="strats">${['green', 'economic', 'balanced'].map((s, i) => `<button class="strat st-${s} ${Q.S.strategy === s ? 'on' : ''}" data-st="${s}"><b>${'ABC'[i]}. ${esc(t('str_' + s))}</b><span>${esc(t('strd_' + s))}</span></button>`).join('')}</div><div class="calm-warn info"><b>i</b><span>${esc(t('futNote'))}</span></div>`,
     bind: el => { $$('[data-fy]', el).forEach(b => b.onclick = () => { Q.S.futureYear = +b.dataset.fy; if (Q.S.futureYear > 2025) Q.award('future'); Q.renderShell(); Q.refreshView(true); Q.changed(); }); $$('[data-st]', el).forEach(b => b.onclick = () => { Q.S.strategy = b.dataset.st; Q.refreshView(true); Q.changed(); }); },
     results: () => {
       const yrs = [2025, 2030, 2040, 2050], st = ['green', 'economic', 'balanced'];
@@ -2482,7 +2759,7 @@ way["waterway"="river"](${b});out geom qt;`;
         Q._futCache = { k: JSON.stringify([Q.S.assumptions, Q.S.proposals.length, Q.D.mode, Q.S.unitCosts]), res };
       }
       const R = Q._futCache.res, cur = R[Q.S.strategy];
-      const chart = (key, f, ttl) => { const W = 340, H = 150, P = 30; const vals = st.flatMap(s => R[s].map(f)); const mn = Math.min(...vals) * 0.97, mx = Math.max(...vals) * 1.03; const x = i => P + i * (W - P - 10) / 3, y = v => H - 22 - (v - mn) / ((mx - mn) || 1) * (H - 40); const col = { green: '#10b981', economic: '#f59e0b', balanced: '#22d3ee' };
+      const chart = (key, f, ttl) => { const W = 340, H = 150, P = 30; const vals = st.flatMap(s => R[s].map(f)); const mn = Math.min(...vals) * 0.97, mx = Math.max(...vals) * 1.03; const x = i => P + i * (W - P - 10) / 3, y = v => H - 22 - (v - mn) / ((mx - mn) || 1) * (H - 40); const col = { green: '#5e8a44', economic: '#c8643b', balanced: '#2244a8' };
         return `<figure class="lc"><figcaption>${esc(ttl)}</figcaption><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(ttl)}">${yrs.map((yy, i) => `<text x="${x(i)}" y="${H - 6}" text-anchor="middle">${yy}</text>`).join('')}<text x="4" y="${y(mx) + 4}">${Q.n(mx, key === 'chi' ? 0 : 2)}</text><text x="4" y="${y(mn) + 4}">${Q.n(mn, key === 'chi' ? 0 : 2)}</text>${st.map(s => `<polyline fill="none" stroke="${col[s]}" stroke-width="${s === Q.S.strategy ? 3 : 1.5}" points="${R[s].map((M, i) => x(i) + ',' + y(f(M))).join(' ')}"/>`).join('')}</svg><div class="lgnd">${st.map(s => `<span><i style="background:${col[s]}"></i>${esc(t('str_' + s))}</span>`).join('')}</div></figure>`; };
       return `<section class="card"><h4>${esc(t('str_' + Q.S.strategy))} ${Q.badge('MODEL')}</h4><div class="scroll"><table class="tbl"><thead><tr><th></th>${yrs.map(y => `<th>${y === 2025 ? esc(t('baseline')) : y}</th>`).join('')}</tr></thead><tbody>
         <tr><td>${esc(t('kPop'))}</td>${cur.map(M => `<td>${Q.n(M.pop / 1000, 0)}k</td>`).join('')}</tr>
@@ -2532,10 +2809,18 @@ way["waterway"="river"](${b});out geom qt;`;
       const pts = Q.bizPts || [], cat = Q.bizCat || 'cafe';
       if (!pts.length) return `<p class="muted">${esc(t('bizEmpty'))}</p>`;
       const res = pts.map(p => E.bizScore(cat, p[0], p[1], Q.D, Q.M));
-      return res.map((r, i) => `<section class="card"><div class="row sb"><h4>${esc(t('cand'))} ${i + 1}</h4><div class="big sm2 ${r.score >= 70 ? 'ok' : r.score >= 45 ? 'warn' : 'crit'}">${r.score}<small>/100</small></div></div>
-        ${hb(Object.entries(r.parts).map(([k, [v, w]]) => ({ l: t('bp_' + k) + ' ×' + w, v: v * 100, txt: Q.n(v * 100) })), 100)}
-        <div class="near2"><span>${esc(t('bp_residents'))}: <b>${Q.n(r.raw.residents)}</b></span><span>${esc(t('bpRoad'))}: <b>${Q.m(r.raw.roadM)}</b></span><span>${esc(t('bp_transit'))}: <b>${r.raw.stops}</b></span><span>${esc(t('bp_competition'))}: <b>${r.raw.competitors}</b></span><span>${esc(t('bp_institutions'))}: <b>${r.raw.institutions}</b></span></div>
-        ${kv(t('bizInvest'), Q.kzt(r.invest), 'EST')}</section>`).join('') + `<p class="muted sm">${Q.badge(Q.D.mode === 'osm' ? 'OPEN' : 'DEMO')} ${esc(t('bizNote'))}</p>`;
+      const best = Math.max(...res.map(r => r.score));
+      const row = (k, f) => `<tr><td>${esc(t(k))}</td>${res.map(r => `<td>${f(r)}</td>`).join('')}</tr>`;
+      return `<section class="card"><div class="row sb"><h4>${esc(t('bizCmp'))} · ${esc(t('bz_' + cat))}</h4>${Q.badge(Q.D.mode === 'osm' ? 'OPEN' : 'DEMO')}</div><div class="scroll"><table class="tbl cmp-t"><thead><tr><th></th>${res.map((r, i) => `<th>${esc(t('cand'))} ${i + 1}</th>`).join('')}</tr></thead><tbody>
+        ${row('bizRow_score', r => `<b class="${r.score === best ? 'ok' : ''}">${r.score}</b>/100`)}
+        ${row('bizRow_pop', r => Q.n(r.raw.residents))}
+        ${row('bizRow_road', r => Q.m(r.raw.roadM))}
+        ${row('bizRow_bus', r => r.raw.stops)}
+        ${row('bizRow_inst', r => r.raw.institutions)}
+        ${row('bizRow_comp', r => r.raw.competitors)}
+        ${row('bizInvest', r => Q.kzt(r.invest))}</tbody></table></div></section>` +
+        res.map((r, i) => `<section class="card"><div class="row sb"><h4>${esc(t('cand'))} ${i + 1}</h4><div class="big sm2 ${r.score >= 70 ? 'ok' : r.score >= 45 ? 'warn' : 'crit'}">${r.score}<small>/100</small></div></div>
+        ${hb(Object.entries(r.parts).map(([k, [v, w]]) => ({ l: t('bp_' + k) + ' ×' + w, v: v * 100, txt: Q.n(v * 100) })), 100)}</section>`).join('') + `<div class="calm-warn info"><b>i</b><span>${esc(t('bizNote'))}</span></div>`;
     }
   };
 
@@ -2586,10 +2871,18 @@ way["waterway"="river"](${b});out geom qt;`;
   /* ============ REPORTS ============ */
   V.reports = {
     sub: 'repSub',
-    form: () => `<div class="rep">${[['repScenario', 'scenarioReport'], ['repBudget', 'budgetCsv'], ['repCompare', 'compareReport'], ['repCitizen', 'citizenCsv'], ['repJson', 'exportJson'], ['repShot', 'screenshot'], ['repMethod', 'methodology']].map(([k, f]) => `<button class="btn" data-rep="${f}"><b>${esc(t(k))}</b><span>${esc(t(k + 'D'))}</span></button>`).join('')}
-      <label class="btn file"><b>${esc(t('repImport'))}</b><span>${esc(t('repImportD'))}</span><input type="file" id="impJson" accept="application/json,.json" hidden></label></div><p class="muted sm">${esc(t('repNote'))}</p>
-      ${location.protocol === 'file:' ? '' : `<h4>${esc(t('dlTitle'))}</h4><div class="rep">${[['QALA2050.html', 'dlApp', 'text/html'], ['QALA2050_PitchDeck_KZ.pptx', 'dlDeck', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'], ['QALA2050_PitchDeck_KZ.pdf', 'dlPdf', 'application/pdf'], ['QALA2050_project.zip', 'dlZip', 'application/zip']].map(([f, k, m]) => `<button class="btn" data-dl="${f}" data-mime="${m}"><b>⇩ ${esc(t(k))}</b><span>${esc(t(k + 'D'))}</span></button>`).join('')}</div>`}`,
-    bind: el => { $$('[data-rep]', el).forEach(b => b.onclick = () => G.QReports[b.dataset.rep]()); $$('[data-dl]', el).forEach(b => b.onclick = async () => { try { const BLOB = { 'QALA2050_PitchDeck_KZ.pptx': '/_blob/e14c1ab61072dabf654e69c2e91ef7d8', 'QALA2050_project.zip': '/_blob/e1493613fb88315c74d2c611a70f2a89' }; let r = await fetch('downloads/' + b.dataset.dl).catch(() => null); if ((!r || !r.ok) && BLOB[b.dataset.dl]) r = await fetch(BLOB[b.dataset.dl]); if (!r || !r.ok) throw new Error('missing'); const blob = new Blob([await r.arrayBuffer()], { type: b.dataset.mime }); await Q.download(b.dataset.dl, blob, b.dataset.mime); } catch (e) { Q.notify(t('dlFail'), 'warn'); } }); $('#impJson', el).onchange = e => { const f = e.target.files[0]; if (f) G.QReports.importJson(f); }; }
+    form: () => {
+      const item = (f, k, tag) => `<div class="arc"><span class="ftag">${tag}</span><div><b>${esc(t(k))}</b><span>${esc(t(k + 'D'))}</span></div><button class="btn sm" data-rep="${f}">⇩ ${esc(t('fileDl'))}</button></div>`;
+      const dl = location.protocol === 'file:' ? '' : `<h4>${esc(t('arch_dl'))}</h4>${[['QALA2050.html', 'dlApp', 'text/html', 'HTML'], ['QALA2050_PitchDeck_KZ.pptx', 'dlDeck', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'PPTX'], ['QALA2050_PitchDeck_KZ.pdf', 'dlPdf', 'application/pdf', 'PDF'], ['QALA2050_project.zip', 'dlZip', 'application/zip', 'ZIP']].map(([f, k, m, tg]) => `<div class="arc"><span class="ftag">${tg}</span><div><b>${esc(t(k))}</b><span>${esc(t(k + 'D'))}</span></div><button class="btn sm" data-dl="${f}" data-mime="${m}">⇩ ${esc(t('fileDl'))}</button></div>`).join('')}`;
+      return `<h3 class="sec-h">${esc(t('arch'))}</h3><div class="archive">
+        <h4>${esc(t('arch_rep'))}</h4>${item('scenarioReport', 'repScenario', 'HTML')}${item('compareReport', 'repCompare', 'HTML')}
+        <h4>${esc(t('arch_data'))}</h4>${item('budgetCsv', 'repBudget', 'CSV')}${item('citizenCsv', 'repCitizen', 'CSV')}${item('exportJson', 'repJson', 'JSON')}
+        <div class="arc"><span class="ftag">JSON</span><div><b>${esc(t('repImport'))}</b><span>${esc(t('repImportD'))}</span></div><label class="btn sm">⇧ ${esc(t('load'))}<input type="file" id="impJson" accept="application/json,.json" hidden></label></div>
+        <h4>${esc(t('arch_map'))}</h4>${item('screenshot', 'repShot', 'PNG')}
+        <h4>${esc(t('arch_method'))}</h4><div class="arc"><span class="ftag">§</span><div><b>${esc(t('repMethod'))}</b><span>${esc(t('repMethodD'))}</span></div><button class="btn sm" data-rep="methodology">→</button></div>
+        ${dl}</div><p class="muted sm">${esc(t('repNote'))}</p>`;
+    },
+    bind: el => { $$('[data-rep]', el).forEach(b => b.onclick = () => G.QReports[b.dataset.rep]()); $$('[data-dl]', el).forEach(b => b.onclick = async () => { try { const BLOB = { 'QALA2050_PitchDeck_KZ.pptx': '/_blob/e14c1ab61072dabf654e69c2e91ef7d8', 'QALA2050_project.zip': '/_blob/e1493613fb88315c74d2c611a70f2a89' }; const f = b.dataset.dl, LOCAL = { 'QALA2050.html': 'dist/QALA2050.html', 'QALA2050_PitchDeck_KZ.pptx': 'pitch/QALA2050_PitchDeck_KZ.pptx', 'QALA2050_PitchDeck_KZ.pdf': 'pitch/QALA2050_PitchDeck_KZ.pdf' }; if (f.endsWith('.zip') && /github\.io$/.test(location.hostname)) { const a = document.createElement('a'); a.href = 'https://github.com/Qala-2050creator/qala2050/archive/refs/heads/main.zip'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); return; } let r = null; for (const u of ['downloads/' + f, LOCAL[f], BLOB[f]].filter(Boolean)) { r = await fetch(u).catch(() => null); if (r && r.ok) break; } if (!r || !r.ok) throw new Error('missing'); const blob = new Blob([await r.arrayBuffer()], { type: b.dataset.mime }); await Q.download(b.dataset.dl, blob, b.dataset.mime); } catch (e) { Q.notify(t('dlFail'), 'warn'); } }); $('#impJson', el).onchange = e => { const f = e.target.files[0]; if (f) G.QReports.importJson(f); }; }
   };
 
   /* ============ SETTINGS & METHODOLOGY ============ */
@@ -2722,11 +3015,19 @@ way["waterway"="river"](${b});out geom qt;`;
   const strip = h => String(h).replace(/<[^>]+>/g, '');
   const FIELDS = ['problem', 'data', 'action', 'impact', 'budget', 'risks', 'alt', 'limits', 'next'];
   function render(el) {
-    el.innerHTML = chat.map((m, i) => m.q !== undefined ? `<div class="msg me">${esc(m.q)}</div>` : `<div class="msg ai"><div class="ai-h">${esc(t('mayorName'))} <span class="st st-${m.src === 'claude' ? 'MODEL' : 'RULE'}">${esc(m.src === 'claude' ? t('claudeEngine') : t('ruleBased'))}</span></div>${FIELDS.map((f, j) => m.a[f] ? `<div class="ans"><b>${j + 1}. ${esc(t('mf_' + f))}</b><span>${esc(m.a[f])}</span></div>` : '').join('')}<div class="row wrap">${m.a._site ? `<button class="lnk" data-fly="${i}">${esc(t('flyTo'))}</button>` : ''}${m.a._plan ? `<button class="lnk" data-plan="${i}">${esc(t('optApply'))}</button>` : ''}</div></div>`).join('');
-    el.querySelectorAll('[data-fly]').forEach(b => b.onclick = () => { const s = chat[+b.dataset.fly].a._site; Q.map.flyTo({ center: s.ll, zoom: 15.4, pitch: 55, duration: 1400 }); });
+    let n = 0;
+    el.innerHTML = chat.map((m, i) => {
+      if (m.q !== undefined) return '';
+      n++; const q = (chat[i - 1] && chat[i - 1].q) || '';
+      return `<article class="brief"><header class="brief-h"><span class="brief-no">${esc(t('brief'))} № ${n}</span><span class="brief-src">${esc(t('briefSrc'))}: <span class="st st-${m.src === 'claude' ? 'MODEL' : 'RULE'}"><i></i>${esc(m.src === 'claude' ? t('srcClaude') : t('srcRule'))}</span></span></header>
+        <p class="brief-q"><em>${esc(t('briefQ'))}:</em> ${esc(q)}</p>
+        <ol class="brief-l">${FIELDS.map(f => m.a[f] ? `<li><b>${esc(t('mf_' + f))}</b><span>${esc(m.a[f])}</span></li>` : '').join('')}</ol>
+        <footer class="brief-f"><span>${esc(t('mayorName'))} · ${esc(t('mayorNote').split('.')[0])}.</span><span class="row">${m.a._site ? `<button class="lnk" data-fly="${i}">${esc(t('flyTo'))}</button>` : ''}${m.a._plan ? `<button class="lnk" data-plan="${i}">${esc(t('optApply'))}</button>` : ''}</span></footer></article>`;
+    }).reverse().join('');
+    el.querySelectorAll('[data-fly]').forEach(b => b.onclick = () => { const st = chat[+b.dataset.fly].a._site; Q.map.flyTo({ center: st.ll, zoom: 15.4, pitch: 55, duration: 1400 }); });
     el.querySelectorAll('[data-plan]').forEach(b => b.onclick = () => Q.lastOpt && applyPlan(Q.lastOpt));
-    el.scrollTop = el.scrollHeight;
   }
+
   let sample = null, sampleChecked = false;
   async function checkSample() { if (sampleChecked) return sample; sampleChecked = true; try { if (G.claude && G.claude.use) sample = await Promise.race([G.claude.use('sample'), new Promise(r => setTimeout(() => r(null), 2500))]); } catch (e) { sample = null; } return sample; }
   async function engineLabel(el) {
@@ -2872,11 +3173,11 @@ way["waterway"="river"](${b});out geom qt;`;
   function draw() {
     const el = $('#pitch'); if (!P) { el.hidden = true; return; }
     el.hidden = false;
-    el.innerHTML = `${P.splash ? `<div class="splash ${P.splash === 'end' ? 'end' : ''}"><div class="logo-xl">${G.QIcons.logo}<span>QALA<b>2050</b></span></div><p class="slogan">«${esc(t('slogan'))}»</p><p class="slogan2">${esc(t('sloganEn'))}</p>${P.splash === 'end' ? `<p class="final">«${esc(t('finalStatement'))}»</p><p class="muted">${esc(Q.S.presenter)}</p>` : ''}</div>` : ''}
+    el.innerHTML = `${P.splash ? `<div class="splash ${P.splash === 'end' ? 'end' : ''}"><div class="logo-xl">${G.QIcons.logo}<span>QALA <b>2050</b></span></div><p class="eyebrow">${esc(t('labName'))} · Kyzylorda</p><p class="slogan">«${esc(t('slogan'))}»</p><p class="slogan2">${esc(t('sloganEn'))}</p>${P.splash === 'end' ? `<p class="final">«${esc(t('finalStatement'))}»</p><p class="muted">${esc(Q.S.presenter)}</p>` : ''}</div>` : ''}
       ${P.card ? `<div class="pcard">${P.card}</div>` : ''}
       <div class="pcap"><div class="pstep">${P.k + 1} / ${STEPS}</div><h3>${esc(P.cap.h)}</h3><p>${esc(P.cap.b)}</p><div class="pprog"><i style="width:${(P.k + 1) / STEPS * 100}%"></i></div>
         <div class="pctl"><button class="btn" data-p="prev" title="${esc(t('prev'))}">◀</button><button class="btn pri" data-p="play">${P.auto ? '❚❚ ' + esc(t('pause')) : '▶ ' + esc(t('resume'))}</button><button class="btn" data-p="next" title="${esc(t('next'))}">▶</button><button class="btn" data-p="restart">↺ ${esc(t('restart'))}</button>
-        <span class="seg"><button class="${P.min === 2 ? 'on' : ''}" data-p="m2">2 ${esc(t('min'))}</button><button class="${P.min === 3 ? 'on' : ''}" data-p="m3">3 ${esc(t('min'))}</button></span><button class="btn" data-p="fs">⛶</button><button class="btn" data-p="exit">✕ ${esc(t('exit'))}</button></div></div>`;
+        <span class="seg"><button class="${P.min === 2 ? 'on' : ''}" data-p="m2">2 ${esc(t('min'))}</button><button class="${P.min === 3 ? 'on' : ''}" data-p="m3">3 ${esc(t('min'))}</button></span><button class="btn" data-p="fs">⛶</button><button class="btn" data-p="exit">✕ ${esc(t('exit'))}</button><span class="ptip">${esc(t('pitchTip'))}</span></div></div>`;
     el.querySelectorAll('[data-p]').forEach(b => b.onclick = () => ctl(b.dataset.p));
   }
   function schedule() { clearTimeout(P.timer); if (!P.auto || P.k >= STEPS - 1) return; P.timer = setTimeout(() => go(P.k + 1), DUR[P.min][P.k] * 1000); }
@@ -2968,6 +3269,7 @@ way["waterway"="river"](${b});out geom qt;`;
   const Q = G.Q, t = (...a) => Q.t(...a), $ = Q.$, $$ = Q.$$, esc = Q.esc;
   Q.setLang = l => { Q.S.lang = l; Q.save(); Q.renderShell(); Q.refreshView(true); Q.changed(true); Q.award('lang'); };
   Q.setTheme = th => { Q.S.theme = th; Q.save(); Q.map && Q.map.setTheme(th); Q.map2 && Q.map2.setTheme(th); $('#tTheme').textContent = th === 'night' ? '☾' : '☀'; };
+  Q.setUiTheme = u => { Q.S.uiTheme = u; document.documentElement.dataset.ui = u; Q.setTheme(u === 'dark' ? 'night' : 'day'); const b = $('#uiThemeBtn'); if (b) b.textContent = u === 'dark' ? '☀' : '☾'; };
   function topbar() {
     $('#logo').innerHTML = G.QIcons.logo;
     const cities = [['kzo', 'cityKzo', false], ['ast', 'cityAst', true], ['ala', 'cityAla', true], ['shy', 'cityShy', true], ['tur', 'cityTur', true]];
@@ -2975,10 +3277,12 @@ way["waterway"="river"](${b});out geom qt;`;
     fill(); Q._fillCities = fill;
     $$('#langSw button').forEach(b => b.onclick = () => Q.setLang(b.dataset.l));
     $('#gear').onclick = () => Q.open('settings');
+    $('#uiThemeBtn').onclick = () => Q.setUiTheme(Q.S.uiTheme === 'dark' ? 'light' : 'dark');
+    $('#profileBtn').onclick = () => Q.open('overview');
     $('#pitchBtn').onclick = () => Q.modal(`<h3>${esc(t('pitchMode'))}</h3><p>${esc(t('pitchIntro'))}</p><div class="row end wrap"><button class="btn" data-m="deck">${esc(t('nav_present'))}</button><button class="btn" data-m="3">▶ 3 ${esc(t('min'))}</button><button class="btn pri" data-m="2">▶ 2 ${esc(t('min'))}</button></div>`, b => b.querySelectorAll('[data-m]').forEach(x => x.onclick = () => { Q.closeModal(); if (x.dataset.m === 'deck') G.QPitch.openDeck(); else G.QPitch.start(+x.dataset.m); }));
     $('#brand').onclick = e => { e.preventDefault(); Q.open('overview'); };
     $('#burger').onclick = () => document.body.classList.toggle('nav-open');
-    $('#kpiBtn').onclick = () => document.body.classList.toggle('right-open');
+    $('#kpiBtn').onclick = () => { if (G.innerWidth > 1180) document.body.classList.toggle('right-off'); else document.body.classList.toggle('right-open'); setTimeout(() => { if (Q.map && Q.map.map) Q.map.map.resize(); }, 260); };
     $('#dataStatus').onclick = () => { Q.open('settings'); };
     $('#nav').onclick = e => { const b = e.target.closest('.nav-i'); if (b) Q.open(b.dataset.v); };
     const bell = $('#bell'), notes = $('#notes');
@@ -3015,7 +3319,7 @@ way["waterway"="river"](${b});out geom qt;`;
     Q.modal(`<div class="onb"><div class="logo-xl sm">${G.QIcons.logo}<span>QALA<b>2050</b></span></div><p class="slogan">«${esc(t('slogan'))}»</p><ol>${[1, 2, 3].map(i => `<li><b>${esc(t('onb' + i + 'h'))}</b> ${esc(t('onb' + i))}</li>`).join('')}</ol><p class="muted sm">${esc(t('onbData'))}</p><div class="row end"><button class="btn pri" data-o>${esc(t('onbGo'))}</button></div></div>`, b => { b.querySelector('[data-o]').onclick = () => { Q.S.onboarded = true; Q.save(); Q.closeModal(); }; });
   }
   async function boot() {
-    topbar(); tools(); Q.renderShell(); Q.setTheme(Q.S.theme);
+    topbar(); tools(); Q.renderShell(); document.documentElement.dataset.ui = Q.S.uiTheme; Q.setTheme(Q.S.theme); const ub = $('#uiThemeBtn'); if (ub) ub.textContent = Q.S.uiTheme === 'dark' ? '☀' : '☾';
     const re = Q.renderShell; Q.renderShell = () => { re(); Q._fillCities && Q._fillCities(); };
     Q.refreshView(true);
     try { await Q.bootMap(); } catch (e) { console.error(e); Q.setLoading(null); Q.notify('Map error: ' + (e && e.message), 'warn'); }

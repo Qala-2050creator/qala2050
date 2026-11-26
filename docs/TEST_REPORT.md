@@ -29,3 +29,16 @@ Placing residential, school and park objects by clicking the map, with screening
 - The offline geometry is schematic. Offline screening conflicts refer to demo buildings, not real ones.
 - Accessibility uses straight-line distance × 1.3, not a routed network.
 - Live building screening needs the site to be on screen at zoom ≥ 14. Otherwise the app says so.
+
+## Redesign "QALA 2050 Urban Lab" — 26 Nov 2026
+Visual redesign only: no formula changed. The only engine edit is colour (project palette and a colour-blind-checked congestion ramp, always paired with a text label).
+
+| Check | Result |
+|---|---|
+| `node --test tests/engine.test.cjs` | 23 / 23 pass |
+| `tests/browser/interact.mjs` (placement, edit, undo/redo, duplicate, delete, drag, closure, trees, flood and all 8 risk tabs, budget optimiser, citizen report and vote, future 2050, gap finder, business comparison, AI Әкім briefings, split compare, 6 exports, languages, measure, building info, search, Pitch Mode) | 0 page errors, all actions verified |
+| `tests/browser/design-review.mjs` (all modules at 1600×900, 3-min Pitch Mode, dark theme, ҚАЗ/РУС/ENG, tablet 1024×768, mobile 390×844) | 0 page errors; automated overflow scan of top bar, navigation, sheet and dock: no overflowing elements |
+| AI Әкім | 6 example questions → 6 briefing notes, 9 numbered sections each, source label shown |
+| Single-file build | `python3 scripts/build_single.py` → `dist/QALA2050.html`, opens from `file://` without errors |
+
+Still not tested here: live OpenFreeMap tiles (no internet in the build sandbox), Safari.

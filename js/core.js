@@ -14,15 +14,15 @@
   Q.locale = () => ({ kk: 'kk-KZ', ru: 'ru-RU', en: 'en-GB' }[Q.S.lang] || 'kk-KZ');
   Q.n = (x, d) => Number.isFinite(x) ? x.toLocaleString(Q.locale(), { maximumFractionDigits: d === undefined ? 0 : d, minimumFractionDigits: d && d > 0 ? Math.min(d, 1) : 0 }) : '—';
   Q.pct = (x, d) => Number.isFinite(x) ? Q.n(x * 100, d === undefined ? 0 : d) + '%' : '—';
-  Q.kzt = x => { if (!Number.isFinite(x)) return '—'; const a = Math.abs(x); return a >= 1e9 ? Q.n(x / 1e9, 2) + ' ' + t('bn') : a >= 1e6 ? Q.n(x / 1e6, 1) + ' ' + t('mn') : Q.n(x) + ' ₸'; };
+  Q.kzt = x => { if (!Number.isFinite(x)) return '—'; const a = Math.abs(x); return (a >= 1e9 ? Q.n(x / 1e9, 2) + ' ' + t('bn') : a >= 1e6 ? Q.n(x / 1e6, 1) + ' ' + t('mn') : Q.n(x) + ' ₸').replace(/ /g, '\u00a0'); };
   Q.m = x => !Number.isFinite(x) ? '—' : x >= 1000 ? Q.n(x / 1000, 2) + ' ' + t('km') : Q.n(x) + ' ' + t('m');
-  Q.badge = s => `<span class="st st-${esc(s)}" title="${esc(t('st_' + s + '_d'))}">${esc(t('st_' + s))}</span>`;
+  Q.badge = s => `<span class="st st-${esc(s)}" title="${esc(t('st_' + s + '_d'))}"><i></i>${esc(t('st_' + s))}</span>`;
   Q.typeName = k => t('ty_' + k);
 
   /* ---------------- state & persistence ---------------- */
   const KEY = 'qala.state.v1';
   const DEF = {
-    lang: 'kk', theme: 'night', view: 'overview', proposals: [], trees: [], closures: [], trafficMode: 'morning', transitBoost: false,
+    lang: 'kk', theme: 'day', uiTheme: 'light', scName: '', view: 'overview', proposals: [], trees: [], closures: [], trafficMode: 'morning', transitBoost: false,
     budget: 10e9, unitCosts: {}, assumptions: {}, futureYear: 2025, strategy: 'balanced', floodLevel: 2, disaster: 'flood', heatC: 4, drought: 25, failCat: 'clinic', failShare: 0.3,
     citizen: [], profile: { name: '', ach: {}, xp: 0 }, history: [], saved: {}, presenter: 'Ернұр Батырхан Төлеухан',
     layers: { buildings: true, proposals: true, fac: true, traffic: false, heat: false, flood: false, citizen: true, future: true, gaps: false, trees: true, landmarks: true },
@@ -31,6 +31,7 @@
   };
   function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { const m = Object.assign(JSON.parse(JSON.stringify(DEF)), s); m.layers = Object.assign({}, DEF.layers, s.layers); m.facFilter = Object.assign({}, DEF.facFilter, s.facFilter); return m; } } catch (e) { } return JSON.parse(JSON.stringify(DEF)); }
   Q.S = load();
+  if (!Q.S.uiTheme) { Q.S.uiTheme = 'light'; Q.S.theme = 'day'; }
   if (Q.S.view === 'present') Q.S.view = 'overview';
   let saveT = 0;
   Q.save = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { const c = Object.assign({}, Q.S); localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) { Q.notify(t('nStorage'), 'warn'); } }, 250); };
@@ -85,7 +86,7 @@
   Q.weekly = () => { const d = new Date(), w = Math.floor((d - new Date(d.getFullYear(), 0, 1)) / 6048e5); return Q.MISSIONS[w % Q.MISSIONS.length]; };
 
   /* ---------------- facilities & categories ---------------- */
-  Q.FCOL = { school: '#38bdf8', kinder: '#7dd3fc', university: '#0ea5e9', education: '#93c5fd', hospital: '#f87171', clinic: '#fca5a5', pharmacy: '#fecaca', park: '#22c55e', playground: '#86efac', sport: '#34d399', transit: '#22d3ee', station: '#67e8f9', fire: '#fb923c', government: '#e879f9', worship: '#cbd5e1', business: '#f59e0b', cafe: '#fbbf24', restaurant: '#fbbf24', grocery: '#fcd34d', mall: '#f59e0b', hotel: '#fde68a', gym: '#fde047', coworking: '#facc15' };
+  Q.FCOL = { school: '#2f5bd3', kinder: '#6f8fe0', university: '#1e3a8a', education: '#5876c9', hospital: '#c2412d', clinic: '#e07a5f', pharmacy: '#d98b74', park: '#5e8a44', playground: '#8aac6a', sport: '#4f7d4a', transit: '#1d4ed8', station: '#3355aa', fire: '#d9480f', government: '#7b4ea3', worship: '#8b8174', business: '#a87b2d', cafe: '#b8860b', restaurant: '#b8860b', grocery: '#c49a3a', mall: '#a87b2d', hotel: '#c9a227', gym: '#9c7a2a', coworking: '#b08a2e' };
   Q.FGROUP = { education: ['school', 'kinder', 'university', 'education'], healthcare: ['hospital', 'clinic', 'pharmacy'], residential: [], business: ['business', 'cafe', 'restaurant', 'grocery', 'mall', 'hotel', 'gym', 'coworking'], transportation: ['transit', 'station'], recreation: ['sport', 'playground'], government: ['government', 'fire', 'worship'], industrial: [], green: ['park'] };
   Q.sectorOf = (xy) => { const [x, y] = xy; if (y < -1500) return 'left'; if (Math.hypot(x, y - 500) < 2200) return 'center'; const a = Math.atan2(y - 500, x) * 180 / Math.PI; return a > 45 && a < 135 ? 'north' : (a >= -45 && a <= 45) ? 'east' : (a >= 135 || a <= -135) ? 'west' : 'south'; };
   Q.facVisible = f => { if (Q.S.sector !== 'all' && Q.sectorOf(f.xy) !== Q.S.sector) return false; for (const g in Q.FGROUP) if (Q.FGROUP[g].includes(f.cat)) return !!Q.S.facFilter[g]; return false; };
@@ -96,9 +97,9 @@
   const pg = (ring, P) => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: P });
   const ln = (c, P) => ({ type: 'Feature', geometry: { type: 'LineString', coordinates: c }, properties: P });
   Q.FC = FC; Q.pt = pt; Q.ln = ln; Q.pg = pg;
-  const heatCol = v => v < 0.35 ? '#10b981' : v < 0.5 ? '#84cc16' : v < 0.62 ? '#eab308' : v < 0.75 ? '#f97316' : '#ef4444';
+  const heatCol = v => v < 0.35 ? '#5e8a44' : v < 0.5 ? '#a3b35a' : v < 0.62 ? '#e0a800' : v < 0.75 ? '#e8590c' : '#b02a37';
   Q.heatCol = heatCol;
-  Q.STATUSCOL = { submitted: '#94a3b8', review: '#60a5fa', planned: '#a78bfa', progress: '#f59e0b', resolved: '#10b981' };
+  Q.STATUSCOL = { submitted: '#8b8174', review: '#2f5bd3', planned: '#7b4ea3', progress: '#c8643b', resolved: '#2b8a3e' };
   Q.layerOn = id => {
     const v = Q.S.view, L = Q.S.layers;
     if (id === 'traffic') return L.traffic || v === 'traffic';
@@ -114,23 +115,23 @@
     const realMap = map.kind === 'live', demoOnReal = realMap && Q.D.mode === 'demo';
     const props = M.props.filter(p => !p.future), fut = M.props.filter(p => p.future);
     const lbl = p => p.name || Q.typeName(p.type);
-    map.setData('proposals', FC(props.map(p => pg(p.d.ring, { id: p.id, color: p.d.c.color, height: p.d.height + (p.d.c.bridge ? 4 : 0), base: p.d.c.bridge ? 4 : 0, label: lbl(p), outline: p.id === S.selId ? '#ffffff' : null }))));
-    map.setData('future', FC(fut.map(p => pg(p.d.ring, { id: p.id, color: '#a78bfa', height: p.d.height, label: Q.typeName(p.type) + ' ' + p.year }))));
+    map.setData('proposals', FC(props.map(p => pg(p.d.ring, { id: p.id, color: p.d.c.color, height: p.d.height + (p.d.c.bridge ? 4 : 0), base: p.d.c.bridge ? 4 : 0, label: lbl(p), outline: p.id === S.selId ? '#1d4ed8' : null }))));
+    map.setData('future', FC(fut.map(p => pg(p.d.ring, { id: p.id, color: '#8a9bd1', height: p.d.height, label: Q.typeName(p.type) + ' ' + p.year }))));
     map.setData('fac', FC(demoOnReal ? [] : Q.D.fac.filter(Q.facVisible).map(f => pt([f.lng, f.lat], { id: f.id, cat: f.cat, color: Q.FCOL[f.cat] || '#94a3b8', r: f.cat === 'transit' ? 3 : 4.5, label: f.name, kind: 'fac' }))));
-    map.setData('landmarks', FC(Q.D.landmarks.map(l => pt([l.lng, l.lat], { id: l.id, color: l.status === 'VERIFIED' ? '#22d3ee' : '#e2e8f0', r: 6, label: l.key ? t(l.key) : l.name, ring: l.status === 'VERIFIED' ? 'rgba(34,211,238,0.5)' : null, kind: 'landmark', status: l.status, src: l.src }))));
-    map.setData('trees', FC((S.trees || []).map(tr => pt([tr.lng, tr.lat], { color: '#4ade80', r: 3 + Math.min(4, (tr.n || 1) / 20) }))));
+    map.setData('landmarks', FC(Q.D.landmarks.map(l => pt([l.lng, l.lat], { id: l.id, color: l.status === 'VERIFIED' ? '#c8643b' : '#23272f', r: 6, label: l.key ? t(l.key) : l.name, ring: l.status === 'VERIFIED' ? 'rgba(200,100,59,0.45)' : null, kind: 'landmark', status: l.status, src: l.src }))));
+    map.setData('trees', FC((S.trees || []).map(tr => pt([tr.lng, tr.lat], { color: '#5e8a44', r: 3 + Math.min(4, (tr.n || 1) / 20), stroke: '#ffffff' }))));
     const clusters = Q.citizenClusters();
     map.setData('citizen', FC((S.citizen || []).map(c => pt([c.lng, c.lat], { id: c.id, color: Q.STATUSCOL[c.status] || '#94a3b8', r: 6, ring: clusters.ids.has(c.id) ? 'rgba(239,68,68,0.8)' : null, kind: 'citizen' }))));
     // traffic
-    map.setData('traffic', FC(demoOnReal ? [] : M.traffic.segs.map(s => ln(s.coords, { color: s.closed ? '#64748b' : s.isNew ? '#22d3ee' : E.congColor(s.vc), wm: s.cls === 'trunk' ? 22 : s.cls === 'primary' ? 18 : 13, dash: s.closed ? 1 : 0, id: s.id }))));
+    map.setData('traffic', FC(demoOnReal ? [] : M.traffic.segs.map(s => ln(s.coords, { color: s.closed ? '#868e96' : s.isNew ? '#1d4ed8' : E.congColor(s.vc), wm: s.cls === 'trunk' ? 22 : s.cls === 'primary' ? 18 : 13, dash: s.closed ? 1 : 0, id: s.id }))));
     // heat
-    map.setData('heat', FC(demoOnReal ? [] : M.heat.cells.map(c => { const h = 300; const r = [[c.x - h, c.y - h], [c.x + h, c.y - h], [c.x + h, c.y + h], [c.x - h, c.y + h], [c.x - h, c.y - h]].map(q => E.toLL(q[0], q[1])); return pg(r, { color: heatCol(c.v), opacity: 0.38 }); })));
+    map.setData('heat', FC(demoOnReal ? [] : M.heat.cells.map(c => { const h = 300; const r = [[c.x - h, c.y - h], [c.x + h, c.y - h], [c.x + h, c.y + h], [c.x - h, c.y + h], [c.x - h, c.y - h]].map(q => E.toLL(q[0], q[1])); return pg(r, { color: heatCol(c.v), opacity: 0.32 }); })));
     // flood band (educational proxy)
     const band = (S.floodLevel || 0) / M.A.floodSlope;
-    map.setData('flood', FC(band > 0 ? (Q.D.riverXY || []).map(l => { const r = G.LiteMap.buffer(l, band + (Q.D.riverWidth || 180) / 2).map(q => E.toLL(q[0], q[1])); r.push(r[0]); return pg(r, { color: '#3b82f6', opacity: 0.33 }); }) : []));
+    map.setData('flood', FC(band > 0 ? (Q.D.riverXY || []).map(l => { const r = G.LiteMap.buffer(l, band + (Q.D.riverWidth || 180) / 2).map(q => E.toLL(q[0], q[1])); r.push(r[0]); return pg(r, { color: '#2f6fb0', opacity: 0.3 }); }) : []));
     // access gaps
     const svc = Q.gapSvc || 'school', cv = M.cov[svc];
-    map.setData('gaps', FC(demoOnReal || !cv ? [] : M.homes.map((h, i) => { const d = cv.dist[i]; return pt(E.toLL(h.xy[0], h.xy[1]), { color: d <= cv.radius ? '#10b981' : d <= cv.radius * 2 ? '#f59e0b' : '#ef4444', r: Math.max(3, Math.min(9, Math.sqrt(h.w) / 9)) }); })));
+    map.setData('gaps', FC(demoOnReal || !cv ? [] : M.homes.map((h, i) => { const d = cv.dist[i]; return pt(E.toLL(h.xy[0], h.xy[1]), { color: d <= cv.radius ? '#2b8a3e' : d <= cv.radius * 2 ? '#e0a800' : '#b02a37', r: Math.max(3, Math.min(9, Math.sqrt(h.w) / 9)) }); })));
     map.setData('measure', FC(Q.measureFeatures()));
     for (const id of ['buildings', 'proposals', 'future', 'fac', 'landmarks', 'trees', 'citizen', 'traffic', 'heat', 'flood', 'gaps', 'measure']) map.setVisible(id, id === 'measure' ? true : Q.layerOn(id));
     if (map === Q.map) Q.renderLegend();
@@ -153,7 +154,7 @@
       const speed = 0.08 * Math.max(0.15, 1.15 - Math.min(1.1, s.vc));
       for (let i = 0; i < n; i++) {
         let f = ((sec * speed * 600 / Math.max(L, 50)) + i / n + (s.id.length * 0.13)) % 1; if (i % 2) f = 1 - f;
-        out.push(pt(along(s.coords, f), { color: s.vc >= 1 ? '#fecaca' : s.vc >= 0.8 ? '#fed7aa' : '#ecfeff', r: 2.4 }));
+        out.push(pt(along(s.coords, f), { color: s.vc >= 1 ? '#b02a37' : s.vc >= 0.8 ? '#e8590c' : '#23272f', r: 2.4, stroke: '#ffffff' }));
       }
     }
     Q.map.setData('vehicles', FC(out));
@@ -239,14 +240,19 @@
     Q.map.on('move', () => { Q.renderScale(); Q.renderCompass(); if (Q.map2 && Q.syncing !== 2) { Q.syncing = 1; Q.map2.setView(Q.map.getView()); Q.syncing = 0; } });
     await Q.opening();
   };
+  Q.pad = (ll, zoom) => {   // keep the subject visible beside the module sheet on wide screens
+    if (G.innerWidth <= 760 || document.body.classList.contains('panel-min')) return ll;
+    const mpp = 156543.03 * Math.cos(E.LAT0 * Math.PI / 180) / Math.pow(2, zoom);
+    return [ll[0] - 200 * mpp / (111320 * Math.cos(E.LAT0 * Math.PI / 180)), ll[1]];
+  };
   Q.opening = async () => {
     const m = Q.map;
-    if (m.kind === 'live') { await m.flyTo({ center: [65.509, 44.842], zoom: 12.3, pitch: 35, bearing: -10, duration: 3800 }); await m.flyTo({ center: [65.506, 44.847], zoom: 15.2, pitch: 58, bearing: 28, duration: 3200 }); await m.flyTo({ center: [65.51, 44.846], zoom: 13.6, pitch: 52, bearing: -15, duration: 2200 }); }
-    else { m.setView({ center: [65.509, 44.84], zoom: 10.2, pitch: 10, bearing: 30 }); await m.flyTo({ center: [65.509, 44.846], zoom: 12.6, pitch: 52, bearing: -12, duration: 2600 }); }
+    if (m.kind === 'live') { await m.flyTo({ center: [65.509, 44.842], zoom: 12.3, pitch: 35, bearing: -10, duration: 3800 }); await m.flyTo({ center: [65.506, 44.847], zoom: 15.2, pitch: 58, bearing: 28, duration: 3200 }); await m.flyTo({ center: Q.pad([65.51, 44.846], 13.6), zoom: 13.6, pitch: 52, bearing: -15, duration: 2200 }); }
+    else { m.setView({ center: [65.509, 44.84], zoom: 10.2, pitch: 10, bearing: 30 }); await m.flyTo({ center: Q.pad([65.509, 44.846], 12.6), zoom: 12.6, pitch: 52, bearing: -12, duration: 2600 }); }
     Q.renderScale(); Q.renderCompass();
   };
   Q.home = { center: [65.51, 44.846], zoom: 13.4, pitch: 52, bearing: -15 };
-  Q.resetCamera = () => Q.map.flyTo(Object.assign({}, Q.home, { zoom: Q.map.kind === 'live' ? 13.4 : 12.6, duration: 1200 }));
+  Q.resetCamera = () => { const z = Q.map.kind === 'live' ? 13.4 : 12.6; return Q.map.flyTo(Object.assign({}, Q.home, { center: Q.pad(Q.home.center, z), zoom: z, duration: 1200 })); };
 
   function bindMap(map) {
     map.on('click', e => {
@@ -289,7 +295,7 @@
         <div class="kv col"><span>${esc(t('iNearby'))}</span><ul class="near">${nr.list}</ul></div>
         <p class="note">${esc(live ? t('iHeightNote') : t('iDemoNote'))}</p>
         ${row('iSource', live ? 'OpenStreetMap · OpenMapTiles (OpenFreeMap)' : t('srcDemo'))}`;
-      Q.map.setData('sel', FC(ring ? [pg(ring, { color: '#22d3ee', height: (+hgt || 5) + 0.6, base: 0 })] : []));
+      Q.map.setData('sel', FC(ring ? [pg(ring, { color: '#2244a8', height: (+hgt || 5) + 0.6, base: 0 })] : []));
     } else if (hit.layer === 'fac') {
       const f = Q.D.fac.find(x => x.id === P.id) || {}; const nr = near(f.xy || xy);
       h = `<h3>${esc(f.name || t('fc_' + f.cat))}</h3>${row('iCategory', t('fc_' + f.cat), f.src === 'osm' ? 'OPEN' : 'DEMO')}${row('iAddress', f.addr || null, f.addr ? 'OPEN' : null)}${row('iCoords', (+f.lat).toFixed(5) + ', ' + (+f.lng).toFixed(5))}${row('iRoad', nr.road)}<div class="kv col"><span>${esc(t('iNearby'))}</span><ul class="near">${nr.list}</ul></div>${row('iSource', f.src === 'osm' ? 'OpenStreetMap ' + (f.osm || '') : t('srcDemo'))}`;
@@ -308,12 +314,15 @@
 
   /* ---------------- shell rendering ---------------- */
   Q.NAV = ['overview', 'city', 'build', 'traffic', 'eco', 'disaster', 'budget', 'citizen', 'future', 'infra', 'biz', 'mayor', 'compare', 'reports', 'model', 'present', 'settings'];
+  Q.NAVG = [['ng_city', ['overview', 'city', 'infra', 'traffic', 'eco', 'disaster']], ['ng_plan', ['build', 'budget', 'future', 'compare', 'biz']], ['ng_comm', ['citizen', 'mayor']], ['ng_pres', ['present', 'model', 'reports', 'settings']]];
   Q.renderShell = () => {
     document.documentElement.lang = Q.S.lang;
     $$('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
     $$('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', t(el.dataset.i18nTitle)); });
     $$('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
-    $('#nav').innerHTML = Q.NAV.map(k => `<button class="nav-i${Q.S.view === k ? ' on' : ''}" data-v="${k}" title="${esc(t('nav_' + k))}">${G.QIcons[k] || ''}<span>${esc(t('nav_' + k))}</span></button>`).join('');
+    $('#nav').innerHTML = Q.NAVG.map(([g, ks]) => `<div class="nav-g"><span class="nav-gl">${esc(t(g))}</span>${ks.map(k => `<button class="nav-i${Q.S.view === k ? ' on' : ''}" data-v="${k}" title="${esc(t('nav_' + k))}" aria-current="${Q.S.view === k ? 'page' : 'false'}">${G.QIcons[k] || ''}<span>${esc(t('nav_' + k))}</span></button>`).join('')}</div>`).join('');
+    const sc = $('#scName'); if (sc) sc.textContent = Q.S.scName || t('currentSc');
+    const pb = $('#profileBtn'); if (pb) pb.textContent = ((Q.S.profile.name || 'Q').trim()[0] || 'Q').toUpperCase();
     $$('#langSw button').forEach(b => b.classList.toggle('on', b.dataset.l === Q.S.lang));
     $('#yearChip').textContent = Q.S.futureYear > 2025 ? Q.S.futureYear : t('baseline');
     Q.renderStatus();
@@ -340,27 +349,27 @@
 
   Q.renderLegend = () => {
     const el = $('#legend'); if (!el) return; const it = [];
-    if (Q.layerOn('traffic')) it.push(`<div class="lg-t">${esc(t('lgTraffic'))} ${Q.badge('SIM')}</div>` + [['#22c55e', 'cLow'], ['#eab308', 'cMod'], ['#f97316', 'cHigh'], ['#ef4444', 'cCrit'], ['#22d3ee', 'cNewLink'], ['#64748b', 'cClosed']].map(([c, k]) => `<span class="lg"><i style="background:${c}"></i>${esc(t(k))}</span>`).join(''));
+    if (Q.layerOn('traffic')) it.push(`<div class="lg-t">${esc(t('lgTraffic'))} ${Q.badge('SIM')}</div>` + [['#2b8a3e', 'cLow'], ['#e0a800', 'cMod'], ['#e8590c', 'cHigh'], ['#b02a37', 'cCrit'], ['#1d4ed8', 'cNewLink'], ['#868e96', 'cClosed']].map(([c, k]) => `<span class="lg"><i style="background:${c}"></i>${esc(t(k))}</span>`).join(''));
     if (Q.layerOn('heat')) it.push(`<div class="lg-t">${esc(t('lgHeat'))} ${Q.badge('EST')}</div><div class="ramp"></div><div class="ramp-l"><span>${esc(t('low'))}</span><span>${esc(t('high'))}</span></div>`);
-    if (Q.layerOn('flood') && Q.S.floodLevel > 0) it.push(`<div class="lg-t">${esc(t('lgFlood'))} ${Q.badge('DEMO')}</div><span class="lg"><i style="background:#3b82f6"></i>${esc(t('lgFloodBand', { m: Q.n(Q.S.floodLevel, 1) }))}</span>`);
-    if (Q.layerOn('gaps')) it.push(`<div class="lg-t">${esc(t('lgGaps'))}: ${esc(t('fc_' + (Q.gapSvc === 'health' ? 'clinic' : Q.gapSvc === 'kinder' ? 'kinder' : Q.gapSvc || 'school')))} ${Q.badge('EST')}</div>` + [['#10b981', 'gIn'], ['#f59e0b', 'gNear'], ['#ef4444', 'gOut']].map(([c, k]) => `<span class="lg"><i style="background:${c}"></i>${esc(t(k))}</span>`).join(''));
-    if (Q.layerOn('proposals') && Q.S.proposals.length) it.push(`<span class="lg"><i style="background:#c4b5fd;outline:1px solid #fff"></i>${esc(t('lgProposed'))}</span>`);
-    if (Q.layerOn('future')) it.push(`<span class="lg"><i style="background:#a78bfa;opacity:.7"></i>${esc(t('lgFuture'))}</span>`);
-    if (Q.layerOn('citizen') && (Q.S.citizen || []).length) it.push(`<span class="lg"><i style="background:#94a3b8"></i>${esc(t('lgCitizen'))}</span>`);
-    it.push(`<span class="lg"><i style="background:#22d3ee;border-radius:50%"></i>${esc(t('lgVerified'))}</span>`);
+    if (Q.layerOn('flood') && Q.S.floodLevel > 0) it.push(`<div class="lg-t">${esc(t('lgFlood'))} ${Q.badge('DEMO')}</div><span class="lg"><i style="background:#2f6fb0"></i>${esc(t('lgFloodBand', { m: Q.n(Q.S.floodLevel, 1) }))}</span>`);
+    if (Q.layerOn('gaps')) it.push(`<div class="lg-t">${esc(t('lgGaps'))}: ${esc(t('fc_' + (Q.gapSvc === 'health' ? 'clinic' : Q.gapSvc === 'kinder' ? 'kinder' : Q.gapSvc || 'school')))} ${Q.badge('EST')}</div>` + [['#2b8a3e', 'gIn'], ['#e0a800', 'gNear'], ['#b02a37', 'gOut']].map(([c, k]) => `<span class="lg"><i style="background:${c}"></i>${esc(t(k))}</span>`).join(''));
+    if (Q.layerOn('proposals') && Q.S.proposals.length) it.push(`<span class="lg"><i style="background:#c8794a;outline:1.5px solid #1d4ed8"></i>${esc(t('lgProposed'))}</span>`);
+    if (Q.layerOn('future')) it.push(`<span class="lg"><i style="background:#8a9bd1"></i>${esc(t('lgFuture'))}</span>`);
+    if (Q.layerOn('citizen') && (Q.S.citizen || []).length) it.push(`<span class="lg"><i style="background:#8b8174;border-radius:50%"></i>${esc(t('lgCitizen'))}</span>`);
+    it.push(`<span class="lg"><i style="background:#c8643b;border-radius:50%"></i>${esc(t('lgVerified'))}</span>`);
     el.innerHTML = it.join('');
   };
 
   /* ---------------- right panel: KPIs, CHI, recommendations ---------------- */
   const delta = (a, b, d, inv, unit) => { const x = a - b; if (!Number.isFinite(x) || Math.abs(x) < Math.pow(10, -(d || 0)) / 2) return '<span class="dl z">±0</span>'; const good = inv ? x < 0 : x > 0; return `<span class="dl ${good ? 'up' : 'dn'}">${x > 0 ? '+' : '−'}${Q.n(Math.abs(x), d)}${unit || ''}</span>`; };
   Q.delta = delta;
-  Q.ring = (v, size, label) => { const r = size / 2 - 7, c = 2 * Math.PI * r, col = v >= 75 ? '#10b981' : v >= 55 ? '#f59e0b' : '#ef4444'; return `<svg class="ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="${esc(label || '')} ${Math.round(v)}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="rgba(148,163,184,.18)" stroke-width="8" fill="none"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${col}" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${c * v / 100} ${c}" transform="rotate(-90 ${size / 2} ${size / 2})"/><text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" class="ring-v">${Math.round(v)}</text></svg>`; };
+  Q.ring = (v, size, label) => { const r = size / 2 - 7, c = 2 * Math.PI * r, col = v >= 75 ? 'var(--green)' : v >= 55 ? 'var(--amber)' : 'var(--red)'; return `<svg class="ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="${esc(label || '')} ${Math.round(v)}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="var(--line)" stroke-width="8" fill="none"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${col}" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${c * v / 100} ${c}" transform="rotate(-90 ${size / 2} ${size / 2})"/><text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" class="ring-v">${Math.round(v)}</text></svg>`; };
   Q.bar = (v, col) => `<div class="bar"><i style="width:${Math.max(0, Math.min(100, v))}%;background:${col || 'var(--cy)'}"></i></div>`;
   Q.renderRight = () => {
     const el = $('#right'); const M = Q.before ? Q.M0 : Q.M, M0 = Q.M0; if (!el || !M) return;
     const sc = M.scores, cats = ['transport', 'environment', 'infrastructure', 'access', 'economy', 'resilience'];
     const recs = G.QMayor ? G.QMayor.recs(M, M0).slice(0, 3) : [];
-    el.innerHTML = `
+    el.innerHTML = `<header class="rp-h"><h3>${esc(t('collapseKpi'))}</h3><button class="x" onclick="document.body.classList.toggle('right-off');document.body.classList.remove('right-open')" aria-label="${esc(t('collapse'))}" title="${esc(t('collapse'))}">×</button></header>
       <section class="card chi"><div class="chi-top">${Q.ring(M.chi, 92, t('chi'))}<div><h4>${esc(t('chi'))} ${Q.badge('MODEL')}</h4><div class="muted sm">${esc(t('chiSub'))}</div><div class="chi-d">${esc(t('vsBase'))}: ${delta(M.chi, M0.chi, 1)}</div></div></div>
         ${cats.map(k => `<div class="cat"><span>${esc(t('sc_' + k))} <em>${Math.round(E.WEIGHTS[k] * 100)}%</em></span><b>${Math.round(sc[k])}</b>${Q.bar(sc[k], sc[k] >= 75 ? 'var(--em)' : sc[k] >= 55 ? 'var(--am)' : 'var(--rd)')}</div>`).join('')}
       </section>
@@ -414,8 +423,8 @@
 
   /* ---------------- scenarios ---------------- */
   Q.scenarioData = () => ({ v: 1, proposals: Q.S.proposals, trees: Q.S.trees, closures: Q.S.closures, budget: Q.S.budget, unitCosts: Q.S.unitCosts, assumptions: Q.S.assumptions, futureYear: Q.S.futureYear, strategy: Q.S.strategy, trafficMode: Q.S.trafficMode, transitBoost: Q.S.transitBoost });
-  Q.saveScenarioDialog = () => Q.prompt(t('scName'), t('scDefault') + ' ' + (Object.keys(Q.S.saved).length + 1), name => { if (!name) return; Q.S.saved[name] = Object.assign(Q.scenarioData(), { t: Date.now(), chi: Q.M.chi }); Q.S.history.unshift({ name, t: Date.now(), chi: Q.M.chi, n: Q.S.proposals.length }); Q.S.history = Q.S.history.slice(0, 30); Q.save(); Q.award('save'); Q.notify(t('nScSaved') + ': ' + name, 'ok'); Q.renderBottom(); Q.refreshView(); });
-  Q.loadScenario = name => { const s = Q.S.saved[name]; if (!s) return; Q.commit(S => { S.proposals = JSON.parse(JSON.stringify(s.proposals || [])); S.trees = JSON.parse(JSON.stringify(s.trees || [])); S.closures = (s.closures || []).slice(); S.budget = s.budget || S.budget; S.unitCosts = Object.assign({}, s.unitCosts); S.assumptions = Object.assign({}, s.assumptions); S.futureYear = s.futureYear || 2025; S.strategy = s.strategy || 'balanced'; S.trafficMode = s.trafficMode || 'morning'; S.transitBoost = !!s.transitBoost; }); Q._m0k = null; Q.renderShell(); Q.notify(t('nScLoaded') + ': ' + name, 'ok'); };
+  Q.saveScenarioDialog = () => Q.prompt(t('scName'), t('scDefault') + ' ' + (Object.keys(Q.S.saved).length + 1), name => { if (!name) return; Q.S.saved[name] = Object.assign(Q.scenarioData(), { t: Date.now(), chi: Q.M.chi }); Q.S.scName = name; Q.renderShell(); Q.S.history.unshift({ name, t: Date.now(), chi: Q.M.chi, n: Q.S.proposals.length }); Q.S.history = Q.S.history.slice(0, 30); Q.save(); Q.award('save'); Q.notify(t('nScSaved') + ': ' + name, 'ok'); Q.renderBottom(); Q.refreshView(); });
+  Q.loadScenario = name => { const s = Q.S.saved[name]; if (!s) return; Q.commit(S => { S.proposals = JSON.parse(JSON.stringify(s.proposals || [])); S.trees = JSON.parse(JSON.stringify(s.trees || [])); S.closures = (s.closures || []).slice(); S.budget = s.budget || S.budget; S.unitCosts = Object.assign({}, s.unitCosts); S.assumptions = Object.assign({}, s.assumptions); S.futureYear = s.futureYear || 2025; S.strategy = s.strategy || 'balanced'; S.trafficMode = s.trafficMode || 'morning'; S.transitBoost = !!s.transitBoost; }); Q._m0k = null; Q.S.scName = name; Q.renderShell(); Q.notify(t('nScLoaded') + ': ' + name, 'ok'); };
   Q.metricsFor = key => {
     if (key === 'baseline') return Q.M0; if (key === 'current') return Q.M;
     if (key && key.startsWith('y:')) return E.compute(Q.scenarioState({ futureYear: +key.slice(2) }), Q.D);

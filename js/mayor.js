@@ -94,11 +94,19 @@
   const strip = h => String(h).replace(/<[^>]+>/g, '');
   const FIELDS = ['problem', 'data', 'action', 'impact', 'budget', 'risks', 'alt', 'limits', 'next'];
   function render(el) {
-    el.innerHTML = chat.map((m, i) => m.q !== undefined ? `<div class="msg me">${esc(m.q)}</div>` : `<div class="msg ai"><div class="ai-h">${esc(t('mayorName'))} <span class="st st-${m.src === 'claude' ? 'MODEL' : 'RULE'}">${esc(m.src === 'claude' ? t('claudeEngine') : t('ruleBased'))}</span></div>${FIELDS.map((f, j) => m.a[f] ? `<div class="ans"><b>${j + 1}. ${esc(t('mf_' + f))}</b><span>${esc(m.a[f])}</span></div>` : '').join('')}<div class="row wrap">${m.a._site ? `<button class="lnk" data-fly="${i}">${esc(t('flyTo'))}</button>` : ''}${m.a._plan ? `<button class="lnk" data-plan="${i}">${esc(t('optApply'))}</button>` : ''}</div></div>`).join('');
-    el.querySelectorAll('[data-fly]').forEach(b => b.onclick = () => { const s = chat[+b.dataset.fly].a._site; Q.map.flyTo({ center: s.ll, zoom: 15.4, pitch: 55, duration: 1400 }); });
+    let n = 0;
+    el.innerHTML = chat.map((m, i) => {
+      if (m.q !== undefined) return '';
+      n++; const q = (chat[i - 1] && chat[i - 1].q) || '';
+      return `<article class="brief"><header class="brief-h"><span class="brief-no">${esc(t('brief'))} № ${n}</span><span class="brief-src">${esc(t('briefSrc'))}: <span class="st st-${m.src === 'claude' ? 'MODEL' : 'RULE'}"><i></i>${esc(m.src === 'claude' ? t('srcClaude') : t('srcRule'))}</span></span></header>
+        <p class="brief-q"><em>${esc(t('briefQ'))}:</em> ${esc(q)}</p>
+        <ol class="brief-l">${FIELDS.map(f => m.a[f] ? `<li><b>${esc(t('mf_' + f))}</b><span>${esc(m.a[f])}</span></li>` : '').join('')}</ol>
+        <footer class="brief-f"><span>${esc(t('mayorName'))} · ${esc(t('mayorNote').split('.')[0])}.</span><span class="row">${m.a._site ? `<button class="lnk" data-fly="${i}">${esc(t('flyTo'))}</button>` : ''}${m.a._plan ? `<button class="lnk" data-plan="${i}">${esc(t('optApply'))}</button>` : ''}</span></footer></article>`;
+    }).reverse().join('');
+    el.querySelectorAll('[data-fly]').forEach(b => b.onclick = () => { const st = chat[+b.dataset.fly].a._site; Q.map.flyTo({ center: st.ll, zoom: 15.4, pitch: 55, duration: 1400 }); });
     el.querySelectorAll('[data-plan]').forEach(b => b.onclick = () => Q.lastOpt && applyPlan(Q.lastOpt));
-    el.scrollTop = el.scrollHeight;
   }
+
   let sample = null, sampleChecked = false;
   async function checkSample() { if (sampleChecked) return sample; sampleChecked = true; try { if (G.claude && G.claude.use) sample = await Promise.race([G.claude.use('sample'), new Promise(r => setTimeout(() => r(null), 2500))]); } catch (e) { sample = null; } return sample; }
   async function engineLabel(el) {

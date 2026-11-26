@@ -5,8 +5,8 @@
   'use strict';
   const E = G.QEngine, RAD = Math.PI / 180, MPP0 = 156543.03 * Math.cos(E.LAT0 * RAD);
   const THEMES = {
-    night: { bg: '#070f1d', grid: 'rgba(80,120,180,0.06)', water: '#0f3357', waterEdge: '#1d5a8c', park: '#0f3b2c', road: { trunk: '#3b5378', primary: '#33496b', secondary: '#2a3d5c', tertiary: '#233450' }, wallA: [36, 52, 80], roof: [92, 122, 170], text: '#c9d6ea', halo: '#070f1d' },
-    day:   { bg: '#eef2f6', grid: 'rgba(30,60,100,0.05)', water: '#a9cfe9', waterEdge: '#7fb2d8', park: '#cfe8c9', road: { trunk: '#f6c66f', primary: '#ffffff', secondary: '#fbfbfb', tertiary: '#f4f4f4' }, wallA: [168, 176, 190], roof: [214, 219, 228], text: '#1d2a3a', halo: '#ffffff' }
+    night: { casing: '#1b2a44', bg: '#070f1d', grid: 'rgba(80,120,180,0.06)', water: '#0f3357', waterEdge: '#1d5a8c', park: '#0f3b2c', road: { trunk: '#3b5378', primary: '#33496b', secondary: '#2a3d5c', tertiary: '#233450' }, wallA: [36, 52, 80], roof: [92, 122, 170], text: '#c9d6ea', halo: '#070f1d' },
+    day:   { bg: '#ece6da', grid: 'rgba(34,68,168,0.07)', water: '#b7cbdd', waterEdge: '#7f9fbf', park: '#cfd8bd', road: { trunk: '#f7f3ea', primary: '#fbf8f1', secondary: '#f6f1e7', tertiary: '#f1ebdf' }, casing: '#c9bfae', wallA: [176, 168, 154], roof: [222, 214, 200], text: '#23272f', halo: '#f4efe6' }
   };
   const BCOL = { house: [0.92, 0.9, 0.85], apartments: [1, 1, 1], commercial: [1.05, 0.98, 0.85], public: [0.9, 1.0, 1.1] };
 
@@ -122,6 +122,10 @@
       // roads
       const traf = this.visible('traffic') && (this.data.traffic || []).length;
       const wd = { trunk: 22, primary: 18, secondary: 13, tertiary: 10 };
+      if (T.casing) for (const r of this.D.roads) {
+        c.strokeStyle = T.casing; c.lineWidth = Math.max(1.6, (wd[r.cls] || 10) * s + 2); c.lineCap = 'round';
+        c.beginPath(); r.xy.forEach((q, i) => { const p = this.proj(q[0], q[1]); i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.stroke();
+      }
       for (const r of this.D.roads) {
         c.strokeStyle = T.road[r.cls] || T.road.tertiary; c.lineWidth = Math.max(1, (wd[r.cls] || 10) * s); c.lineCap = 'round';
         c.beginPath(); r.xy.forEach((q, i) => { const p = this.proj(q[0], q[1]); i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.stroke();
@@ -163,20 +167,20 @@
         }
       }
       c.fillStyle = rgb(col, 1); c.beginPath(); this._poly(c, ring, flat ? 0 : top); c.fill();
-      if (it.glow || it.outline) { c.strokeStyle = it.outline || 'rgba(255,255,255,0.55)'; c.lineWidth = it.outline ? 2.2 : 0.8; c.stroke(); }
+      if (it.glow || it.outline) { c.strokeStyle = it.outline || 'rgba(35,39,47,0.45)'; c.lineWidth = it.outline ? 2.2 : 0.8; c.stroke(); }
       c.globalAlpha = 1;
     }
     _ccw(r) { if (r._ccw !== undefined) return r._ccw; let a = 0; for (let i = 0; i < r.length - 1; i++) a += (r[i + 1][0] - r[i][0]) * (r[i + 1][1] + r[i][1]); return (r._ccw = a < 0); }
     _drawDynamic(c) {
       const T = this.th, s = this.s();
-      const pts = (id, def) => { if (!this.visible(id)) return; for (const f of this.data[id] || []) if (f.t === 'pt') { const p = this.proj(f.xy[0], f.xy[1], f.P.z || 0); if (p[0] < -20 || p[0] > this.W + 20 || p[1] < -20 || p[1] > this.H + 20) continue; const r = f.P.r || def; c.fillStyle = f.P.color || '#22d3ee'; c.strokeStyle = f.P.stroke || 'rgba(7,15,29,0.9)'; c.lineWidth = 1.5; c.beginPath(); c.arc(p[0], p[1], r, 0, 7); c.fill(); if (r > 2.5) c.stroke(); if (f.P.ring) { c.strokeStyle = f.P.ring; c.lineWidth = 2; c.beginPath(); c.arc(p[0], p[1], r + 4, 0, 7); c.stroke(); } } };
+      const pts = (id, def) => { if (!this.visible(id)) return; for (const f of this.data[id] || []) if (f.t === 'pt') { const p = this.proj(f.xy[0], f.xy[1], f.P.z || 0); if (p[0] < -20 || p[0] > this.W + 20 || p[1] < -20 || p[1] > this.H + 20) continue; const r = f.P.r || def; c.fillStyle = f.P.color || '#2244a8'; c.strokeStyle = f.P.stroke || T.halo; c.lineWidth = 1.5; c.beginPath(); c.arc(p[0], p[1], r, 0, 7); c.fill(); if (r > 2.5) c.stroke(); if (f.P.ring) { c.strokeStyle = f.P.ring; c.lineWidth = 2; c.beginPath(); c.arc(p[0], p[1], r + 4, 0, 7); c.stroke(); } } };
       pts('trees', 2.2); pts('fac', 4.5); pts('citizen', 6); pts('vehicles', 2.4);
       if (this.visible('measure')) for (const f of this.data.measure || []) {
-        if (f.t === 'ln') { c.strokeStyle = '#22d3ee'; c.lineWidth = 2; c.setLineDash([6, 4]); c.beginPath(); f.xy.forEach((q, i) => { const p = this.proj(q[0], q[1]); i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.stroke(); c.setLineDash([]); }
-        else { const p = this.proj(f.xy[0], f.xy[1]); c.fillStyle = '#fff'; c.beginPath(); c.arc(p[0], p[1], 4, 0, 7); c.fill(); }
+        if (f.t === 'ln') { c.strokeStyle = '#c8643b'; c.lineWidth = 2; c.setLineDash([6, 4]); c.beginPath(); f.xy.forEach((q, i) => { const p = this.proj(q[0], q[1]); i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.stroke(); c.setLineDash([]); }
+        else { const p = this.proj(f.xy[0], f.xy[1]); c.fillStyle = '#c8643b'; c.beginPath(); c.arc(p[0], p[1], 4, 0, 7); c.fill(); }
       }
       // labels
-      c.font = '600 12px Inter, system-ui, sans-serif'; c.textAlign = 'center'; c.lineJoin = 'round';
+      c.font = '600 12px "Golos Text", Inter, system-ui, sans-serif'; c.textAlign = 'center'; c.lineJoin = 'round';
       const lbl = (id, minZ) => { if (!this.visible(id) || this.v.zoom < minZ) return; for (const f of this.data[id] || []) if (f.t === 'pt' && f.P.label) { const p = this.proj(f.xy[0], f.xy[1], f.P.z || 0); if (p[0] < 0 || p[0] > this.W || p[1] < 0 || p[1] > this.H) continue; c.strokeStyle = T.halo; c.lineWidth = 3.5; c.strokeText(f.P.label, p[0], p[1] - 10); c.fillStyle = f.P.lc || T.text; c.fillText(f.P.label, p[0], p[1] - 10); } };
       pts('landmarks', 6); lbl('landmarks', 9); lbl('fac', 15.2); lbl('proposals', 14);
       void s;
